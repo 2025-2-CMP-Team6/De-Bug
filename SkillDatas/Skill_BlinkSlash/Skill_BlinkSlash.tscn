@@ -1,0 +1,16 @@
+[gd_scene load_steps=3 format=3 uid="uid://bp2n1tbnw12f4"]
+
+[ext_resource type="Script" uid="uid://o7wombbsoxns" path="res://SkillDatas/Skill_BlinkSlash/Skill_BlinkSlash.gd" id="1_47a4o"]
+[ext_resource type="Texture2D" uid="uid://bwf4bpn28sj77" path="res://graphics/icon.svg" id="2_f6qxk"]
+
+[node name="Skill_BlinkSlash" type="Node2D"]
+script = ExtResource("1_47a4o")
+teleport_distance = 200.0
+slide_speed = 1000.0
+slide_friction = 8000.0
+skill_name = "벽력일섬 "
+skill_icon = ExtResource("2_f6qxk")
+cast_duration = 15.0
+requires_target = true
+ends_on_condition = true
+max_cast_range = 700.0

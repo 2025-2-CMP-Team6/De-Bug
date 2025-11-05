@@ -1,7 +1,8 @@
-[gd_scene load_steps=4 format=3 uid="uid://dodw35vp4duix"]
+[gd_scene load_steps=5 format=3 uid="uid://dodw35vp4duix"]
 
 [ext_resource type="PackedScene" uid="uid://en1mqsrf58ka" path="res://Actors/Player/player.tscn" id="1_4717r"]
-[ext_resource type="Texture2D" uid="uid://bwf4bpn28sj77" path="res://graphics/icon.svg" id="2_h5o24"]
+[ext_resource type="PackedScene" uid="uid://10p01la5f8rw" path="res://Actors/Enemies/enemy.tscn" id="3_4717r"]
+[ext_resource type="PackedScene" uid="uid://hwvrl37b2dlk" path="res://UI/skill_ui.tscn" id="3_h5o24"]
 [ext_resource type="Texture2D" uid="uid://bq86qdbosfr7h" path="res://graphics/grid.jpg" id="3_mmdvd"]
 
 [node name="Node2D" type="Node2D"]
@@ -9,10 +10,7 @@
 [node name="Player" parent="." instance=ExtResource("1_4717r")]
 position = Vector2(152, 144)
 
-[node name="TargetIcon" type="Sprite2D" parent="."]
-z_index = -10
-position = Vector2(208, 472)
-texture = ExtResource("2_h5o24")
+[node name="SkillUI" parent="." instance=ExtResource("3_h5o24")]
 
 [node name="ParallaxLayer" type="Parallax2D" parent="."]
 z_index = -10
@@ -25,3 +23,9 @@ position = Vector2(1096, 648)
 texture = ExtResource("3_mmdvd")
 region_enabled = true
 region_rect = Rect2(0, 0, 4000, 4000)
+
+[node name="Enemy" parent="." instance=ExtResource("3_4717r")]
+position = Vector2(151, 619)
+
+[node name="Enemy2" parent="." instance=ExtResource("3_4717r")]
+position = Vector2(705, 100)
