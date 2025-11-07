@@ -18,6 +18,7 @@ config/icon="res://graphics/icon.svg"
 [autoload]
 
 InventoryManager="*res://InventoryManager.gd"
+EffectManager="*res://EffectManager.gd"
 
 [display]
 

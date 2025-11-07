@@ -12,6 +12,15 @@ position = Vector2(152, 144)
 
 [node name="SkillUI" parent="." instance=ExtResource("3_h5o24")]
 
+[node name="Enemy3" parent="." instance=ExtResource("3_4717r")]
+position = Vector2(1014, 848)
+
+[node name="Enemy2" parent="." instance=ExtResource("3_4717r")]
+position = Vector2(507, 424)
+
+[node name="Enemy" parent="." instance=ExtResource("3_4717r")]
+position = Vector2(503, 150)
+
 [node name="ParallaxLayer" type="Parallax2D" parent="."]
 z_index = -10
 repeat_size = Vector2(1300, 1300)
@@ -23,9 +32,3 @@ position = Vector2(1096, 648)
 texture = ExtResource("3_mmdvd")
 region_enabled = true
 region_rect = Rect2(0, 0, 4000, 4000)
-
-[node name="Enemy" parent="." instance=ExtResource("3_4717r")]
-position = Vector2(151, 619)
-
-[node name="Enemy2" parent="." instance=ExtResource("3_4717r")]
-position = Vector2(705, 100)

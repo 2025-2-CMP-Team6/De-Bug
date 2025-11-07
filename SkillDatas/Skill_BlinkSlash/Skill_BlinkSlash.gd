@@ -1,136 +1,143 @@
 # skills/blink_slash/Skill_BlinkSlash.gd
 extends BaseSkill
 
-# --- 기존 변수 ---
-@export var teleport_distance: float = 60.0 # 적 뒤로 이동할 '최대' 거리
+# 스킬 고유의 속성들입니다.
+@export var teleport_distance: float = 60.0
 @export var safety_margin: float = 16.0
-
-# --- 미끄러짐 효과를 위한 새 변수 ---
-@export var slide_speed: float = 600.0 # 텔레포트 직후 미끄러지기 시작하는 속도
-@export var slide_friction: float = 2000.0 # 마찰력 (초당 감속되는 속도, 클수록 빨리 멈춤)
-
-## ★ (추가) 히트박스의 폭 (직선의 두께)
+@export var slide_speed: float = 600.0
+@export var slide_friction: float = 2000.0
 @export var hitbox_width: float = 50.0
+@export var slash_visual_texture: Texture # 디버그용 히트박스 시각화에 사용할 이미지입니다.
 
-
-# 스킬의 현재 상태 (순간이동은 1프레임, 미끄러지는 건 여러 프레임)
 var is_sliding: bool = false
-var slide_direction: Vector2 = Vector2.ZERO # 미끄러질 방향 저장
+var slide_direction: Vector2 = Vector2.ZERO
 
-# "스킬 발사!" 함수 (순간이동 + 미끄러짐 '시작')
-func execute(owner: CharacterBody2D, target: Node2D = null):
-	super.execute(owner, target)
+func _init():
+	# 이 스킬은 타겟 지정이 필수임을 설정합니다.
+	requires_target = true
 	
-	# 1. (수정) 타겟 유효성 검사
+	# 이 스킬은 특정 조건(미끄러짐 종료)에 따라 시전이 끝남을 설정합니다.
+	ends_on_condition = true
+
+
+# 스킬의 핵심 로직을 실행합니다.
+func execute(owner: CharacterBody2D, target: Node2D = null):
+	super.execute(owner, target) # is_active = true로 설정됩니다.
+	
+	# player.gd에서 이미 타겟을 확인하지만, 안전을 위해 여기서 한 번 더 확인합니다.
 	if target == null:
-		print("벽력일섬 타겟 없음! 스킬 발동 실패.")
-		is_active = false # "나 끝났음" 신호를 바로 보냄
+		is_active = false # 타겟이 없으면 스킬을 즉시 종료 상태로 만듭니다.
 		return
 	if not target.has_method("get_rid"):
-		print("타겟이 물리 객체가 아님! 스킬 발동 실패.")
-		is_active = false
+		is_active = false # 유효한 노드가 아니면 스킬을 즉시 종료 상태로 만듭니다.
 		return
 	
-	# 2. ★ (추가) 히트박스 판정 및 데미지 적용
-	#    (텔레포트보다 먼저 실행)
-	apply_slash_damage(owner, target)
-	
-	# 3. (기존) 방향 벡터 계산
-	slide_direction = (target.global_position - owner.global_position).normalized()
-	
+	var start_pos = owner.global_position
+	slide_direction = (target.global_position - start_pos).normalized()
 	if slide_direction == Vector2.ZERO:
-		slide_direction = Vector2.RIGHT # 기본 방향
-
-	# 2. 레이저 쏠 '시작점'과 '끝점' 계산
+		slide_direction = Vector2.RIGHT
+	
+	# 타겟 뒤쪽으로 순간이동할 위치를 계산합니다. (벽 관통 방지)
 	var ray_from = target.global_position
 	var ray_to = ray_from + (slide_direction * teleport_distance)
-	
-	# 3. 물리 엔진 공간(space state) 가져오기
 	var space_state = owner.get_world_2d().direct_space_state
-	
-	# 4. 레이저 쿼리 파라미터 생성
 	var query = PhysicsRayQueryParameters2D.create(ray_from, ray_to)
 	query.exclude = [owner.get_rid(), target.get_rid()]
-	
-	# 5. 레이저 발사!
 	var result: Dictionary = space_state.intersect_ray(query)
-
-	var target_position # 최종 이동할 위치
-
+	
+	var target_position
 	if result:
-		# 6-A. (충돌함)
 		target_position = result.position - (slide_direction * safety_margin)
 	else:
-		# 6-B. (충돌 안함)
 		target_position = ray_to
 	
-	# 5. (기존) 순간이동 및 미끄러짐 시작
+	# 계산된 위치로 플레이어를 순간이동시킵니다.
 	owner.global_position = target_position
+	
+	# 이동 경로에 있는 적들에게 데미지를 줍니다.
+	apply_slash_damage(start_pos, target_position, owner)
+	
+	# 순간이동 후 짧게 미끄러지는 효과를 위해 초기 속도를 설정합니다.
 	owner.velocity = slide_direction * slide_speed
 	is_sliding = true
 
 
-## ★ (추가) 벽력일섬 히트박스 판정 함수
-func apply_slash_damage(owner: CharacterBody2D, target_enemy: Node2D):
-	var start_pos = owner.global_position
-	var end_pos = target_enemy.global_position
+# 지정된 경로에 사각형 형태의 히트박스를 생성하여 적들에게 데미지를 입힙니다.
+func apply_slash_damage(start_pos: Vector2, end_pos: Vector2, owner: CharacterBody2D):
 	var length = start_pos.distance_to(end_pos)
-	
-	# 1. 물리 엔진 공간 가져오기
 	var space_state = owner.get_world_2d().direct_space_state
-	
-	# 2. 히트박스로 사용할 직사각형(Rectangle) Shape 생성
 	var shape = RectangleShape2D.new()
-	# (Shape의 길이는 y축 기준이므로, y에 길이를, x에 폭을 줍니다)
 	shape.size = Vector2(hitbox_width, length)
 	
-	# 3. Shape의 위치와 회전을 설정할 Transform 생성
-	var xform = Transform2D()
-	xform.origin = (start_pos + end_pos) / 2 # 중심점
-	# (Shape의 y축을 (end_pos - start_pos) 방향으로 정렬)
-	xform = xform.rotated((end_pos - start_pos).angle() + deg_to_rad(90))
-	
-	# 4. 물리 쿼리 생성
+	var angle = (end_pos - start_pos).angle() + deg_to_rad(90)
+	var center_pos = (start_pos + end_pos) / 2
+	var xform = Transform2D(angle, center_pos)
+
 	var query = PhysicsShapeQueryParameters2D.new()
 	query.shape = shape
 	query.transform = xform
-	query.collision_mask = owner.get_collision_mask() # 플레이어가 충돌하는 레이어와 동일하게
-	query.collide_with_areas = true # Area2D (적) 포함
-	query.collide_with_bodies = true # CharacterBody2D (적) 포함
+	query.collide_with_areas = false
+	query.collide_with_bodies = true
+	query.exclude = [owner.get_rid()]
 	
-	# 5. 쿼리 실행! (영역과 교차하는 모든 오브젝트를 반환)
+	# 디버깅을 위해 히트박스 영역을 이미지로 표시합니다.
+	_debug_draw_hitbox(shape, xform, owner)
+
 	var results: Array = space_state.intersect_shape(query)
 	
-	# 6. 결과 분석 및 데미지 적용
-	var hit_enemies = [] # 중복 데미지 방지 리스트
+	var did_hit_enemy: bool = false
+	
+	var hit_enemies = []
 	for res in results:
 		var collider = res.collider
-		
-		# "enemies" 그룹에 속하고, 아직 안 때렸고, take_damage 함수가 있다면
 		if collider.is_in_group("enemies") and not collider in hit_enemies:
 			if collider.has_method("take_damage"):
-				# BaseSkill에서 물려받은 'damage' 변수 사용
 				collider.take_damage(damage)
 				print("벽력일섬 히트: " + collider.name)
-				hit_enemies.append(collider) # 중복 방지 리스트에 추가
+				hit_enemies.append(collider)
+				did_hit_enemy = true
 
-# "스킬 시전 중 물리 처리" 함수 (미끄러짐 '감속' 담당)
+	# 적을 한 명이라도 타격했다면 화면 효과를 재생합니다.
+	if did_hit_enemy:
+		EffectManager.play_screen_shake(12.0, 0.15)
+		EffectManager.play_multi_flash(Color.WHITE, 0.05, 3)
+
+# 스킬 시전 중 매 물리 프레임마다 호출되어 미끄러짐 효과를 처리합니다.
 func process_skill_physics(owner: CharacterBody2D, delta: float):
-	# is_sliding 플래그를 통해 스킬이 "미끄러지는 중"인지 확인
+	# execute 함수에서 is_sliding이 true로 설정된 동안 이 로직이 실행됩니다.
 	if is_sliding:
-		# 1. 마찰력을 적용하여 속도를 0으로 점차 줄임
+		# 마찰력을 적용하여 속도를 점차 줄입니다.
 		owner.velocity = owner.velocity.move_toward(Vector2.ZERO, slide_friction * delta)
-		if owner.velocity.length() < 10.0:
-			owner.velocity = Vector2.ZERO
-			is_sliding = false
-			is_active = false # "나 끝났음"
 		
-		# 2. 속도가 거의 0이 되었는지 확인
-		elif owner.velocity.length() < 10.0:
-			owner.velocity = Vector2.ZERO
-			is_sliding = false # 미끄러짐 종료
-			is_active = false # 스킬 종료
-			
+		# 속도가 0이 되면 미끄러짐을 멈추고, 스킬이 종료되었음을 알립니다.
+		if owner.velocity == Vector2.ZERO:
+			is_sliding = false
+			is_active = false # player.gd가 상태를 변경할 수 있도록 is_active를 false로 설정합니다.
+
+# 디버깅 목적으로 히트박스 영역을 Sprite2D를 사용해 시각적으로 표시합니다.
+func _debug_draw_hitbox(shape: Shape2D, xform: Transform2D, owner: Node):
+	# 이 시각화는 Godot 에디터의 '디버그 > 충돌 모양 보이기' 옵션과 무관하게 표시됩니다.
+	var debug_sprite = Sprite2D.new()
+	
+	# 인스펙터에서 설정한 텍스처를 사용합니다.
+	if slash_visual_texture:
+		debug_sprite.texture = slash_visual_texture
 	else:
-		# 미끄러짐이 끝난 후에는 속도를 0으로 유지
-		owner.velocity = Vector2.ZERO
+		return # 텍스처가 없으면 표시하지 않습니다.
+	
+	# 텍스처의 크기에 맞춰 스프라이트의 스케일을 조절하여 히트박스 모양과 일치시킵니다.
+	if debug_sprite.texture.get_width() > 0:
+		debug_sprite.scale.x = shape.size.x / debug_sprite.texture.get_width()
+		debug_sprite.scale.y = shape.size.y / debug_sprite.texture.get_height()
+
+	# 반투명하게 만들어 게임 화면과 구분되도록 합니다.
+	debug_sprite.modulate = Color(1, 1, 1, 0.5)
+	
+	# 히트박스와 동일한 위치, 회전, 크기를 적용합니다.
+	debug_sprite.global_transform = xform
+	
+	owner.get_parent().add_child(debug_sprite)
+	
+	# 잠시 후 자동으로 사라지도록 타이머를 설정합니다.
+	var timer = get_tree().create_timer(0.5)
+	timer.timeout.connect(debug_sprite.queue_free)
