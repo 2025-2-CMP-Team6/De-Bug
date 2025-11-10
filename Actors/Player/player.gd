@@ -1,9 +1,10 @@
+# player.gd
 extends CharacterBody2D
 
 const BaseSkill = preload("res://SkillDatas/BaseSkill.gd")
 
 #region 플레이어 속성 (Player Attributes)
-# 플레이어의 움직임, 능력치 등 핵심적인 속성을 정의하는 변수들입니다. 인스펙터 창에서 값을 쉽게 조절할 수 있습니다.
+
 @export var max_speed: float = 1000.0
 @export var acceleration: float = 4000.0
 @export var friction: float = 2000.0
@@ -20,7 +21,7 @@ const BaseSkill = preload("res://SkillDatas/BaseSkill.gd")
 #endregion
 
 #region 상태 머신 (State Machine)
-# 플레이어가 가질 수 있는 모든 행동 상태를 정의하는 열거형입니다.
+
 enum State {
 	IDLE,
 	MOVE,
@@ -32,20 +33,19 @@ enum State {
 #endregion
 
 #region 상태 관리 변수
-# 플레이어의 현재 상태와 관련된 데이터들을 저장하고 추적합니다.
+
 var current_state = State.IDLE
 var can_dash: bool = true
 var dash_direction: Vector2 = Vector2.ZERO
 var current_stamina: float = 0.0
 var current_casting_skill: BaseSkill = null
 var current_cast_target: Node2D = null
-var is_invincible: bool = false # 무적 상태 여부. true일 경우 피해를 받지 않습니다. (피격 후 깜빡이는 동안)
+var is_invincible: bool = false
 var current_lives: int = 0
-var is_input_locked: bool = false # 입력 잠금 상태. true일 경우 UI 창이 열려있는 등 플레이어 조작이 비활성화됩니다.
+var is_input_locked: bool = false
 #endregion
 
 #region 노드 참조 (Node Cache)
-# 자주 사용하는 노드들을 변수에 미리 할당하여 성능을 최적화합니다.
 @onready var duration_timer = $DashDurationTimer
 @onready var cooldown_timer = $DashCooldownTimer
 @onready var skill_cast_timer = $SkillCastTimer
@@ -58,10 +58,15 @@ var is_input_locked: bool = false # 입력 잠금 상태. true일 경우 UI 창�
 @onready var skill_1_slot = $Visuals/Skill1Slot
 @onready var skill_2_slot = $Visuals/Skill2Slot
 @onready var skill_3_slot = $Visuals/Skill3Slot
+
+# ★ (새로 추가) 우측 하단 HUD 스킬 아이콘 참조
+@onready var hud_skill_1_icon = $HUD/HudContainer/SkillHudIcon1
+@onready var hud_skill_2_icon = $HUD/HudContainer/SkillHudIcon2
+@onready var hud_skill_3_icon = $HUD/HudContainer/SkillHudIcon3
 #endregion
 
 #region 디버그용 시각화
-# 게임 개발 및 테스트 중에만 사용되는 디버그 관련 코드입니다.
+
 var show_range: bool = true
 func _draw():
 	if show_range and skill_1_slot.get_child_count() > 0:
@@ -72,20 +77,32 @@ func _draw():
 #endregion
 
 #region 초기화 (Initialization)
-# 게임 시작 시 플레이어의 초기 상태를 설정하고 필요한 연결을 수행합니다.
 func _ready():
+	# 시그널 연결
 	duration_timer.timeout.connect(_on_dash_duration_timeout)
 	cooldown_timer.timeout.connect(_on_dash_cooldown_timeout)
 	i_frames_timer.timeout.connect(_on_i_frames_timeout)
 	skill_cast_timer.timeout.connect(_on_skill_cast_timeout)
 	
+	# 변수 초기화
 	current_stamina = max_stamina
 	stamina_bar.max_value = max_stamina
 	stamina_bar.value = current_stamina
-
 	current_lives = max_lives
 	update_lives_ui()
 
+	# -----------------------------------------------------------------
+	# ★ (새로 추가) HUD 아이콘과 실제 스킬 슬롯을 연결합니다.
+	# -----------------------------------------------------------------
+	if is_instance_valid(hud_skill_1_icon):
+		hud_skill_1_icon.setup_hud(skill_1_slot, "LMB") # 1번 스킬(LMB) 연결
+	if is_instance_valid(hud_skill_2_icon):
+		hud_skill_2_icon.setup_hud(skill_2_slot, "Q") # 2번 스킬(Q) 연결
+	if is_instance_valid(hud_skill_3_icon):
+		hud_skill_3_icon.setup_hud(skill_3_slot, "E") # 3번 스킬(E) 연결
+	# -----------------------------------------------------------------
+
+	# (부활 / 첫 시작) 스킬 장착 로직 (이전과 동일)
 	var has_saved_skills = false
 	for slot_index in InventoryManager.equipped_skill_paths:
 		if InventoryManager.equipped_skill_paths[slot_index] != null:
@@ -94,17 +111,11 @@ func _ready():
 
 	if has_saved_skills:
 		var path1 = InventoryManager.equipped_skill_paths[1]
-		if path1 != null:
-			_load_skill_into_slot(path1, 1)
-			
+		if path1 != null: _load_skill_into_slot(path1, 1)
 		var path2 = InventoryManager.equipped_skill_paths[2]
-		if path2 != null:
-			_load_skill_into_slot(path2, 2)
-			
+		if path2 != null: _load_skill_into_slot(path2, 2)
 		var path3 = InventoryManager.equipped_skill_paths[3]
-		if path3 != null:
-			_load_skill_into_slot(path3, 3)
-			
+		if path3 != null: _load_skill_into_slot(path3, 3)
 	else:
 		var initial_skill_1_path = "res://SkillDatas/Skill_BlinkSlash/Skill_BlinkSlash.tscn"
 		if InventoryManager.remove_skill_from_inventory(initial_skill_1_path):
@@ -118,13 +129,14 @@ func _ready():
 		if InventoryManager.remove_skill_from_inventory(initial_skill_3_path):
 			equip_skill(initial_skill_3_path, 3)
 
+	# 이펙트 매니저 등록
 	EffectManager.register_effects($Camera2D, $HUD/ScreenFlashRect)
-
+	# 상태 시작
 	change_state(State.IDLE)
 #endregion
 
 #region 물리 처리 (Physics Process)
-# 매 물리 프레임마다 호출되어 플레이어의 상태에 따른 로직을 처리하고 움직임을 업데이트합니다.
+
 func _physics_process(delta: float):
 	var mouse_x = get_global_mouse_position().x
 	var player_x = global_position.x
@@ -141,7 +153,6 @@ func _physics_process(delta: float):
 		
 	state_label.text = State.keys()[current_state]
 
-	# 특정 상태(대시, 스킬 시전 중이 아닐 때)에서만 스태미나가 회복되도록 처리합니다.
 	match current_state:
 		State.IDLE, State.MOVE, State.MOVE_TO_IDLE, State.DASH_TO_IDLE:
 			if not is_input_locked:
@@ -160,10 +171,9 @@ func _physics_process(delta: float):
 #endregion
 
 #region 상태별 로직 (State Logic)
-# 각 상태(IDLE, MOVE 등)에서 플레이어가 어떻게 행동해야 하는지를 정의합니다.
+
 func regenerate_stamina(delta: float):
 	current_stamina = clamp(current_stamina + stamina_regen_rate * delta, 0, max_stamina)
-
 
 func state_logic_idle(_delta: float):
 	velocity = Vector2.ZERO
@@ -225,7 +235,7 @@ func state_logic_skill_casting(delta: float):
 #endregion
 
 #region 입력 처리 (Input Handling)
-# 플레이어의 키보드 및 마우스 입력을 감지하고 그에 맞는 행동을 호출합니다.
+
 func handle_inputs():
 	if Input.is_action_just_pressed("ui_inventory"):
 		skill_ui.visible = not skill_ui.visible
@@ -252,7 +262,7 @@ func handle_inputs():
 #endregion
 
 #region 스킬 관련 기능 (Skill Functions)
-# 스킬 사용, 장착, 해제 등 스킬 시스템과 관련된 모든 기능을 담당합니다.
+
 func find_mouse_target() -> Node2D:
 	var space_state = get_world_2d().direct_space_state
 	var query = PhysicsPointQueryParameters2D.new()
@@ -268,7 +278,6 @@ func find_mouse_target() -> Node2D:
 				return collider
 	return null
 
-# 스킬 사용 시도 (쿨타임, 스태미나, 사거리 등 조건 검사)
 func try_cast_skill(slot_node: Node, target: Node2D = null):
 	if slot_node.get_child_count() == 0:
 		print("슬롯이 비어있음")
@@ -289,23 +298,19 @@ func try_cast_skill(slot_node: Node, target: Node2D = null):
 		print(str(distance) + "거리")
 		print(str(skill.max_cast_range) + "사거리")
 	
-	# 쿨타임 검사
 	if not skill.is_ready():
 		var time_left = skill.get_cooldown_time_left()
 		print(skill.skill_name + " 스킬 준비 안 됨 (쿨타임). 남은 시간: " + str(time_left) + "초")
 		return
 		
-	# 스태미나 검사
 	if current_stamina < skill.stamina_cost:
 		print(skill.skill_name + " 스킬 준비 안 됨 (스태미나 부족! 현재: " + str(current_stamina) + " / 필요: " + str(skill.stamina_cost) + ")")
 		return
 
-	# 검사 통과후 실행
 	current_casting_skill = skill
 	current_cast_target = target
 	change_state(State.SKILL_CASTING)
 
-# 인벤토리 데이터와 무관하게, 단순히 씬 파일을 로드하여 슬롯에 인스턴스화합니다. (게임 시작 시 호출)
 func _load_skill_into_slot(skill_scene_path: String, slot_number: int):
 	var slot_node: Node = null
 	match slot_number:
@@ -332,7 +337,6 @@ func _load_skill_into_slot(skill_scene_path: String, slot_number: int):
 	else:
 		new_skill_instance.queue_free()
 
-# 스킬 장착
 func equip_skill(skill_scene_path: String, slot_number: int):
 	var slot_node: Node = null
 	match slot_number:
@@ -345,7 +349,6 @@ func equip_skill(skill_scene_path: String, slot_number: int):
 	if old_skill_path != null:
 		InventoryManager.add_skill_to_inventory(old_skill_path)
 
-	# 기존 스킬 인벤토리로
 	if slot_node.get_child_count() > 0:
 		for child in slot_node.get_children():
 			child.queue_free()
@@ -368,7 +371,6 @@ func equip_skill(skill_scene_path: String, slot_number: int):
 	else:
 		new_skill_instance.queue_free()
 
-# 스킬 해제 (인벤토리 데이터 연동)
 func unequip_skill(slot_number: int):
 	var slot_node: Node = null
 	match slot_number:
@@ -387,15 +389,13 @@ func unequip_skill(slot_number: int):
 			InventoryManager.add_skill_to_inventory(unequipped_path)
 #endregion
 
-
 #region 상태 변경 로직 (State Change)
-# 플레이어의 상태를 다른 상태로 전환하고, 상태 진입 시 필요한 초기화 로직을 수행합니다.
+
 func change_state(new_state: State):
 	if current_state == new_state:
 		return
 	current_state = new_state
 
-	# 상태에 진입하는 순간, 단 한 번 실행되어야 하는 로직을 처리합니다.
 	match new_state:
 		State.DASH:
 			current_stamina -= dash_cost
@@ -421,11 +421,11 @@ func change_state(new_state: State):
 				skill_cast_timer.start()
 		
 		_:
-			pass # IDLE, MOVE, MOVE_TO_IDLE 등 다른 상태들은 진입 시 특별한 초기화 로직이 없습니다.
+			pass
 #endregion
 
 #region 타이머 콜백 (Timer Callbacks)
-# 대시, 스킬 시전 등 시간과 관련된 동작들이 끝났을 때 호출되는 함수들입니다.
+
 func _on_dash_duration_timeout():
 	change_state(State.DASH_TO_IDLE)
 	cooldown_timer.wait_time = dash_cooldown
@@ -441,7 +441,6 @@ func _on_skill_cast_timeout():
 #endregion
 
 #region 피격 및 생명 관리
-# 플레이어가 피해를 입거나 생명력을 잃었을 때의 로직을 처리합니다.
 
 func update_lives_ui():
 	for child in lives_container.get_children():
@@ -455,7 +454,6 @@ func update_lives_ui():
 			icon.custom_minimum_size = Vector2(32, 32)
 			lives_container.add_child(icon)
 
-# 피격 처리 및 무적 시간 적용
 func lose_life():
 	if is_invincible or current_state == State.DASH or current_lives <= 0:
 		return
@@ -471,7 +469,6 @@ func lose_life():
 		i_frames_timer.wait_time = i_frames_duration
 		i_frames_timer.start()
 
-# 사망 처리
 func die():
 	print("플레이어가 사망했습니다.")
 	is_invincible = false
@@ -479,7 +476,6 @@ func die():
 	get_tree().reload_current_scene()
 	
 func _on_i_frames_timeout():
-	# 무적 시간이 끝나면 호출됩니다.
 	is_invincible = false
 	visuals.visible = true
 #endregion

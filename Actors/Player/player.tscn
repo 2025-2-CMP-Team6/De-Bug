@@ -1,8 +1,9 @@
-[gd_scene load_steps=6 format=3 uid="uid://en1mqsrf58ka"]
+[gd_scene load_steps=7 format=3 uid="uid://en1mqsrf58ka"]
 
 [ext_resource type="Texture2D" uid="uid://bwf4bpn28sj77" path="res://graphics/icon.svg" id="1_4flbx"]
 [ext_resource type="Script" uid="uid://wkfijdxl0av1" path="res://Actors/Player/player.gd" id="1_onrkg"]
 [ext_resource type="Texture2D" uid="uid://bmvvtay7oilmh" path="res://graphics/life_icon.png" id="2_v1key"]
+[ext_resource type="PackedScene" uid="uid://byv8rt76sqhox" path="res://UI/SkillHudIcon.tscn" id="4_b63gh"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_onrkg"]
 size = Vector2(128, 128)
@@ -86,3 +87,32 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+
+[node name="HudContainer" type="Control" parent="HUD"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="SkillHudIcon1" parent="HUD/HudContainer" instance=ExtResource("4_b63gh")]
+layout_mode = 0
+offset_left = 2008.0
+offset_top = 1264.0
+offset_right = 2108.0
+offset_bottom = 1364.0
+
+[node name="SkillHudIcon2" parent="HUD/HudContainer" instance=ExtResource("4_b63gh")]
+layout_mode = 0
+offset_left = 2200.0
+offset_top = 1264.0
+offset_right = 2300.0
+offset_bottom = 1364.0
+
+[node name="SkillHudIcon3" parent="HUD/HudContainer" instance=ExtResource("4_b63gh")]
+layout_mode = 0
+offset_left = 2392.0
+offset_top = 1264.0
+offset_right = 2492.0
+offset_bottom = 1364.0
