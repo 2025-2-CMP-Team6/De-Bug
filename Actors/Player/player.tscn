@@ -21,9 +21,32 @@ corner_radius_bottom_right = 1
 corner_radius_bottom_left = 1
 corner_detail = 12
 
-[node name="Player" type="CharacterBody2D"]
+[node name="Player" type="CharacterBody2D" node_paths=PackedStringArray("duration_timer", "cooldown_timer", "skill_cast_timer", "state_label", "stamina_bar", "visuals", "lives_container", "i_frames_timer", "skill_1_slot", "skill_2_slot", "skill_3_slot", "camera_node", "screen_flash_rect", "hud_skill_1_icon", "hud_skill_2_icon", "hud_skill_3_icon")]
+scale = Vector2(0.99840045, 0.99016076)
+collision_mask = 6
 script = ExtResource("1_onrkg")
+max_speed = 800.0
+jump_velocity = -1200.0
+dash_speed = 2000.0
+dash_duration = 0.2
+max_lives = 5
 life_icon = ExtResource("2_v1key")
+duration_timer = NodePath("DashDurationTimer")
+cooldown_timer = NodePath("DashCooldownTimer")
+skill_cast_timer = NodePath("SkillCastTimer")
+state_label = NodePath("StateDebugLabel")
+stamina_bar = NodePath("StaminaBar")
+visuals = NodePath("Visuals")
+lives_container = NodePath("HUD/LivesContainer")
+i_frames_timer = NodePath("IFramesTimer")
+skill_1_slot = NodePath("Visuals/Skill1Slot")
+skill_2_slot = NodePath("Visuals/Skill2Slot")
+skill_3_slot = NodePath("Visuals/Skill3Slot")
+camera_node = NodePath("Camera2D")
+screen_flash_rect = NodePath("HUD/ScreenFlashRect")
+hud_skill_1_icon = NodePath("HUD/HudContainer/SkillHudIcon1")
+hud_skill_2_icon = NodePath("HUD/HudContainer/SkillHudIcon2")
+hud_skill_3_icon = NodePath("HUD/HudContainer/SkillHudIcon3")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_onrkg")

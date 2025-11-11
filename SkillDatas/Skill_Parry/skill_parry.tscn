@@ -6,6 +6,7 @@
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1hlnm"]
 
 [node name="Skill_Parry" type="Node2D"]
+scale = Vector2(0.95491946, 0.9520446)
 script = ExtResource("1_1hlnm")
 skill_name = "패링"
 skill_description = "적의 공격을 튕겨낸다."

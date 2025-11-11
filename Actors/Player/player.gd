@@ -4,13 +4,11 @@ extends CharacterBody2D
 const BaseSkill = preload("res://SkillDatas/BaseSkill.gd")
 
 #region 플레이어 속성 (Player Attributes)
-
-@export var max_speed: float = 1000.0
-@export var acceleration: float = 4000.0
-@export var friction: float = 2000.0
-@export var dash_speed: float = 3000.0
-@export var dash_friction: float = 10000.0
-@export var dash_duration: float = 0.02
+@export var max_speed: float = 400.0
+@export var gravity: float = ProjectSettings.get_setting("physics/2d/default_gravity")
+@export var jump_velocity: float = -600.0
+@export var dash_speed: float = 1200.0
+@export var dash_duration: float = 0.05
 @export var dash_cooldown: float = 0.8
 @export var max_lives: int = 3
 @export var life_icon: Texture
@@ -21,19 +19,15 @@ const BaseSkill = preload("res://SkillDatas/BaseSkill.gd")
 #endregion
 
 #region 상태 머신 (State Machine)
-
 enum State {
 	IDLE,
 	MOVE,
-	MOVE_TO_IDLE,
 	DASH,
-	DASH_TO_IDLE,
 	SKILL_CASTING
 }
 #endregion
 
 #region 상태 관리 변수
-
 var current_state = State.IDLE
 var can_dash: bool = true
 var dash_direction: Vector2 = Vector2.ZERO
@@ -46,63 +40,60 @@ var is_input_locked: bool = false
 #endregion
 
 #region 노드 참조 (Node Cache)
-@onready var duration_timer = $DashDurationTimer
-@onready var cooldown_timer = $DashCooldownTimer
-@onready var skill_cast_timer = $SkillCastTimer
-@onready var state_label = $StateDebugLabel
-@onready var stamina_bar = $StaminaBar
-@onready var visuals = $Visuals
-@onready var skill_ui = get_parent().find_child("SkillUI")
-@onready var lives_container = $HUD/LivesContainer
-@onready var i_frames_timer = $IFramesTimer
-@onready var skill_1_slot = $Visuals/Skill1Slot
-@onready var skill_2_slot = $Visuals/Skill2Slot
-@onready var skill_3_slot = $Visuals/Skill3Slot
+# --- 내부 노드 ---
+@export var duration_timer: Timer
+@export var cooldown_timer: Timer
+@export var skill_cast_timer: Timer
+@export var state_label: Label
+@export var stamina_bar: ProgressBar
+@export var visuals: Node2D
+@export var lives_container: HBoxContainer
+@export var i_frames_timer: Timer
+@export var skill_1_slot: Node
+@export var skill_2_slot: Node
+@export var skill_3_slot: Node
+@export var camera_node: Camera2D
+@export var screen_flash_rect: ColorRect
 
-# ★ (새로 추가) 우측 하단 HUD 스킬 아이콘 참조
-@onready var hud_skill_1_icon = $HUD/HudContainer/SkillHudIcon1
-@onready var hud_skill_2_icon = $HUD/HudContainer/SkillHudIcon2
-@onready var hud_skill_3_icon = $HUD/HudContainer/SkillHudIcon3
+# --- 외부 HUD 노드 ---
+@export var skill_ui: SkillUI
+@export var hud_skill_1_icon: Control
+@export var hud_skill_2_icon: Control
+@export var hud_skill_3_icon: Control
 #endregion
 
 #region 디버그용 시각화
-
 var show_range: bool = true
 func _draw():
 	if show_range and skill_1_slot.get_child_count() > 0:
 		var skill = skill_1_slot.get_child(0)
 		if is_instance_valid(skill):
 			if "max_cast_range" in skill and skill.max_cast_range > 0:
-				draw_circle(Vector2.ZERO, skill.max_cast_range, Color(1, 0, 0, 0.3))
+				draw_circle(Vector2(0, 0), skill.max_cast_range, Color(1, 0, 0, 0.3))
 #endregion
 
 #region 초기화 (Initialization)
 func _ready():
-	# 시그널 연결
-	duration_timer.timeout.connect(_on_dash_duration_timeout)
-	cooldown_timer.timeout.connect(_on_dash_cooldown_timeout)
-	i_frames_timer.timeout.connect(_on_i_frames_timeout)
-	skill_cast_timer.timeout.connect(_on_skill_cast_timeout)
+	if duration_timer: duration_timer.timeout.connect(_on_dash_duration_timeout)
+	if cooldown_timer: cooldown_timer.timeout.connect(_on_dash_cooldown_timeout)
+	if i_frames_timer: i_frames_timer.timeout.connect(_on_i_frames_timeout)
+	if skill_cast_timer: skill_cast_timer.timeout.connect(_on_skill_cast_timeout)
 	
-	# 변수 초기화
 	current_stamina = max_stamina
-	stamina_bar.max_value = max_stamina
-	stamina_bar.value = current_stamina
+	if stamina_bar:
+		stamina_bar.max_value = max_stamina
+		stamina_bar.value = current_stamina
+
 	current_lives = max_lives
 	update_lives_ui()
 
-	# -----------------------------------------------------------------
-	# ★ (새로 추가) HUD 아이콘과 실제 스킬 슬롯을 연결합니다.
-	# -----------------------------------------------------------------
 	if is_instance_valid(hud_skill_1_icon):
-		hud_skill_1_icon.setup_hud(skill_1_slot, "LMB") # 1번 스킬(LMB) 연결
+		hud_skill_1_icon.setup_hud(skill_1_slot, "LMB")
 	if is_instance_valid(hud_skill_2_icon):
-		hud_skill_2_icon.setup_hud(skill_2_slot, "Q") # 2번 스킬(Q) 연결
+		hud_skill_2_icon.setup_hud(skill_2_slot, "Q")
 	if is_instance_valid(hud_skill_3_icon):
-		hud_skill_3_icon.setup_hud(skill_3_slot, "E") # 3번 스킬(E) 연결
-	# -----------------------------------------------------------------
+		hud_skill_3_icon.setup_hud(skill_3_slot, "E")
 
-	# (부활 / 첫 시작) 스킬 장착 로직 (이전과 동일)
 	var has_saved_skills = false
 	for slot_index in InventoryManager.equipped_skill_paths:
 		if InventoryManager.equipped_skill_paths[slot_index] != null:
@@ -120,109 +111,78 @@ func _ready():
 		var initial_skill_1_path = "res://SkillDatas/Skill_BlinkSlash/Skill_BlinkSlash.tscn"
 		if InventoryManager.remove_skill_from_inventory(initial_skill_1_path):
 			equip_skill(initial_skill_1_path, 1)
-		
 		var initial_skill_2_path = "res://SkillDatas/Skill_Melee/Skill_Melee.tscn"
 		if InventoryManager.remove_skill_from_inventory(initial_skill_2_path):
 			equip_skill(initial_skill_2_path, 2)
-		
 		var initial_skill_3_path = "res://SkillDatas/Skill_Parry/Skill_Parry.tscn"
 		if InventoryManager.remove_skill_from_inventory(initial_skill_3_path):
 			equip_skill(initial_skill_3_path, 3)
 
-	# 이펙트 매니저 등록
-	EffectManager.register_effects($Camera2D, $HUD/ScreenFlashRect)
-	# 상태 시작
+	if camera_node and screen_flash_rect:
+		EffectManager.register_effects(camera_node, screen_flash_rect)
+		
 	change_state(State.IDLE)
 #endregion
 
 #region 물리 처리 (Physics Process)
-
 func _physics_process(delta: float):
-	var mouse_x = get_global_mouse_position().x
-	var player_x = global_position.x
+	var current_gravity_multiplier = 1.0
+	if current_state == State.SKILL_CASTING and is_instance_valid(current_casting_skill):
+		current_gravity_multiplier = current_casting_skill.gravity_multiplier
 	
-	if is_invincible:
-		visuals.visible = (int(Time.get_ticks_msec() / 100) % 2) == 0
-	else:
-		visuals.visible = true
+	if current_state != State.DASH and not is_on_floor():
+		velocity.y += gravity * current_gravity_multiplier * delta
 
-	if mouse_x < player_x:
-		visuals.scale.x = -1
-	elif mouse_x > player_x:
-		visuals.scale.x = 1
+	if is_invincible:
+		if visuals: visuals.visible = (int(Time.get_ticks_msec() / 100) % 2) == 0
+	else:
+		if visuals: visuals.visible = true
+
+	if velocity.x > 0.1:
+		if visuals: visuals.scale.x = 1
+	elif velocity.x < -0.1:
+		if visuals: visuals.scale.x = -1
 		
-	state_label.text = State.keys()[current_state]
+	if state_label: state_label.text = State.keys()[current_state]
 
 	match current_state:
-		State.IDLE, State.MOVE, State.MOVE_TO_IDLE, State.DASH_TO_IDLE:
+		State.IDLE, State.MOVE:
 			if not is_input_locked:
 				regenerate_stamina(delta)
 
 	match current_state:
 		State.IDLE: state_logic_idle(delta)
 		State.MOVE: state_logic_move(delta)
-		State.MOVE_TO_IDLE: state_logic_move_to_idle(delta)
 		State.DASH: state_logic_dash(delta)
-		State.DASH_TO_IDLE: state_logic_dash_to_idle(delta)
 		State.SKILL_CASTING: state_logic_skill_casting(delta)
 	
-	stamina_bar.value = current_stamina
+	if stamina_bar: stamina_bar.value = current_stamina
 	move_and_slide()
 #endregion
 
 #region 상태별 로직 (State Logic)
-
 func regenerate_stamina(delta: float):
 	current_stamina = clamp(current_stamina + stamina_regen_rate * delta, 0, max_stamina)
 
 func state_logic_idle(_delta: float):
-	velocity = Vector2.ZERO
+	velocity.x = 0
 	handle_inputs()
 	if is_input_locked: return
-	if Input.get_vector("move_left", "move_right", "move_up", "move_down"):
+	if Input.get_axis("move_left", "move_right") != 0:
 		change_state(State.MOVE)
 
-func state_logic_move(delta: float):
+func state_logic_move(_delta: float):
 	handle_inputs()
 	if is_input_locked:
-		velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
+		velocity.x = 0
 		return
-
-	var direction = Input.get_vector("move_left", "move_right", "move_up", "move_down")
-	if direction:
-		velocity = velocity.move_toward(direction.normalized() * max_speed, acceleration * delta)
-	else:
-		change_state(State.MOVE_TO_IDLE)
-
-func state_logic_move_to_idle(delta: float):
-	handle_inputs()
-	if is_input_locked:
-		velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
-		return
-		
-	velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
-	
-	if velocity == Vector2.ZERO:
+	var move_input = Input.get_axis("move_left", "move_right")
+	velocity.x = move_input * max_speed
+	if move_input == 0:
 		change_state(State.IDLE)
-	elif Input.get_vector("move_left", "move_right", "move_up", "move_down"):
-		velocity = Vector2.ZERO
-		change_state(State.MOVE)
 
 func state_logic_dash(_delta: float):
 	velocity = dash_direction * dash_speed
-
-func state_logic_dash_to_idle(delta: float):
-	handle_inputs()
-	if is_input_locked:
-		velocity = velocity.move_toward(Vector2.ZERO, dash_friction * delta)
-		return
-		
-	velocity = velocity.move_toward(Vector2.ZERO, dash_friction * delta)
-	if velocity == Vector2.ZERO:
-		change_state(State.IDLE)
-	elif Input.get_vector("move_left", "move_right", "move_up", "move_down"):
-		velocity = Vector2.ZERO
-		change_state(State.MOVE)
 
 func state_logic_skill_casting(delta: float):
 	if current_casting_skill != null:
@@ -235,20 +195,26 @@ func state_logic_skill_casting(delta: float):
 #endregion
 
 #region 입력 처리 (Input Handling)
-
 func handle_inputs():
+	# (오류가 발생했던 205번째 줄)
 	if Input.is_action_just_pressed("ui_inventory"):
-		skill_ui.visible = not skill_ui.visible
-		is_input_locked = skill_ui.visible
-		if skill_ui.visible:
-			skill_ui.refresh_ui(self)
+		# (수정) 이제 skill_ui가 'SkillUI' 타입임을 알기 때문에
+		#        refresh_ui() 함수를 정상적으로 호출할 수 있습니다.
+		if skill_ui:
+			skill_ui.visible = not skill_ui.visible
+			is_input_locked = skill_ui.visible
+			if skill_ui.visible:
+				skill_ui.refresh_ui(self)
 		return
 
 	if is_input_locked:
 		return
+	
+	if Input.is_action_just_pressed("jump") and is_on_floor():
+		velocity.y = jump_velocity
 		
 	if Input.is_action_just_pressed("skill_1"):
-		var target = find_mouse_target()
+		var target = find_nearest_enemy()
 		try_cast_skill(skill_1_slot, target)
 	elif Input.is_action_just_pressed("skill_2"):
 		try_cast_skill(skill_2_slot, null)
@@ -262,34 +228,29 @@ func handle_inputs():
 #endregion
 
 #region 스킬 관련 기능 (Skill Functions)
-
-func find_mouse_target() -> Node2D:
-	var space_state = get_world_2d().direct_space_state
-	var query = PhysicsPointQueryParameters2D.new()
-	query.position = get_global_mouse_position()
-	query.collide_with_areas = false
-	query.collide_with_bodies = true
-	var results = space_state.intersect_point(query)
-	
-	if not results.is_empty():
-		for result in results:
-			var collider = result.collider
-			if collider.is_in_group("enemies"):
-				return collider
-	return null
+# (이하 함수들은 이전과 동일)
+func find_nearest_enemy() -> Node2D:
+	var all_enemies = get_tree().get_nodes_in_group("enemies")
+	var nearest_enemy: Node2D = null
+	var min_distance = INF
+	for enemy in all_enemies:
+		if enemy is CharacterBody2D:
+			var distance = global_position.distance_to(enemy.global_position)
+			if distance < min_distance:
+				min_distance = distance
+				nearest_enemy = enemy
+	return nearest_enemy
 
 func try_cast_skill(slot_node: Node, target: Node2D = null):
+	if not is_instance_valid(slot_node): return
 	if slot_node.get_child_count() == 0:
 		print("슬롯이 비어있음")
 		return
-
 	var skill: BaseSkill = slot_node.get_child(0)
 	if skill == null: return
-
 	if skill.requires_target and target == null:
 		print(skill.skill_name + "은(는) 적을 클릭해야 합니다.")
 		return
-
 	if skill.requires_target and skill.max_cast_range > 0:
 		var distance = global_position.distance_to(target.global_position)
 		if distance > skill.max_cast_range:
@@ -297,16 +258,13 @@ func try_cast_skill(slot_node: Node, target: Node2D = null):
 			return
 		print(str(distance) + "거리")
 		print(str(skill.max_cast_range) + "사거리")
-	
 	if not skill.is_ready():
 		var time_left = skill.get_cooldown_time_left()
 		print(skill.skill_name + " 스킬 준비 안 됨 (쿨타임). 남은 시간: " + str(time_left) + "초")
 		return
-		
 	if current_stamina < skill.stamina_cost:
 		print(skill.skill_name + " 스킬 준비 안 됨 (스태미나 부족! 현재: " + str(current_stamina) + " / 필요: " + str(skill.stamina_cost) + ")")
 		return
-
 	current_casting_skill = skill
 	current_cast_target = target
 	change_state(State.SKILL_CASTING)
@@ -317,17 +275,13 @@ func _load_skill_into_slot(skill_scene_path: String, slot_number: int):
 		1: slot_node = skill_1_slot
 		2: slot_node = skill_2_slot
 		3: slot_node = skill_3_slot
-	
-	if slot_node == null: return
+	if not is_instance_valid(slot_node): return
 	if slot_node.get_child_count() > 0:
 		for child in slot_node.get_children():
 			child.queue_free()
-
 	var skill_scene = load(skill_scene_path)
 	if skill_scene == null: return
-	
 	var new_skill_instance = skill_scene.instantiate()
-	
 	if new_skill_instance is BaseSkill:
 		if new_skill_instance.type == slot_number:
 			slot_node.add_child(new_skill_instance)
@@ -343,25 +297,20 @@ func equip_skill(skill_scene_path: String, slot_number: int):
 		1: slot_node = skill_1_slot
 		2: slot_node = skill_2_slot
 		3: slot_node = skill_3_slot
-	if slot_node == null: return
-
+	if not is_instance_valid(slot_node): return
 	var old_skill_path = InventoryManager.equipped_skill_paths[slot_number]
 	if old_skill_path != null:
 		InventoryManager.add_skill_to_inventory(old_skill_path)
-
 	if slot_node.get_child_count() > 0:
 		for child in slot_node.get_children():
 			child.queue_free()
-
 	var skill_scene = load(skill_scene_path)
 	if skill_scene == null: return
 	var new_skill_instance = skill_scene.instantiate()
-	
 	if new_skill_instance is BaseSkill:
 		if new_skill_instance.type == slot_number:
 			print(new_skill_instance.skill_name + "을(를) " + str(slot_number) + "번 슬롯에 장착!")
 			slot_node.add_child(new_skill_instance)
-			
 			InventoryManager.equipped_skill_paths[slot_number] = skill_scene_path
 		else:
 			print("타입 불일치")
@@ -377,12 +326,11 @@ func unequip_skill(slot_number: int):
 		1: slot_node = skill_1_slot
 		2: slot_node = skill_2_slot
 		3: slot_node = skill_3_slot
-	
-	if slot_node != null and slot_node.get_child_count() > 0:
+	if not is_instance_valid(slot_node): return
+	if slot_node.get_child_count() > 0:
 		print(str(slot_number) + "번 슬롯 장착 해제")
 		for child in slot_node.get_children():
 			child.queue_free()
-			
 		var unequipped_path = InventoryManager.equipped_skill_paths[slot_number]
 		if unequipped_path != null:
 			InventoryManager.equipped_skill_paths[slot_number] = null
@@ -390,46 +338,40 @@ func unequip_skill(slot_number: int):
 #endregion
 
 #region 상태 변경 로직 (State Change)
-
 func change_state(new_state: State):
 	if current_state == new_state:
 		return
 	current_state = new_state
-
 	match new_state:
+		State.IDLE: pass
+		State.MOVE: pass
 		State.DASH:
 			current_stamina -= dash_cost
-			var mouse_position = get_global_mouse_position()
-			dash_direction = (mouse_position - global_position).normalized()
-			
+			if visuals: dash_direction = Vector2(visuals.scale.x, 0).normalized()
 			if dash_direction == Vector2.ZERO:
-				change_state(State.IDLE)
-				return
-
+				dash_direction = Vector2.RIGHT
 			can_dash = false
-			duration_timer.wait_time = dash_duration
-			duration_timer.start()
-	
+			if duration_timer:
+				duration_timer.wait_time = dash_duration
+				duration_timer.start()
 		State.SKILL_CASTING:
 			if current_casting_skill == null: return
 			current_casting_skill.execute(self, current_cast_target)
 			current_stamina -= current_casting_skill.stamina_cost
 			current_casting_skill.start_cooldown()
-			
 			if not current_casting_skill.ends_on_condition:
-				skill_cast_timer.wait_time = current_casting_skill.cast_duration
-				skill_cast_timer.start()
-		
-		_:
-			pass
+				if skill_cast_timer:
+					skill_cast_timer.wait_time = current_casting_skill.cast_duration
+					skill_cast_timer.start()
 #endregion
 
 #region 타이머 콜백 (Timer Callbacks)
-
 func _on_dash_duration_timeout():
-	change_state(State.DASH_TO_IDLE)
-	cooldown_timer.wait_time = dash_cooldown
-	cooldown_timer.start()
+	velocity = Vector2.ZERO
+	change_state(State.IDLE)
+	if cooldown_timer:
+		cooldown_timer.wait_time = dash_cooldown
+		cooldown_timer.start()
 
 func _on_dash_cooldown_timeout():
 	can_dash = true
@@ -441,11 +383,10 @@ func _on_skill_cast_timeout():
 #endregion
 
 #region 피격 및 생명 관리
-
 func update_lives_ui():
+	if not is_instance_valid(lives_container): return
 	for child in lives_container.get_children():
 		child.queue_free()
-		
 	if life_icon:
 		for i in range(current_lives):
 			var icon = TextureRect.new()
@@ -457,25 +398,24 @@ func update_lives_ui():
 func lose_life():
 	if is_invincible or current_state == State.DASH or current_lives <= 0:
 		return
-
 	current_lives -= 1
 	print("생명 1 잃음! 남은 생명: ", current_lives)
 	update_lives_ui()
-	
 	if current_lives <= 0:
 		die()
 	else:
 		is_invincible = true
-		i_frames_timer.wait_time = i_frames_duration
-		i_frames_timer.start()
+		if i_frames_timer:
+			i_frames_timer.wait_time = i_frames_duration
+			i_frames_timer.start()
 
 func die():
 	print("플레이어가 사망했습니다.")
 	is_invincible = false
-	visuals.visible = true
+	if visuals: visuals.visible = true
 	get_tree().reload_current_scene()
 	
 func _on_i_frames_timeout():
 	is_invincible = false
-	visuals.visible = true
+	if visuals: visuals.visible = true
 #endregion

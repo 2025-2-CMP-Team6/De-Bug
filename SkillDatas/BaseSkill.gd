@@ -1,3 +1,4 @@
+# BaseSkill.gd
 extends Node
 class_name BaseSkill
 
@@ -13,6 +14,9 @@ class_name BaseSkill
 @export var ends_on_condition: bool = false
 @export var damage: float = 10.0
 @export var max_cast_range: float = 0.0
+
+# ★ 'ignore_gravity' 대신 이 변수가 있어야 합니다.
+@export var gravity_multiplier: float = 1.0
 #endregion
 
 var cooldown_timer: Timer
@@ -27,7 +31,6 @@ func _ready():
 func is_ready() -> bool:
 	if cooldown_timer == null:
 		return false
-		
 	return cooldown_timer.is_stopped()
 
 #region 스킬 시전
@@ -35,22 +38,16 @@ func execute(owner: CharacterBody2D, target: Node2D = null):
 	is_active = true
 	print(owner.name + "가 " + skill_name + " 시전!")
 
-# 스킬 쿨타임을 시작합니다.
 func start_cooldown():
-	# _ready()가 실행되기 전(cooldown_timer가 null일 때) 호출될 경우를 대비합니다.
 	if cooldown_timer != null:
 		cooldown_timer.wait_time = cooldown
 		cooldown_timer.start()
 		
-# 스킬 물리
 func process_skill_physics(owner: CharacterBody2D, delta: float):
 	pass
 
-# 남은 쿨타임
 func get_cooldown_time_left() -> float:
 	if cooldown_timer != null:
 		return cooldown_timer.time_left
-	
 	return 0.0
-
 #endregion

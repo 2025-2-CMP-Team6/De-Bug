@@ -4,14 +4,12 @@
 [ext_resource type="Texture2D" uid="uid://bwf4bpn28sj77" path="res://graphics/icon.svg" id="2_f6qxk"]
 
 [node name="Skill_BlinkSlash" type="Node2D"]
+scale = Vector2(0.98290265, 0.9541606)
 script = ExtResource("1_47a4o")
 teleport_distance = 200.0
-slide_speed = 1000.0
-slide_friction = 8000.0
 slash_visual_texture = ExtResource("2_f6qxk")
 skill_name = "벽력일섬 "
 skill_icon = ExtResource("2_f6qxk")
-cast_duration = 15.0
 requires_target = true
-ends_on_condition = true
 max_cast_range = 700.0
+ignore_gravity = true

@@ -4,18 +4,12 @@ extends BaseSkill
 #region 스킬 고유 속성
 @export var teleport_distance: float = 60.0
 @export var safety_margin: float = 16.0
-@export var slide_speed: float = 600.0
-@export var slide_friction: float = 2000.0
 @export var hitbox_width: float = 50.0
 @export var slash_visual_texture: Texture
 #endregion
 
-var is_sliding: bool = false
 var slide_direction: Vector2 = Vector2.ZERO
 
-func _init():
-	requires_target = true
-	ends_on_condition = true
 
 #region 스킬 로직
 func execute(owner: CharacterBody2D, target: Node2D = null):
@@ -49,9 +43,6 @@ func execute(owner: CharacterBody2D, target: Node2D = null):
 	owner.global_position = target_position
 	
 	apply_slash_damage(start_pos, target_position, owner)
-	
-	owner.velocity = slide_direction * slide_speed
-	is_sliding = true
 
 # 히트박스 형성
 func apply_slash_damage(start_pos: Vector2, end_pos: Vector2, owner: CharacterBody2D):
@@ -86,18 +77,12 @@ func apply_slash_damage(start_pos: Vector2, end_pos: Vector2, owner: CharacterBo
 				print("벽력일섬 히트: " + collider.name)
 				hit_enemies.append(collider)
 				did_hit_enemy = true
-# 이펙트
+
+	# 이펙트
 	if did_hit_enemy:
 		EffectManager.play_screen_shake(12.0, 0.15)
 		EffectManager.play_multi_flash(Color.WHITE, 0.05, 3)
 
-func process_skill_physics(owner: CharacterBody2D, delta: float):
-	if is_sliding:
-		owner.velocity = owner.velocity.move_toward(Vector2.ZERO, slide_friction * delta)
-		
-		if owner.velocity == Vector2.ZERO:
-			is_sliding = false
-			is_active = false
 # 히트박스 시각화
 func _debug_draw_hitbox(shape: Shape2D, xform: Transform2D, owner: Node):
 	var debug_sprite = Sprite2D.new()

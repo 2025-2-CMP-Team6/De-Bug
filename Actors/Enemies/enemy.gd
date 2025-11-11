@@ -1,26 +1,33 @@
 # actors/enemies/enemy.gd
 extends CharacterBody2D
 
-# 총알 발사 관련 노드 및 씬입니다.
+#region 총알 발사
 const BULLET_SCENE = preload("res://Actors/Enemies/bullet.tscn")
 @onready var fire_timer = $FireTimer
 @onready var muzzle = $Muzzle
+#endregion
 
-# 체력 관련 변수입니다.
+#region 속성
 @export var max_health: float = 100.0
 var current_health: float
 
-# 자주 사용하는 노드를 캐시합니다.
+# (추가) 중력 값
+@export var gravity: float = ProjectSettings.get_setting("physics/2d/default_gravity")
+#endregion
+
+#region 노드 참조
 @onready var sprite = $Sprite2D
 @onready var hurtbox = $Hurtbox
 @onready var i_frames_timer = $IFramesTimer
+#endregion
 
-# 상태 관련 변수입니다.
+#region 상태 변수
 var is_invincible: bool = false
+#endregion
 
+#region 초기화
 func _ready():
-	# Godot 에디터에서 수동으로 연결된 시그널이 중복 연결되는 것을 방지하기 위해
-	# 초기화 시점에 기존 연결을 모두 해제합니다. 노드가 null일 경우를 대비해 확인합니다.
+	# 시그널 중복 연결 방지
 	if fire_timer != null:
 		for conn in fire_timer.timeout.get_connections():
 			fire_timer.timeout.disconnect(conn.callable)
@@ -33,7 +40,7 @@ func _ready():
 		for conn in i_frames_timer.timeout.get_connections():
 			i_frames_timer.timeout.disconnect(conn.callable)
 		
-	# 스크립트 내에서 시그널을 다시 연결하여 동작을 보장합니다.
+	# 시그널 연결
 	if fire_timer != null:
 		fire_timer.timeout.connect(shoot)
 	
@@ -43,19 +50,24 @@ func _ready():
 	if i_frames_timer != null:
 		i_frames_timer.timeout.connect(_on_i_frames_timeout)
 	
-	# 체력을 최대로 설정합니다.
 	current_health = max_health
 	
-	# 다른 개체에 영향을 주지 않도록 쉐이더 머티리얼을 복제하여 사용합니다.
+	# 쉐이더 머티리얼 복제
 	if sprite and sprite.material:
 		sprite.material = sprite.material.duplicate()
 	
-	# 피격 효과 쉐이더를 초기 상태(꺼짐)로 설정합니다.
+	# 쉐이더 초기화
 	if sprite:
 		EffectManager.set_hit_flash_amount(sprite, 0.0)
+#endregion
 
-func _physics_process(_delta):
-	# 무적 상태일 때 쉐이더를 이용해 점멸 효과를 표시합니다.
+#region 물리 처리
+func _physics_process(delta: float):
+	# 1. (추가) 중력 적용
+	if not is_on_floor():
+		velocity.y += gravity * delta
+
+	# 2. 무적 상태일 때 점멸 효과
 	if is_invincible:
 		var is_flash_on = (int(Time.get_ticks_msec() / 100) % 2) == 0
 		if is_flash_on:
@@ -65,10 +77,14 @@ func _physics_process(_delta):
 			if sprite:
 				EffectManager.set_hit_flash_amount(sprite, 0.0)
 	else:
-		# 무적이 아닐 때는 점멸 효과가 없도록 쉐이더를 확실히 꺼줍니다.
 		if sprite:
 			EffectManager.set_hit_flash_amount(sprite, 0.0)
+	
+	# 3. (추가) 이동 적용
+	move_and_slide()
+#endregion
 
+#region 전투
 # 총알을 발사합니다.
 func shoot():
 	var random_angle = randf_range(0, TAU)
@@ -78,8 +94,7 @@ func shoot():
 	bullet.global_position = muzzle.global_position
 	get_parent().add_child(bullet)
 
-
-# 데미지를 받아 체력을 깎고, 무적 상태로 전환하거나 사망 처리합니다.
+# 데미지를 받아 체력을 깎습니다.
 func take_damage(amount: float):
 	if is_invincible or current_health <= 0:
 		return
@@ -87,7 +102,6 @@ func take_damage(amount: float):
 	current_health -= amount
 	print(self.name + " 피격! 남은 체력: ", current_health)
 	
-	# 짧은 시간 동안 무적 상태가 됩니다.
 	is_invincible = true
 	if i_frames_timer != null:
 		i_frames_timer.start()
@@ -119,3 +133,4 @@ func _on_i_frames_timeout():
 	is_invincible = false
 	if sprite:
 		EffectManager.set_hit_flash_amount(sprite, 0.0)
+#endregion

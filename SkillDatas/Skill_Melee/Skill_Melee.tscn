@@ -8,9 +8,11 @@
 size = Vector2(236.5, 220.5)
 
 [node name="Skill_Melee" type="Node2D"]
+scale = Vector2(1.0037879, 0.998679)
 script = ExtResource("1_1iwp7")
 skill_icon = ExtResource("2_6kfnf")
 type = 2
+ignore_gravity = true
 
 [node name="Hitbox" type="Area2D" parent="." groups=["player_attack"]]
 visible = false
