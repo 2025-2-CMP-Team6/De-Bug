@@ -74,12 +74,15 @@ func _draw():
 
 #region 초기화 (Initialization)
 func _ready():
-	await InventoryManager.ready
-	
-	if duration_timer: duration_timer.timeout.connect(_on_dash_duration_timeout)
-	if cooldown_timer: cooldown_timer.timeout.connect(_on_dash_cooldown_timeout)
-	if i_frames_timer: i_frames_timer.timeout.connect(_on_i_frames_timeout)
-	if skill_cast_timer: skill_cast_timer.timeout.connect(_on_skill_cast_timeout)
+	if is_instance_valid(duration_timer):
+		duration_timer.timeout.connect(_on_dash_duration_timeout)
+	if is_instance_valid(cooldown_timer):
+		cooldown_timer.timeout.connect(_on_dash_cooldown_timeout)
+	if is_instance_valid(i_frames_timer):
+		i_frames_timer.timeout.connect(_on_i_frames_timeout)
+	if is_instance_valid(skill_cast_timer):
+		skill_cast_timer.timeout.connect(_on_skill_cast_timeout)
+	#await InventoryManager.ready
 	
 	current_stamina = max_stamina
 	if stamina_bar:
@@ -97,28 +100,32 @@ func _ready():
 		hud_skill_3_icon.setup_hud(skill_3_slot, "E")
 
 	var has_saved_skills = false
-	for slot_index in InventoryManager.equipped_skill_paths:
-		if InventoryManager.equipped_skill_paths[slot_index] != null:
+	for slot_index in InventoryManager.equipped_skills:
+		if InventoryManager.equipped_skills[slot_index] != null:
 			has_saved_skills = true
 			break
 
 	if has_saved_skills:
-		var path1 = InventoryManager.equipped_skill_paths[1]
-		if path1 != null: _load_skill_into_slot(path1, 1)
-		var path2 = InventoryManager.equipped_skill_paths[2]
-		if path2 != null: _load_skill_into_slot(path2, 2)
-		var path3 = InventoryManager.equipped_skill_paths[3]
-		if path3 != null: _load_skill_into_slot(path3, 3)
+		print("플레이어 부활: 저장된 스킬을 다시 장착합니다.")
+		var inst1 = InventoryManager.equipped_skills[1]
+		if inst1: _load_skill_into_slot(inst1, 1)
+		var inst2 = InventoryManager.equipped_skills[2]
+		if inst2: _load_skill_into_slot(inst2, 2)
+		var inst3 = InventoryManager.equipped_skills[3]
+		if inst3: _load_skill_into_slot(inst3, 3)
 	else:
+		print("플레이어 첫 시작: 기본 스킬을 장착합니다.")
 		var initial_skill_1_path = "res://SkillDatas/Skill_BlinkSlash/Skill_BlinkSlash.tscn"
-		if InventoryManager.remove_skill_from_inventory(initial_skill_1_path):
-			equip_skill(initial_skill_1_path, 1)
+		var inst1 = InventoryManager.pop_skill_by_path(initial_skill_1_path)
+		if inst1: equip_skill(inst1, 1)
+		
 		var initial_skill_2_path = "res://SkillDatas/Skill_Melee/Skill_Melee.tscn"
-		if InventoryManager.remove_skill_from_inventory(initial_skill_2_path):
-			equip_skill(initial_skill_2_path, 2)
+		var inst2 = InventoryManager.pop_skill_by_path(initial_skill_2_path)
+		if inst2: equip_skill(inst2, 2)
+		
 		var initial_skill_3_path = "res://SkillDatas/Skill_Parry/Skill_Parry.tscn"
-		if InventoryManager.remove_skill_from_inventory(initial_skill_3_path):
-			equip_skill(initial_skill_3_path, 3)
+		var inst3 = InventoryManager.pop_skill_by_path(initial_skill_3_path)
+		if inst3: equip_skill(inst3, 3)
 
 	if camera_node and screen_flash_rect:
 		EffectManager.register_effects(camera_node, screen_flash_rect)
@@ -254,8 +261,6 @@ func try_cast_skill(slot_node: Node, target: Node2D = null):
 		if distance > skill.max_cast_range:
 			print(skill.skill_name + "의 사거리가 닿지 않습니다!")
 			return
-		print(str(distance) + "거리")
-		print(str(skill.max_cast_range) + "사거리")
 	if not skill.is_ready():
 		var time_left = skill.get_cooldown_time_left()
 		print(skill.skill_name + " 스킬 준비 안 됨 (쿨타임). 남은 시간: " + str(time_left) + "초")
@@ -267,72 +272,103 @@ func try_cast_skill(slot_node: Node, target: Node2D = null):
 	current_cast_target = target
 	change_state(State.SKILL_CASTING)
 
-func _load_skill_into_slot(skill_scene_path: String, slot_number: int):
+# ★ (수정) 부활 시 SkillInstance를 사용해 로드
+func _load_skill_into_slot(skill_instance: SkillInstance, slot_number: int):
 	var slot_node: Node = null
 	match slot_number:
 		1: slot_node = skill_1_slot
 		2: slot_node = skill_2_slot
 		3: slot_node = skill_3_slot
+	
 	if not is_instance_valid(slot_node): return
 	if slot_node.get_child_count() > 0:
 		for child in slot_node.get_children():
 			child.queue_free()
-	var skill_scene = load(skill_scene_path)
-	if skill_scene == null: return
-	var new_skill_instance = skill_scene.instantiate()
-	if new_skill_instance is BaseSkill:
-		if new_skill_instance.type == slot_number:
-			slot_node.add_child(new_skill_instance)
-		else:
-			print("부활 오류: 스킬 타입 불일치! " + skill_scene_path)
-			new_skill_instance.queue_free()
-	else:
-		new_skill_instance.queue_free()
 
-func equip_skill(skill_scene_path: String, slot_number: int):
+	var skill_scene = load(skill_instance.skill_path)
+	if skill_scene == null: return
+	
+	var new_skill_node = skill_scene.instantiate()
+	
+	if new_skill_node is BaseSkill:
+		if new_skill_node.type == slot_number:
+			# (추가) 레벨과 인스턴스 참조 설정
+			new_skill_node.current_level = skill_instance.level
+			new_skill_node.skill_instance_ref = skill_instance
+			slot_node.add_child(new_skill_node)
+		else:
+			print("부활 오류: 스킬 타입 불일치! " + skill_instance.skill_path)
+			new_skill_node.queue_free()
+	else:
+		new_skill_node.queue_free()
+
+# -----------------------------------------------------------------
+# ★ (오류 2 수정) 'skill_path: String' 대신 'SkillInstance'를 받도록 변경
+# -----------------------------------------------------------------
+func equip_skill(skill_to_equip: SkillInstance, slot_number: int):
 	var slot_node: Node = null
 	match slot_number:
 		1: slot_node = skill_1_slot
 		2: slot_node = skill_2_slot
 		3: slot_node = skill_3_slot
 	if not is_instance_valid(slot_node): return
-	var old_skill_path = InventoryManager.equipped_skill_paths[slot_number]
-	if old_skill_path != null:
-		InventoryManager.add_skill_to_inventory(old_skill_path)
+
+	# ★ (수정) 스왑 로직 (equipped_skills 사용)
+	var old_skill_instance = InventoryManager.equipped_skills[slot_number]
+	if is_instance_valid(old_skill_instance):
+		InventoryManager.add_skill_to_inventory(old_skill_instance)
+
+	# 기존 스킬 파괴
 	if slot_node.get_child_count() > 0:
 		for child in slot_node.get_children():
 			child.queue_free()
-	var skill_scene = load(skill_scene_path)
+
+	# ★ (수정) 새 스킬 인스턴스화
+	var skill_scene = load(skill_to_equip.skill_path)
 	if skill_scene == null: return
-	var new_skill_instance = skill_scene.instantiate()
-	if new_skill_instance is BaseSkill:
-		if new_skill_instance.type == slot_number:
-			print(new_skill_instance.skill_name + "을(를) " + str(slot_number) + "번 슬롯에 장착!")
-			slot_node.add_child(new_skill_instance)
-			InventoryManager.equipped_skill_paths[slot_number] = skill_scene_path
+	var new_skill_node = skill_scene.instantiate()
+	
+	if new_skill_node is BaseSkill:
+		if new_skill_node.type == slot_number:
+			print(new_skill_node.skill_name + "을(를) " + str(slot_number) + "번 슬롯에 장착!")
+			
+			# ★ (추가) 레벨과 인스턴스 참조 설정
+			new_skill_node.current_level = skill_to_equip.level
+			new_skill_node.skill_instance_ref = skill_to_equip
+			
+			slot_node.add_child(new_skill_node)
+			
+			# ★ (수정) InventoryManager에 'SkillInstance'를 등록
+			InventoryManager.equipped_skills[slot_number] = skill_to_equip
 		else:
 			print("타입 불일치")
-			new_skill_instance.queue_free()
-			InventoryManager.add_skill_to_inventory(skill_scene_path)
+			new_skill_node.queue_free()
+			# ★ (수정) 장착 실패했으므로 'SkillInstance'를 인벤토리로 되돌림
+			InventoryManager.add_skill_to_inventory(skill_to_equip)
 			return
 	else:
-		new_skill_instance.queue_free()
+		new_skill_node.queue_free()
 
+# ★ (수정) SkillInstance를 사용하도록 로직 변경
 func unequip_skill(slot_number: int):
 	var slot_node: Node = null
 	match slot_number:
 		1: slot_node = skill_1_slot
 		2: slot_node = skill_2_slot
 		3: slot_node = skill_3_slot
-	if not is_instance_valid(slot_node): return
-	if slot_node.get_child_count() > 0:
+	
+	if is_instance_valid(slot_node) and slot_node.get_child_count() > 0:
 		print(str(slot_number) + "번 슬롯 장착 해제")
+		
+		# ★ (수정) InventoryManager에서 장착 해제된 SkillInstance를 가져옴
+		var unequipped_instance = InventoryManager.equipped_skills[slot_number]
+		if is_instance_valid(unequipped_instance):
+			InventoryManager.equipped_skills[slot_number] = null
+			InventoryManager.add_skill_to_inventory(unequipped_instance) # 인벤토리에 다시 추가
+			
+		# (씬에서 노드 제거는 공통)
 		for child in slot_node.get_children():
 			child.queue_free()
-		var unequipped_path = InventoryManager.equipped_skill_paths[slot_number]
-		if unequipped_path != null:
-			InventoryManager.equipped_skill_paths[slot_number] = null
-			InventoryManager.add_skill_to_inventory(unequipped_path)
 #endregion
 
 #region 상태 변경 로직 (State Change)
@@ -349,16 +385,25 @@ func change_state(new_state: State):
 			if dash_direction == Vector2.ZERO:
 				dash_direction = Vector2.RIGHT
 			can_dash = false
-			if duration_timer:
+			
+			# -----------------------------------------------------------------
+			# ★ (오류 1 수정) 대시 버그: 타이머가 valid한지 확인 후 start
+			# -----------------------------------------------------------------
+			if is_instance_valid(duration_timer):
 				duration_timer.wait_time = dash_duration
 				duration_timer.start()
+			else:
+				# (안전장치) 타이머가 @export로 할당되지 않았으면 즉시 종료
+				push_warning("DashDurationTimer가 @export로 할당되지 않았습니다!")
+				_on_dash_duration_timeout()
+				
 		State.SKILL_CASTING:
 			if current_casting_skill == null: return
 			current_casting_skill.execute(self, current_cast_target)
 			current_stamina -= current_casting_skill.stamina_cost
 			current_casting_skill.start_cooldown()
 			if not current_casting_skill.ends_on_condition:
-				if skill_cast_timer:
+				if is_instance_valid(skill_cast_timer):
 					skill_cast_timer.wait_time = current_casting_skill.cast_duration
 					skill_cast_timer.start()
 #endregion
@@ -367,7 +412,7 @@ func change_state(new_state: State):
 func _on_dash_duration_timeout():
 	velocity = Vector2.ZERO
 	change_state(State.IDLE)
-	if cooldown_timer:
+	if is_instance_valid(cooldown_timer):
 		cooldown_timer.wait_time = dash_cooldown
 		cooldown_timer.start()
 
@@ -403,7 +448,7 @@ func lose_life():
 		die()
 	else:
 		is_invincible = true
-		if i_frames_timer:
+		if is_instance_valid(i_frames_timer):
 			i_frames_timer.wait_time = i_frames_duration
 			i_frames_timer.start()
 

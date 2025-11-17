@@ -9,10 +9,10 @@
 [node name="Node2D" type="Node2D"]
 
 [node name="Player" parent="." node_paths=PackedStringArray("skill_ui") instance=ExtResource("1_4717r")]
-position = Vector2(152, 144)
 skill_ui = NodePath("../SkillUI")
 
 [node name="SkillUI" parent="." instance=ExtResource("3_h5o24")]
+visible = false
 
 [node name="Enemy" parent="." instance=ExtResource("3_4717r")]
 position = Vector2(503, 150)
