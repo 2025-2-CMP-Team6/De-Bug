@@ -30,5 +30,5 @@ region_enabled = true
 region_rect = Rect2(0, 0, 4000, 4000)
 
 [node name="wall" parent="." instance=ExtResource("5_mmdvd")]
-position = Vector2(336, 360)
-scale = Vector2(34.600006, 1)
+position = Vector2(1648, 352)
+scale = Vector2(71.16, 1)

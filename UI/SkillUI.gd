@@ -17,17 +17,28 @@ const SkillCard = preload("res://UI/SkillCard.gd")
 @export var upgrade_material_slot: Control
 @export var upgrade_button: Button
 @export var upgrade_info_label: Label
+
+# 합성 탭 UI
+@export var synthesis_slot1: Control
+@export var synthesis_slot2: Control
+@export var synthesis_button: Button
+@export var synthesis_info_label: Label
 #endregion
 
 var player_node_ref: CharacterBody2D
 
 var current_upgrade_base: SkillInstance = null
 var current_upgrade_material: SkillInstance = null
+var current_synthesis_skill1: SkillInstance = null
+var current_synthesis_skill2: SkillInstance = null
 
 func _ready():
 	if is_instance_valid(tab_container):
 		tab_container.add_theme_font_size_override("font_size", 24)
-
+	if is_instance_valid(upgrade_base_slot):
+		upgrade_base_slot.slot_index = 10
+	if is_instance_valid(upgrade_material_slot):
+		upgrade_material_slot.slot_index = 11
 	# 시그널 연결
 	if is_instance_valid(equipped_slot_1) and equipped_slot_1.has_signal("skill_dropped_on_slot"):
 		equipped_slot_1.skill_dropped_on_slot.connect(_on_skill_dropped)
@@ -35,16 +46,16 @@ func _ready():
 		equipped_slot_2.skill_dropped_on_slot.connect(_on_skill_dropped)
 	if is_instance_valid(equipped_slot_3) and equipped_slot_3.has_signal("skill_dropped_on_slot"):
 		equipped_slot_3.skill_dropped_on_slot.connect(_on_skill_dropped)
-		
 	if is_instance_valid(inventory_drop_area):
 		inventory_drop_area.skill_unequipped.connect(_on_skill_unequipped)
-		
 	if is_instance_valid(upgrade_base_slot) and upgrade_base_slot.has_signal("skill_dropped_on_slot"):
 		upgrade_base_slot.skill_dropped_on_slot.connect(_on_upgrade_base_dropped)
 	if is_instance_valid(upgrade_material_slot) and upgrade_material_slot.has_signal("skill_dropped_on_slot"):
 		upgrade_material_slot.skill_dropped_on_slot.connect(_on_upgrade_material_dropped)
 	if is_instance_valid(upgrade_button):
 		upgrade_button.pressed.connect(_on_upgrade_button_pressed)
+	if is_instance_valid(synthesis_button):
+		upgrade_button.pressed.connect(_on_synthesis_button_pressed)
 
 #region UI 관리
 func refresh_ui(player_node: CharacterBody2D):
@@ -70,6 +81,7 @@ func refresh_ui(player_node: CharacterBody2D):
 		update_equip_slot_display(player_node.skill_3_slot, equipped_slot_3)
 	
 	refresh_upgrade_tab()
+	refresh_synthesis_tab()
 
 # 장착 탭
 func update_equip_slot_display(player_skill_slot: Node, ui_equip_slot: Control):
@@ -107,6 +119,33 @@ func refresh_upgrade_tab():
 			upgrade_info_label.text = "현재 보너스: " + str(current_upgrade_base.bonus_points) + "%"
 		else:
 			upgrade_info_label.text = "강화할 스킬을 올려주세요."
+
+# 합성 탭
+func refresh_synthesis_tab():
+	# 첫 번째 합성 슬롯 UI 업데이트
+	if is_instance_valid(synthesis_slot1):
+		if is_instance_valid(current_synthesis_skill1):
+			var t = load(current_synthesis_skill1.skill_path).instantiate()
+			synthesis_slot1.set_skill_display(t.skill_icon, t.skill_name, t.skill_description, current_synthesis_skill1.level)
+			t.queue_free()
+		else:
+			synthesis_slot1.clear_skill_display()
+
+	# 두 번째 합성 슬롯 UI 업데이트
+	if is_instance_valid(synthesis_slot2):
+		if is_instance_valid(current_synthesis_skill2):
+			var t = load(current_synthesis_skill2.skill_path).instantiate()
+			synthesis_slot2.set_skill_display(t.skill_icon, t.skill_name, t.skill_description, current_synthesis_skill2.level)
+			t.queue_free()
+		else:
+			synthesis_slot2.clear_skill_display()
+
+	# 정보 라벨 업데이트
+	if is_instance_valid(synthesis_info_label):
+		if not is_instance_valid(current_synthesis_skill1) or not is_instance_valid(current_synthesis_skill2):
+			synthesis_info_label.text = "합성에 사용할 스킬 2개를 올려주세요."
+		else:
+			synthesis_info_label.text = "두 스킬을 합성하여 새로운 스킬을 얻을 수 있습니다."
 #endregion
 
 #region 시그널 콜백
@@ -121,9 +160,26 @@ func _on_skill_dropped(skill_instance: SkillInstance, slot_index: int):
 			print("UI 오류: 인벤토리에 없는 스킬을 장착 시도함")
 
 func _on_skill_unequipped(slot_index: int):
-	if player_node_ref:
-		player_node_ref.unequip_skill(slot_index)
-		get_tree().create_timer(0.01).timeout.connect(refresh_ui.bind(player_node_ref))
+	# 플레이어 장비 슬롯 
+	if slot_index >= 1 and slot_index <= 3:
+		if player_node_ref:
+			player_node_ref.unequip_skill(slot_index)
+
+
+	# 강화 대상 슬롯 
+	elif slot_index == 10:
+		if is_instance_valid(current_upgrade_base):
+			current_upgrade_base = null
+			print("강화 대상 스킬 해제됨")
+
+	# 재료 슬롯 (11번)
+	elif slot_index == 11:
+		if is_instance_valid(current_upgrade_material):
+			current_upgrade_material = null
+			print("재료 스킬 해제됨")
+
+	# UI 새로고침
+	get_tree().create_timer(0.01).timeout.connect(refresh_ui.bind(player_node_ref))
 
 func _on_upgrade_base_dropped(skill_instance: SkillInstance, slot_index: int):
 	if is_instance_valid(current_upgrade_base):
@@ -145,9 +201,22 @@ func _on_upgrade_button_pressed():
 	var success = InventoryManager.attempt_upgrade(current_upgrade_base, current_upgrade_material)
 	
 	if success:
+		InventoryManager.remove_skill_from_inventory(current_upgrade_material)
 		current_upgrade_material = null
 	else:
+		InventoryManager.remove_skill_from_inventory(current_upgrade_material)
 		current_upgrade_material = null
-		
 	get_tree().create_timer(0.01).timeout.connect(refresh_ui.bind(player_node_ref))
+
+func _on_synthesis_button_pressed():
+	var getSkill = InventoryManager.get_random_skill_path()
+	InventoryManager.add_skill_to_inventory(getSkill)
+	print("스킬 합성 성공! " + getSkill + " 획득")
+	InventoryManager.remove_skill_from_inventory(current_synthesis_skill1)
+	InventoryManager.remove_skill_from_inventory(current_synthesis_skill2)
+	current_synthesis_skill1 = null;
+	current_synthesis_skill2 = null;
+	refresh_synthesis_tab()
+
+
 #endregion

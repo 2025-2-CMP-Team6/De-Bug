@@ -22,7 +22,7 @@ corner_radius_bottom_left = 1
 corner_detail = 12
 
 [node name="Player" type="CharacterBody2D" node_paths=PackedStringArray("duration_timer", "cooldown_timer", "skill_cast_timer", "state_label", "stamina_bar", "visuals", "lives_container", "i_frames_timer", "skill_1_slot", "skill_2_slot", "skill_3_slot", "camera_node", "screen_flash_rect", "hud_skill_1_icon", "hud_skill_2_icon", "hud_skill_3_icon")]
-position = Vector2(24.000004, 24)
+position = Vector2(23.999998, 24)
 scale = Vector2(0.99840045, 0.99016076)
 collision_mask = 6
 script = ExtResource("1_onrkg")
