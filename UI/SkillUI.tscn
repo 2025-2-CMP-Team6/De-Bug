@@ -82,11 +82,10 @@ offset_top = -0.99554443
 offset_right = 1201.3335
 offset_bottom = 389.24283
 scale = Vector2(0.9986842, 1)
-current_tab = 2
+current_tab = 0
 drag_to_rearrange_enabled = true
 
 [node name="equiped" type="PanelContainer" parent="Panel/TabContainer"]
-visible = false
 layout_mode = 2
 metadata/_tab_index = 0
 
@@ -158,6 +157,7 @@ layout_mode = 2
 size_flags_vertical = 8
 
 [node name="Synthesis" type="PanelContainer" parent="Panel/TabContainer"]
+visible = false
 layout_mode = 2
 metadata/_tab_index = 2
 

@@ -54,8 +54,12 @@ func _ready():
 		upgrade_material_slot.skill_dropped_on_slot.connect(_on_upgrade_material_dropped)
 	if is_instance_valid(upgrade_button):
 		upgrade_button.pressed.connect(_on_upgrade_button_pressed)
+	if is_instance_valid(synthesis_slot1) and synthesis_slot1.has_signal("skill_dropped_on_slot"):
+		synthesis_slot1.skill_dropped_on_slot.connect(_on_synthesis_slot1_dropped)
+	if is_instance_valid(synthesis_slot2) and synthesis_slot2.has_signal("skill_dropped_on_slot"):
+		synthesis_slot2.skill_dropped_on_slot.connect(_on_synthesis_slot2_dropped)
 	if is_instance_valid(synthesis_button):
-		upgrade_button.pressed.connect(_on_synthesis_button_pressed)
+		synthesis_button.pressed.connect(_on_synthesis_button_pressed)
 
 #region UI 관리
 func refresh_ui(player_node: CharacterBody2D):
@@ -149,6 +153,7 @@ func refresh_synthesis_tab():
 #endregion
 
 #region 시그널 콜백
+# 스킬 장착
 func _on_skill_dropped(skill_instance: SkillInstance, slot_index: int):
 	print(str(slot_index) + "번 슬롯에 " + skill_instance.skill_path + " 장착 시도!")
 	
@@ -159,6 +164,7 @@ func _on_skill_dropped(skill_instance: SkillInstance, slot_index: int):
 		else:
 			print("UI 오류: 인벤토리에 없는 스킬을 장착 시도함")
 
+# 스킬 해제
 func _on_skill_unequipped(slot_index: int):
 	# 플레이어 장비 슬롯 
 	if slot_index >= 1 and slot_index <= 3:
@@ -178,9 +184,24 @@ func _on_skill_unequipped(slot_index: int):
 			current_upgrade_material = null
 			print("재료 스킬 해제됨")
 
+# 합성 슬롯 1 해제
+	elif slot_index == 12:
+		if is_instance_valid(current_synthesis_skill1):
+			InventoryManager.add_skill_to_inventory(current_synthesis_skill1)
+			current_synthesis_skill1 = null
+			print("합성 스킬 1 해제됨")
+
+	# 합성 슬롯 2 해제
+	elif slot_index == 13:
+		if is_instance_valid(current_synthesis_skill2):
+			InventoryManager.add_skill_to_inventory(current_synthesis_skill2)
+			current_synthesis_skill2 = null
+			print("합성 스킬 2 해제됨")
+
 	# UI 새로고침
 	get_tree().create_timer(0.01).timeout.connect(refresh_ui.bind(player_node_ref))
 
+# 강화 대상 스킬 해제
 func _on_upgrade_base_dropped(skill_instance: SkillInstance, slot_index: int):
 	if is_instance_valid(current_upgrade_base):
 		InventoryManager.add_skill_to_inventory(current_upgrade_base)
@@ -189,6 +210,7 @@ func _on_upgrade_base_dropped(skill_instance: SkillInstance, slot_index: int):
 	
 	get_tree().create_timer(0.01).timeout.connect(refresh_ui.bind(player_node_ref))
 
+# 강화 재료 스킬 해제
 func _on_upgrade_material_dropped(skill_instance: SkillInstance, slot_index: int):
 	if is_instance_valid(current_upgrade_material):
 		InventoryManager.add_skill_to_inventory(current_upgrade_material)
@@ -197,6 +219,7 @@ func _on_upgrade_material_dropped(skill_instance: SkillInstance, slot_index: int
 	
 	get_tree().create_timer(0.01).timeout.connect(refresh_ui.bind(player_node_ref))
 
+# 강화 버튼
 func _on_upgrade_button_pressed():
 	var success = InventoryManager.attempt_upgrade(current_upgrade_base, current_upgrade_material)
 	
@@ -208,15 +231,37 @@ func _on_upgrade_button_pressed():
 		current_upgrade_material = null
 	get_tree().create_timer(0.01).timeout.connect(refresh_ui.bind(player_node_ref))
 
+# 합성 슬롯 1 드롭
+func _on_synthesis_slot1_dropped(skill_instance: SkillInstance, slot_index: int):
+	if is_instance_valid(current_synthesis_skill1):
+		InventoryManager.add_skill_to_inventory(current_synthesis_skill1)
+	InventoryManager.remove_skill_from_inventory(skill_instance)
+	current_synthesis_skill1 = skill_instance
+	get_tree().create_timer(0.01).timeout.connect(refresh_ui.bind(player_node_ref))
+
+
+# 합성 슬롯 2 드롭
+func _on_synthesis_slot2_dropped(skill_instance: SkillInstance, slot_index: int):
+	if is_instance_valid(current_synthesis_skill2):
+		InventoryManager.add_skill_to_inventory(current_synthesis_skill2)
+	InventoryManager.remove_skill_from_inventory(skill_instance)
+	current_synthesis_skill2 = skill_instance
+	get_tree().create_timer(0.01).timeout.connect(refresh_ui.bind(player_node_ref))
+
+# 합성 버튼
 func _on_synthesis_button_pressed():
+	if not is_instance_valid(current_synthesis_skill1) or not is_instance_valid(current_synthesis_skill2):
+		print("합성 오류: 재료가 부족합니다.")
+		return
+		
 	var getSkill = InventoryManager.get_random_skill_path()
 	InventoryManager.add_skill_to_inventory(getSkill)
 	print("스킬 합성 성공! " + getSkill + " 획득")
-	InventoryManager.remove_skill_from_inventory(current_synthesis_skill1)
-	InventoryManager.remove_skill_from_inventory(current_synthesis_skill2)
-	current_synthesis_skill1 = null;
-	current_synthesis_skill2 = null;
-	refresh_synthesis_tab()
+	
+	current_synthesis_skill1 = null
+	current_synthesis_skill2 = null
+	
+	get_tree().create_timer(0.01).timeout.connect(refresh_ui.bind(player_node_ref))
 
 
 #endregion
