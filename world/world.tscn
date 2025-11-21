@@ -15,8 +15,10 @@ enemy = NodePath("Enemy")
 skill_get_ui = NodePath("SkillGetUI")
 skill_ui = NodePath("SkillUI")
 
-[node name="Player" parent="." node_paths=PackedStringArray("skill_ui") instance=ExtResource("1_4717r")]
+[node name="Player" parent="." node_paths=PackedStringArray("skill_ui", "skill_get_ui") instance=ExtResource("1_4717r")]
+z_index = 1
 skill_ui = NodePath("../SkillUI")
+skill_get_ui = NodePath("../SkillGetUI")
 
 [node name="SkillUI" parent="." instance=ExtResource("3_h5o24")]
 visible = false
@@ -35,11 +37,12 @@ repeat_size = Vector2(1300, 1300)
 [node name="Sprite2D" type="Sprite2D" parent="ParallaxLayer"]
 z_index = -10
 texture_repeat = 2
-position = Vector2(632, -200)
+position = Vector2(512, -344)
 texture = ExtResource("3_mmdvd")
 region_enabled = true
 region_rect = Rect2(0, 0, 4000, 4000)
 
 [node name="wall" parent="." instance=ExtResource("5_mmdvd")]
+z_index = -1
 position = Vector2(1648, 352)
 scale = Vector2(71.16, 1)

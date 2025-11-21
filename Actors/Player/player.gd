@@ -63,18 +63,13 @@ var is_input_locked: bool = false
 @export var hud_skill_3_icon: Control
 #endregion
 
-#region 디버그용 시각화
-var show_range: bool = true
-func _draw():
-	if show_range and skill_1_slot.get_child_count() > 0:
-		var skill = skill_1_slot.get_child(0)
-		if is_instance_valid(skill):
-			if "max_cast_range" in skill and skill.max_cast_range > 0:
-				draw_circle(Vector2(0, 0), skill.max_cast_range, Color(1, 0, 0, 0.3))
-#endregion
 
 #region 초기화 (Initialization)
 func _ready():
+	if camera_node == null:
+		camera_node = get_node_or_null("Camera2D")
+		if camera_node == null:
+			print("can't find camera")
 	if is_instance_valid(duration_timer):
 		duration_timer.timeout.connect(_on_dash_duration_timeout)
 	if is_instance_valid(cooldown_timer):

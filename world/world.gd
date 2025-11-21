@@ -24,6 +24,8 @@ func _on_skill_get_ui_closed():
 		player.set_input_locked(false)
 
 func _unhandled_input(event):
+	if !GameManager.is_cheat:
+		return
 	# 보상 테스트
 	if event.is_action_pressed("get_skill_test"):
 		if is_instance_valid(skill_get_ui):

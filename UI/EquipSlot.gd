@@ -9,30 +9,71 @@ signal skill_dropped_on_slot(skill_instance: SkillInstance, slot_index: int)
 var default_stylebox: StyleBoxFlat
 var can_drop_stylebox: StyleBoxFlat
 var type_mismatch_stylebox: StyleBoxFlat
+var hover_stylebox: StyleBoxFlat
 
 # 노드 참조
 @onready var icon_rect: TextureRect = $VBoxContainer/Icon
 @onready var name_label: Label = $VBoxContainer/NameLabel
 #endregion
+# UI/EquipSlot.gd
 
 func _ready():
+	# 기본 스타일
 	default_stylebox = StyleBoxFlat.new()
-	default_stylebox.bg_color = Color(0, 0, 0, 0)
-	custom_minimum_size = Vector2(160, 160)
+	default_stylebox.bg_color = Color(0, 0, 0, 0.5)
+	default_stylebox.set_border_width_all(1)
+	default_stylebox.border_color = Color(1, 1, 1, 0.2)
+	default_stylebox.set_corner_radius_all(4)
+	
+	# 호버 스타일 
+	hover_stylebox = default_stylebox.duplicate()
+	hover_stylebox.set_border_width_all(1) # 테두리 두께 3px
+	hover_stylebox.border_color = Color.WHITE # 완전 흰색
+	
+	# 드롭 가능 스타일 
 	can_drop_stylebox = StyleBoxFlat.new()
-	can_drop_stylebox.bg_color = Color(0.1, 1, 0.1, 0.3)
+	can_drop_stylebox.bg_color = Color(0.1, 1, 0.1, 0.2)
 	can_drop_stylebox.set_border_width_all(2)
-	can_drop_stylebox.border_color = Color.WHITE
+	can_drop_stylebox.border_color = Color(0.5, 1, 0.5)
+	can_drop_stylebox.set_corner_radius_all(4)
+	
+	# 불일치 스타일
 	type_mismatch_stylebox = StyleBoxFlat.new()
-	type_mismatch_stylebox.bg_color = Color(1, 0.1, 0.1, 0.3)
+	type_mismatch_stylebox.bg_color = Color(1, 0.1, 0.1, 0.2)
 	type_mismatch_stylebox.set_border_width_all(2)
-	type_mismatch_stylebox.border_color = Color.RED
+	type_mismatch_stylebox.border_color = Color(1, 0.5, 0.5)
+	type_mismatch_stylebox.set_corner_radius_all(4)
+
+	custom_minimum_size = Vector2(160, 160)
 	add_theme_stylebox_override("panel", default_stylebox)
 	
 	if is_instance_valid(icon_rect):
+		icon_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		icon_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		icon_rect.size_flags_vertical = Control.SIZE_EXPAND_FILL
+		icon_rect.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		
+		icon_rect.custom_minimum_size = Vector2(64, 64)
 	
+	# 마우스 이벤트 연결
+	if not mouse_entered.is_connected(_on_mouse_entered):
+		mouse_entered.connect(_on_mouse_entered)
+	if not mouse_exited.is_connected(_on_mouse_exited):
+		mouse_exited.connect(_on_mouse_exited)
+		
 	clear_skill_display()
+
+#region 호버 효과
+# 호버 시작
+func _on_mouse_entered():
+	if get_viewport().gui_is_dragging(): return
+	add_theme_stylebox_override("panel", hover_stylebox)
+
+# 호버 종료
+func _on_mouse_exited():
+	if get_viewport().gui_is_dragging(): return
+	add_theme_stylebox_override("panel", default_stylebox)
+#endregion
 
 
 #region 드래그 앤 드롭
