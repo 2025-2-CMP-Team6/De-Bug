@@ -1,0 +1,53 @@
+[gd_scene load_steps=7 format=3 uid="uid://hwws6pa3vxua"]
+
+[ext_resource type="PackedScene" uid="uid://deraqiym6ih4h" path="res://Actors/Enemies/Boss/Boss.tscn" id="1_3uvoy"]
+[ext_resource type="PackedScene" uid="uid://en1mqsrf58ka" path="res://Actors/Player/player.tscn" id="1_7prfy"]
+[ext_resource type="PackedScene" uid="uid://hwvrl37b2dlk" path="res://UI/SkillUI.tscn" id="2_3uvoy"]
+[ext_resource type="PackedScene" uid="uid://dgv1ef1ng7ngs" path="res://UI/SkillGetUI.tscn" id="3_slli8"]
+[ext_resource type="PackedScene" uid="uid://10p01la5f8rw" path="res://Actors/Enemies/enemy.tscn" id="4_c3pgj"]
+[ext_resource type="PackedScene" uid="uid://c0sv0dk5utfr3" path="res://Block/wall.tscn" id="5_se8im"]
+
+[node name="StageBoss" type="Node2D"]
+
+[node name="Player" parent="." node_paths=PackedStringArray("skill_ui", "skill_get_ui") instance=ExtResource("1_7prfy")]
+z_index = 1
+skill_ui = NodePath("../SkillUI")
+skill_get_ui = NodePath("../SkillGetUI")
+
+[node name="Camera2D" parent="Player" index="7"]
+limit_left = -1920
+limit_top = -640
+limit_right = 1920
+limit_bottom = 840
+
+[node name="SkillUI" parent="." instance=ExtResource("2_3uvoy")]
+visible = false
+
+[node name="SkillGetUI" parent="." instance=ExtResource("3_slli8")]
+visible = false
+
+[node name="Enemy" parent="." instance=ExtResource("4_c3pgj")]
+position = Vector2(503, 150)
+max_health = 30.0
+
+[node name="wall" parent="." instance=ExtResource("5_se8im")]
+z_index = -1
+position = Vector2(-40, 776)
+scale = Vector2(71.16, 1)
+
+[node name="wall3" parent="." instance=ExtResource("5_se8im")]
+z_index = -1
+position = Vector2(-1920, 0)
+rotation = -3.1415915
+scale = Vector2(0.7200031, 23.88)
+
+[node name="wall2" parent="." instance=ExtResource("5_se8im")]
+z_index = -1
+position = Vector2(1920, 0)
+rotation = 1.5707964
+scale = Vector2(23.88, 1)
+
+[node name="Node2D" parent="." instance=ExtResource("1_3uvoy")]
+position = Vector2(0, -64)
+
+[editable path="Player"]

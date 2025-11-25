@@ -18,17 +18,7 @@ const BaseSkill = preload("res://SkillDatas/BaseSkill.gd")
 @export var stamina_regen_rate: float = 20.0
 #endregion
 
-#region 상태 머신 (State Machine)
-enum State {
-	IDLE,
-	MOVE,
-	DASH,
-	SKILL_CASTING
-}
-#endregion
-
 #region 상태 관리 변수
-var current_state = State.IDLE
 var can_dash: bool = true
 var dash_direction: Vector2 = Vector2.ZERO
 var current_stamina: float = 0.0
@@ -80,6 +70,7 @@ func _ready():
 		skill_cast_timer.timeout.connect(_on_skill_cast_timeout)
 	#await InventoryManager.ready
 	
+	GameManager.state = GameManager.State.IDLE
 	current_stamina = max_stamina
 	if stamina_bar:
 		stamina_bar.max_value = max_stamina
@@ -126,16 +117,16 @@ func _ready():
 	if camera_node and screen_flash_rect:
 		EffectManager.register_effects(camera_node, screen_flash_rect)
 		
-	change_state(State.IDLE)
+	change_state(GameManager.State.IDLE)
 #endregion
 
 #region 물리 처리 (Physics Process)
 func _physics_process(delta: float):
 	var current_gravity_multiplier = 1.0
-	if current_state == State.SKILL_CASTING and is_instance_valid(current_casting_skill):
+	if GameManager.state == GameManager.State.SKILL_CASTING and is_instance_valid(current_casting_skill):
 		current_gravity_multiplier = current_casting_skill.gravity_multiplier
 	
-	if current_state != State.DASH and not is_on_floor():
+	if GameManager.state != GameManager.State.DASH and not is_on_floor():
 		velocity.y += gravity * current_gravity_multiplier * delta
 
 	if is_invincible:
@@ -148,18 +139,18 @@ func _physics_process(delta: float):
 	elif velocity.x < -0.1:
 		if visuals: visuals.scale.x = -1
 		
-	if state_label: state_label.text = State.keys()[current_state]
+	if state_label: state_label.text = GameManager.State.keys()[GameManager.state]
 
-	match current_state:
-		State.IDLE, State.MOVE:
+	match GameManager.state:
+		GameManager.State.IDLE, GameManager.State.MOVE:
 			if not is_input_locked:
 				regenerate_stamina(delta)
 
-	match current_state:
-		State.IDLE: state_logic_idle(delta)
-		State.MOVE: state_logic_move(delta)
-		State.DASH: state_logic_dash(delta)
-		State.SKILL_CASTING: state_logic_skill_casting(delta)
+	match GameManager.state:
+		GameManager.State.IDLE: state_logic_idle(delta)
+		GameManager.State.MOVE: state_logic_move(delta)
+		GameManager.State.DASH: state_logic_dash(delta)
+		GameManager.State.SKILL_CASTING: state_logic_skill_casting(delta)
 	
 	if stamina_bar: stamina_bar.value = current_stamina
 	move_and_slide()
@@ -174,7 +165,7 @@ func state_logic_idle(_delta: float):
 	handle_inputs()
 	if is_input_locked: return
 	if Input.get_axis("move_left", "move_right") != 0:
-		change_state(State.MOVE)
+		change_state(GameManager.State.MOVE)
 
 func state_logic_move(_delta: float):
 	handle_inputs()
@@ -184,7 +175,7 @@ func state_logic_move(_delta: float):
 	var move_input = Input.get_axis("move_left", "move_right")
 	velocity.x = move_input * max_speed
 	if move_input == 0:
-		change_state(State.IDLE)
+		change_state(GameManager.State.IDLE)
 
 func state_logic_dash(_delta: float):
 	velocity = dash_direction * dash_speed
@@ -196,7 +187,7 @@ func state_logic_skill_casting(delta: float):
 			if not current_casting_skill.is_active:
 				_on_skill_cast_timeout()
 	else:
-		change_state(State.IDLE)
+		change_state(GameManager.State.IDLE)
 #endregion
 
 #region 입력 처리 (Input Handling)
@@ -216,7 +207,7 @@ func handle_inputs():
 		try_cast_skill(skill_3_slot)
 	elif Input.is_action_just_pressed("dash") and can_dash:
 		if current_stamina >= dash_cost:
-			change_state(State.DASH)
+			change_state(GameManager.State.DASH)
 		else:
 			pass
 #endregion
@@ -258,7 +249,7 @@ func try_cast_skill(slot_node: Node, target: Node2D = null):
 		return
 	current_casting_skill = skill
 	current_cast_target = target
-	change_state(State.SKILL_CASTING)
+	change_state(GameManager.State.SKILL_CASTING)
 
 #  부활 시 SkillInstance를 사용해 로드
 func _load_skill_into_slot(skill_instance: SkillInstance, slot_number: int):
@@ -354,14 +345,14 @@ func unequip_skill(slot_number: int):
 #endregion
 
 #region 상태 변경 로직 (State Change)
-func change_state(new_state: State):
-	if current_state == new_state:
+func change_state(new_state: GameManager.State):
+	if GameManager.state == new_state:
 		return
-	current_state = new_state
+	GameManager.state = new_state
 	match new_state:
-		State.IDLE: pass
-		State.MOVE: pass
-		State.DASH:
+		GameManager.State.IDLE: pass
+		GameManager.State.MOVE: pass
+		GameManager.State.DASH:
 			current_stamina -= dash_cost
 			if visuals: dash_direction = Vector2(visuals.scale.x, 0).normalized()
 			if dash_direction == Vector2.ZERO:
@@ -375,7 +366,7 @@ func change_state(new_state: State):
 				push_warning("DashDurationTimer가 @export로 할당되지 않았습니다!")
 				_on_dash_duration_timeout()
 				
-		State.SKILL_CASTING:
+		GameManager.State.SKILL_CASTING:
 			if current_casting_skill == null: return
 			current_casting_skill.execute(self, current_cast_target)
 			current_stamina -= current_casting_skill.stamina_cost
@@ -389,7 +380,7 @@ func change_state(new_state: State):
 #region 타이머 콜백 (Timer Callbacks)
 func _on_dash_duration_timeout():
 	velocity = Vector2.ZERO
-	change_state(State.IDLE)
+	change_state(GameManager.State.IDLE)
 	if is_instance_valid(cooldown_timer):
 		cooldown_timer.wait_time = dash_cooldown
 		cooldown_timer.start()
@@ -398,7 +389,7 @@ func _on_dash_cooldown_timeout():
 	can_dash = true
 
 func _on_skill_cast_timeout():
-	change_state(State.IDLE)
+	change_state(GameManager.State.IDLE)
 	current_casting_skill = null
 	current_cast_target = null
 #endregion
@@ -417,7 +408,7 @@ func update_lives_ui():
 			lives_container.add_child(icon)
 
 func lose_life():
-	if is_invincible or current_state == State.DASH or current_lives <= 0:
+	if is_invincible or GameManager.state == GameManager.State.DASH or current_lives <= 0:
 		return
 	current_lives -= 1
 	print("생명 1 잃음! 남은 생명: ", current_lives)

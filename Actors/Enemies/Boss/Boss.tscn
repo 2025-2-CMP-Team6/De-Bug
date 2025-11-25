@@ -1,0 +1,29 @@
+[gd_scene load_steps=3 format=3 uid="uid://deraqiym6ih4h"]
+
+[ext_resource type="Texture2D" uid="uid://dhqkgdjp85tn" path="res://graphics/Boss.png" id="1_rsbw7"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_rsbw7"]
+size = Vector2(129, 128)
+
+[node name="Boss" type="Node2D"]
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+scale = Vector2(2, 2)
+texture = ExtResource("1_rsbw7")
+
+[node name="HitBox" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitBox"]
+position = Vector2(0.5, 0)
+scale = Vector2(7, 7)
+shape = SubResource("RectangleShape2D_rsbw7")
+
+[node name="Muzzle" type="Node2D" parent="."]
+
+[node name="IFramesTimer" type="Timer" parent="."]
+wait_time = 0.5
+one_shot = true
+
+[node name="FireTimer" type="Timer" parent="."]
+wait_time = 2.0
+autostart = true

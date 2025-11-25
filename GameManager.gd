@@ -4,9 +4,20 @@ extends Node
 var is_cheat: bool = false
 var is_free_cam: bool = false
 var is_dragging: bool = false
+#region 상태 머신 (State Machine)
+enum State {
+	IDLE,
+	MOVE,
+	DASH,
+	SKILL_CASTING
+}
+
+var state: int = State.IDLE
+#endregion
 
 func _ready():
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	
 
 func _input(event):
 	if not OS.is_debug_build():
