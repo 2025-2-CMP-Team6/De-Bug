@@ -1,7 +1,7 @@
 [gd_scene load_steps=6 format=3 uid="uid://10p01la5f8rw"]
 
 [ext_resource type="Texture2D" uid="uid://bwf4bpn28sj77" path="res://graphics/icon.svg" id="1_0uy8v"]
-[ext_resource type="Script" uid="uid://6qjpwo6o3fpi" path="res://Actors/Enemies/enemy.gd" id="1_1jkyi"]
+[ext_resource type="Script" uid="uid://6qjpwo6o3fpi" path="res://Actors/Enemies/RangedEnemy.gd" id="1_1jkyi"]
 [ext_resource type="Shader" uid="uid://dkkieya857u0n" path="res://effects/hit_flash.gdshader" id="2_487ts"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_1l6y5"]

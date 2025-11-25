@@ -56,8 +56,8 @@ func execute(owner: CharacterBody2D, target: Node2D = null):
 	owner.global_position = target_position
 	
 	apply_slash_damage(start_pos, target_position, owner)
+# Skill_BlinkSlash.gd
 
-# 히트박스 형성
 func apply_slash_damage(start_pos: Vector2, end_pos: Vector2, owner: CharacterBody2D):
 	var length = start_pos.distance_to(end_pos)
 	var space_state = owner.get_world_2d().direct_space_state
@@ -71,33 +71,46 @@ func apply_slash_damage(start_pos: Vector2, end_pos: Vector2, owner: CharacterBo
 	var query = PhysicsShapeQueryParameters2D.new()
 	query.shape = shape
 	query.transform = xform
-	query.collide_with_areas = false
+	
+	# ★ 수정 1: Area2D(히트박스)도 감지하도록 변경
+	query.collide_with_areas = true
 	query.collide_with_bodies = true
-	query.exclude = [owner.get_rid()]
+	
+	query.exclude = [owner.get_rid()] # 플레이어 자신은 제외
 	
 	_debug_draw_hitbox(shape, xform, owner)
 
 	var results = space_state.intersect_shape(query)
 	
 	var did_hit_enemy = false
+	var hit_enemies = [] # 중복 타격 방지용 목록
 	
-	var hit_enemies = []
 	for res in results:
 		var collider = res.collider
-		if collider.is_in_group("enemies") and not collider in hit_enemies:
-			if collider.has_method("take_damage"):
-				collider.take_damage(damage)
-				print("벽력일섬 히트: " + collider.name)
-				hit_enemies.append(collider)
+		var enemy_node = null
+		
+		# ★ 수정 2: 부딪힌 게 적 본체인지, 적의 히트박스인지 확인
+		if collider.is_in_group("enemies"):
+			# 적 본체(Body)와 충돌한 경우
+			enemy_node = collider
+			
+		elif collider is Area2D and collider.get_parent().is_in_group("enemies"):
+			# 적의 히트박스(Area)와 충돌한 경우 -> 부모를 적 본체로 설정
+			enemy_node = collider.get_parent()
+			
+		# ★ 수정 3: 적을 찾았고, 아직 때리지 않았다면 데미지 적용
+		if enemy_node != null and not enemy_node in hit_enemies:
+			if enemy_node.has_method("take_damage"):
+				enemy_node.take_damage(damage)
+				print("벽력일섬 히트: " + enemy_node.name)
+				hit_enemies.append(enemy_node) # 타격 목록에 추가
 				did_hit_enemy = true
 
 	# 이펙트
 	if did_hit_enemy:
 		EffectManager.play_screen_shake(12.0, 0.15)
 		EffectManager.play_multi_flash(Color.WHITE, 0.05, 3)
-
-# (process_skill_physics 함수는 삭제됨)
-
+		
 # 히트박스 시각화
 func _debug_draw_hitbox(shape: Shape2D, xform: Transform2D, owner: Node):
 	var debug_sprite = Sprite2D.new()

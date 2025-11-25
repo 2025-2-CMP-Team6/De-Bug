@@ -4,13 +4,14 @@
 [ext_resource type="PackedScene" uid="uid://en1mqsrf58ka" path="res://Actors/Player/player.tscn" id="1_7prfy"]
 [ext_resource type="PackedScene" uid="uid://hwvrl37b2dlk" path="res://UI/SkillUI.tscn" id="2_3uvoy"]
 [ext_resource type="PackedScene" uid="uid://dgv1ef1ng7ngs" path="res://UI/SkillGetUI.tscn" id="3_slli8"]
-[ext_resource type="PackedScene" uid="uid://10p01la5f8rw" path="res://Actors/Enemies/enemy.tscn" id="4_c3pgj"]
 [ext_resource type="PackedScene" uid="uid://c0sv0dk5utfr3" path="res://Block/wall.tscn" id="5_se8im"]
+[ext_resource type="Texture2D" uid="uid://dcvp6ynx0e1up" path="res://graphics/BossBg.png" id="6_3uvoy"]
 
 [node name="StageBoss" type="Node2D"]
 
 [node name="Player" parent="." node_paths=PackedStringArray("skill_ui", "skill_get_ui") instance=ExtResource("1_7prfy")]
 z_index = 1
+position = Vector2(-1815.9999, 664.00006)
 skill_ui = NodePath("../SkillUI")
 skill_get_ui = NodePath("../SkillGetUI")
 
@@ -25,10 +26,6 @@ visible = false
 
 [node name="SkillGetUI" parent="." instance=ExtResource("3_slli8")]
 visible = false
-
-[node name="Enemy" parent="." instance=ExtResource("4_c3pgj")]
-position = Vector2(503, 150)
-max_health = 30.0
 
 [node name="wall" parent="." instance=ExtResource("5_se8im")]
 z_index = -1
@@ -47,7 +44,11 @@ position = Vector2(1920, 0)
 rotation = 1.5707964
 scale = Vector2(23.88, 1)
 
-[node name="Node2D" parent="." instance=ExtResource("1_3uvoy")]
-position = Vector2(0, -64)
+[node name="Sprite2D" type="Sprite2D" parent="."]
+scale = Vector2(2.6, 2.6)
+texture = ExtResource("6_3uvoy")
+
+[node name="Boss" parent="." instance=ExtResource("1_3uvoy")]
+position = Vector2(48, -210)
 
 [editable path="Player"]
