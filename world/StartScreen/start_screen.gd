@@ -7,7 +7,7 @@ func _ready():
 
 func _on_start_button_pressed():
 	# Load and change to the world scene
-	get_tree().change_scene_to_file("res://world/world.tscn")
+	get_tree().change_scene_to_file("res://testScenes_SIC/Stage1/Stage1.tscn")
 
 
 func _on_options_button_pressed():

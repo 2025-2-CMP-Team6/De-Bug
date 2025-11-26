@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://dwh0wvo41cee8" path="res://testScenes_SIC/player_test.gd" id="1_im2ba"]
 [ext_resource type="Texture2D" uid="uid://c3uulybwprmo0" path="res://graphics/AnimationSheet_Character.png" id="2_p75ev"]
-[ext_resource type="Script" uid="uid://crv50bot4wkpv" path="res://testScenes_SIC/animated_sprite_2d.gd" id="3_p75ev"]
+[ext_resource type="Script" uid="uid://crv50bot4wkpv" path="res://testScenes_SIC/player_anim.gd" id="3_p75ev"]
 [ext_resource type="PackedScene" uid="uid://byv8rt76sqhox" path="res://UI/SkillHudIcon.tscn" id="4_2jjk8"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_onrkg"]
