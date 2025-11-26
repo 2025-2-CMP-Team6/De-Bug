@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://d2kexrpmwtbw0"]
+[gd_scene load_steps=15 format=3 uid="uid://d2kexrpmwtbw0"]
 
 [ext_resource type="PackedScene" uid="uid://fdweqovua6t0" path="res://testScenes_SIC/player_test.tscn" id="1_ie5yo"]
 [ext_resource type="Script" uid="uid://3wb8r3l1jd6n" path="res://testScenes_SIC/Stage1/Stage1.gd" id="1_stage_script"]
@@ -7,7 +7,10 @@
 [ext_resource type="Script" uid="uid://cqw1qj4qrccjq" path="res://testScenes_SIC/Stage1/portal_anim.gd" id="5_g1wns"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_wjadl"]
-size = Vector2(9045.312, 279.5)
+size = Vector2(9332.812, 517.375)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_g1wns"]
+size = Vector2(149.5053, 9108)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_h4ln0"]
 atlas = ExtResource("4_g1wns")
@@ -65,26 +68,38 @@ scale = Vector2(1.9200001, 1)
 collision_layer = 2
 collision_mask = 13
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Platform"]
-position = Vector2(1763.8021, 1921)
+[node name="ground" type="CollisionShape2D" parent="Platform"]
+position = Vector2(1763.8021, 2037.625)
+shape = SubResource("RectangleShape2D_wjadl")
+
+[node name="leftLimit" type="CollisionShape2D" parent="Platform"]
+position = Vector2(-2837.7476, -2238)
+shape = SubResource("RectangleShape2D_g1wns")
+
+[node name="rightLimit" type="CollisionShape2D" parent="Platform"]
+position = Vector2(6357.2915, -2282)
+shape = SubResource("RectangleShape2D_g1wns")
+
+[node name="upperLimit" type="CollisionShape2D" parent="Platform"]
+position = Vector2(1755.4684, -7094.6875)
 shape = SubResource("RectangleShape2D_wjadl")
 
 [node name="Player_test" parent="." instance=ExtResource("1_ie5yo")]
-position = Vector2(-1908, 2243)
+position = Vector2(11591, 2126)
 scale = Vector2(1.0010989, 1.006192)
 
 [node name="ParallaxBackground" type="ParallaxBackground" parent="."]
 
 [node name="ParallaxLayer" type="ParallaxLayer" parent="ParallaxBackground"]
 
-[node name="Sprite2D" type="Sprite2D" parent="ParallaxBackground/ParallaxLayer"]
-position = Vector2(4652, -836)
-scale = Vector2(9.0502, 8.443197)
+[node name="Sprite2D" type="Sprite2D" parent="ParallaxBackground/ParallaxLayer" groups=["CameraMapLimit"]]
+position = Vector2(4670.9995, -836)
+scale = Vector2(9.269792, 8.443197)
 texture = ExtResource("4_wjadl")
 metadata/_edit_lock_ = true
 
 [node name="portal" type="Area2D" parent="."]
-position = Vector2(-3118, 3141)
+position = Vector2(9303, 3100)
 collision_layer = 2
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="portal"]
