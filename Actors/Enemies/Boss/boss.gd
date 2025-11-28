@@ -1,6 +1,8 @@
 # Boss.gd
 extends BaseEnemy
 
+signal pattern_started(pattern_name: String)
+
 #region 보스 전용 설정
 @export var attack_interval_min: float = 2.0
 @export var attack_interval_max: float = 4.0
@@ -9,6 +11,8 @@ extends BaseEnemy
 #region 노드 참조
 @export var pattern_timer: Timer
 #endregion
+
+var patterns = ["pattern1", "pattern2", "pattern3"]
 
 func _ready():
 	super._ready()
@@ -25,10 +29,11 @@ func start_attack_pattern():
 		pattern_timer.wait_time = randf_range(attack_interval_min, attack_interval_max)
 		pattern_timer.start()
 
-func _on_fire_timer_timeout():
+func _on_pattern_timer_timeout():
 	spawn_random_pattern()
 	pattern_timer.wait_time = randf_range(attack_interval_min, attack_interval_max)
 	pattern_timer.start()
 
 func spawn_random_pattern():
-	print("Boss Pattern")
+	var chosen_pattern = patterns.pick_random()
+	pattern_started.emit(chosen_pattern)

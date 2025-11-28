@@ -9,10 +9,11 @@ size = Vector2(129, 128)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_m4boa"]
 size = Vector2(129, 128)
 
-[node name="Boss" type="CharacterBody2D" groups=["enemies"]]
+[node name="Boss" type="CharacterBody2D" node_paths=PackedStringArray("pattern_timer") groups=["enemies"]]
 collision_layer = 16
 collision_mask = 0
 script = ExtResource("1_x4ak8")
+pattern_timer = NodePath("PatternTimer")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 position = Vector2(0, -584)
@@ -30,9 +31,8 @@ disabled = true
 wait_time = 0.5
 one_shot = true
 
-[node name="FireTimer" type="Timer" parent="."]
+[node name="PatternTimer" type="Timer" parent="."]
 wait_time = 2.0
-autostart = true
 
 [node name="Hurtbox" type="Area2D" parent="."]
 position = Vector2(0, 56)
@@ -42,3 +42,5 @@ collision_mask = 9
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox"]
 position = Vector2(0.5, 0)
 shape = SubResource("RectangleShape2D_m4boa")
+
+[connection signal="timeout" from="PatternTimer" to="." method="_on_pattern_timer_timeout"]
