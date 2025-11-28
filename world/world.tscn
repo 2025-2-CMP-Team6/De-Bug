@@ -37,7 +37,7 @@ repeat_size = Vector2(1300, 1300)
 [node name="Sprite2D" type="Sprite2D" parent="ParallaxLayer"]
 z_index = -10
 texture_repeat = 2
-position = Vector2(512, -344)
+position = Vector2(680, -344)
 texture = ExtResource("3_mmdvd")
 region_enabled = true
 region_rect = Rect2(0, 0, 4000, 4000)

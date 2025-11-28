@@ -2,24 +2,24 @@ extends BaseSkill
 
 #region 1. 노드 참조 & 설정
 # 템플릿의 hitbox 대신, 복제해서 쓸 총알 원본을 가져옵니다.
-@onready var bullet_template = $BulletTemplate 
+@onready var bullet_template = $BulletTemplate
 
 func _init():
 	# [설계 사항 입력]
 	# 타겟팅 필요 여부 (false: 논타겟 스킬, 바라보는 방향 발사)
-	requires_target = false 
+	requires_target = false
 	
 	# 중력 적용 비율 (1.0: 땅에 붙어있음, 시전 중 붕 뜨지 않음)
-	gravity_multiplier = 1.0 
+	gravity_multiplier = 1.0
 	
 	# 조건부 종료 여부 (false: 시전 시간 지나면 스킬 상태 끝)
-	ends_on_condition = false 
+	ends_on_condition = false
 
 func _ready():
 	super._ready() # ★ 필수: 쿨타임 타이머 초기화
 	
 	# 총알 원본은 게임 시작 시 안 보이게 꺼둡니다.
-	if bullet_template: 
+	if bullet_template:
 		bullet_template.visible = false
 		bullet_template.monitoring = false
 #endregion
@@ -43,7 +43,7 @@ func execute(owner: CharacterBody2D, target: Node2D = null):
 	
 	# 3. 방향 설정 (플레이어가 보는 방향)
 	var direction = Vector2.RIGHT
-	if owner.scale.x < 0: # 왼쪽 보고 있으면
+	if owner.visuals.scale.x < 0: # 왼쪽 보고 있으면
 		direction = Vector2.LEFT
 		bullet.scale.x = -1 # 총알 이미지도 반전
 	

@@ -35,14 +35,21 @@ func load_skills_from_directory(path: String):
 		dir.list_dir_begin()
 		var file_name = dir.get_next()
 		while file_name != "":
-			if file_name == "." or file_name == "..":
+			if file_name == "." or file_name == ".." or file_name.ends_with(".tmp"):
 				file_name = dir.get_next()
 				continue
+			
+			var full_path = path.path_join(file_name)
 			if dir.current_is_dir():
-				load_skills_from_directory(path + file_name + "/")
-			else:
-				if file_name.ends_with(".tscn"):
-					skill_database.append(path + file_name)
+				load_skills_from_directory(full_path)
+			elif file_name.ends_with(".tscn"):
+				var scene = load(full_path) as PackedScene
+				if scene:
+					var instance = scene.instantiate()
+					if instance is BaseSkill:
+						skill_database.append(full_path)
+					instance.queue_free() # 메모리 누수 방지
+			
 			file_name = dir.get_next()
 #endregion
 

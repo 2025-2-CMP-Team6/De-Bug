@@ -100,16 +100,21 @@ func _reset_selection():
 		select_button.disabled = true # 버튼 비활성화
 
 func _generate_rewards():
-	var all_skills = InventoryManager.skill_database.duplicate()
+	# 1. 데이터베이스에서 중복을 제거한 고유 스킬 목록을 생성합니다.
+	#    플레이어 소유 여부는 고려하지 않습니다.
+	var all_db_skills = InventoryManager.skill_database
+	var unique_skills: Array[String] = []
+	for skill_path in all_db_skills:
+		if not skill_path in unique_skills:
+			unique_skills.append(skill_path)
+
+	# 2. 보상으로 제시할 스킬들을 선택합니다.
 	var chosen_skills: Array[String] = []
-	
-	if all_skills.size() <= 3:
-		chosen_skills = all_skills
+	if unique_skills.size() <= 3:
+		chosen_skills = unique_skills
 	else:
-		all_skills.shuffle()
-		chosen_skills.append(all_skills[0])
-		chosen_skills.append(all_skills[1])
-		chosen_skills.append(all_skills[2])
+		unique_skills.shuffle()
+		chosen_skills = unique_skills.slice(0, 3)
 	
 	_setup_slot(skill_select1, chosen_skills[0] if chosen_skills.size() > 0 else "")
 	_setup_slot(skill_select2, chosen_skills[1] if chosen_skills.size() > 1 else "")
@@ -118,55 +123,75 @@ func _generate_rewards():
 func _setup_slot(slot_node: Panel, skill_path: String):
 	if not is_instance_valid(slot_node): return
 
-	# 기존 버튼/시그널 정리
-	for child in slot_node.get_children():
-		if child is Button:
-			child.queue_free()
+	# 1. 이전에 동적으로 생성된 클릭용 버튼을 찾아 제거합니다.
+	var old_button = slot_node.get_node_or_null("ClickButton")
+	if is_instance_valid(old_button):
+		old_button.queue_free()
 	
-	# 시각 효과 초기화
+	# 2. 시각 효과 및 UI 내용을 초기화합니다.
 	slot_node.modulate = COLOR_NORMAL
+	var icon_node = slot_node.get_node_or_null("icon")
+	var name_node = slot_node.get_node_or_null("name")
+	var text_node = slot_node.get_node_or_null("text")
+	
+	if icon_node is TextureRect: icon_node.texture = null
+	if icon_node is Sprite2D: icon_node.texture = null
+	if name_node is Label: name_node.text = ""
+	if text_node is Label: text_node.text = ""
 	
 	if skill_path == "":
 		slot_node.visible = false
 		return
 	
+	# 3. 스킬 정보를 로드하고 UI를 업데이트합니다.
 	slot_node.visible = true
-
-	# 스킬 정보 로드
 	var skill_scene = load(skill_path)
 	if not skill_scene: return
 	var temp_skill = skill_scene.instantiate() as BaseSkill
 	if not is_instance_valid(temp_skill): return
 
-	# UI 업데이트
-	var icon_node = slot_node.get_node_or_null("icon")
-	var name_node = slot_node.get_node_or_null("name")
-	var text_node = slot_node.get_node_or_null("text")
+	if icon_node:
+		var desired_icon_size = Vector2(128, 128) # 필요하면 값 조정 가능
 
-	if icon_node and icon_node is TextureRect:
-		icon_node.texture = temp_skill.skill_icon
+		if icon_node is TextureRect:
+			icon_node.texture = temp_skill.skill_icon
+			icon_node.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+			icon_node.custom_minimum_size = desired_icon_size
+		elif icon_node is Sprite2D:
+			icon_node.texture = temp_skill.skill_icon
+			if temp_skill.skill_icon != null:
+				var tex_size = temp_skill.skill_icon.get_size()
+				if tex_size.x > 0 and tex_size.y > 0:
+					var sx = desired_icon_size.x / float(tex_size.x)
+					var sy = desired_icon_size.y / float(tex_size.y)
+					var s = min(sx, sy)
+					icon_node.scale = Vector2(s, s)
+				else:
+					icon_node.scale = Vector2.ONE
+			else:
+				icon_node.scale = Vector2.ONE
 	if name_node and name_node is Label:
 		name_node.text = temp_skill.skill_name
 	if text_node and text_node is Label:
 		text_node.text = temp_skill.skill_description
 
-	# 데이터 생성
+	# 4. 새 데이터와 버튼을 생성하고 연결합니다.
 	var instance = SkillInstance.new()
 	instance.skill_path = skill_path
 	instance.level = 0
 	
-	# 투명 버튼 생성
 	var btn = Button.new()
+	btn.name = "ClickButton" # 버튼을 식별할 수 있도록 이름 지정
 	btn.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	btn.flat = true
 	btn.modulate.a = 0.0
-	
-	# 시그널 연결 (bind를 사용해 어떤 슬롯인지 함께 전달)
+	btn.mouse_filter = Control.MOUSE_FILTER_STOP
+
 	btn.pressed.connect(_on_slot_clicked.bind(instance, slot_node))
 	btn.mouse_entered.connect(_on_slot_mouse_entered.bind(slot_node))
 	btn.mouse_exited.connect(_on_slot_mouse_exited.bind(slot_node))
-	
 	slot_node.add_child(btn)
+
 	temp_skill.queue_free()
 #region 이벤트 핸들러
 # 슬롯 클릭
@@ -195,6 +220,7 @@ func _on_slot_mouse_entered(slot_node: Control):
 		# 3. 속성 변경
 		tween.tween_property(slot_node, "scale", Vector2(1.05, 1.05), 0.15)
 		tween.tween_property(slot_node, "modulate", COLOR_HOVER, 0.15)
+		print("마우스 호버: " + str(slot_node))
 
 # 마우스 호버 종료
 func _on_slot_mouse_exited(slot_node: Control):
