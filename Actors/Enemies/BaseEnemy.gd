@@ -76,7 +76,7 @@ func take_damage(amount: float):
 
 	current_health -= amount
 	print(self.name + " 피격! 남은 체력: ", current_health)
-	
+	EffectManager.play_hit_effect(global_position, 1.0)
 	is_invincible = true
 	if i_frames_timer != null:
 		i_frames_timer.start()

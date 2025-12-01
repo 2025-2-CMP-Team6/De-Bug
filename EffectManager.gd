@@ -7,6 +7,7 @@ var flash_rect: ColorRect = null
 var shake_timer: Timer = null
 var shake_tween: Tween = null
 var flash_tween: Tween = null
+const HIT_EFFECT_SCENE = preload("res://effects/HitEffect.tscn")
 
 func _ready():
 	shake_timer = Timer.new()
@@ -67,4 +68,16 @@ func play_multi_flash(color: Color = Color.WHITE, duration_per_flash: float = 0.
 func set_hit_flash_amount(sprite_node: Sprite2D, amount: float):
 	if is_instance_valid(sprite_node) and sprite_node.material:
 		sprite_node.material.set_shader_parameter("flash_mix", amount)
+#endregion
+
+#region 히트 파티클
+func play_hit_effect(pos: Vector2, scale_amount: float = 1.0):
+	if not HIT_EFFECT_SCENE: return
+	
+	var effect = HIT_EFFECT_SCENE.instantiate()
+	effect.global_position = pos
+	effect.scale = Vector2(scale_amount, scale_amount)
+	
+	# 현재 씬(월드)에 추가해야 적이 죽어서 사라져도 이펙트는 남음
+	get_tree().current_scene.add_child(effect)
 #endregion
