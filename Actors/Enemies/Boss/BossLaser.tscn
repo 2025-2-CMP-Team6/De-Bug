@@ -1,0 +1,32 @@
+[gd_scene load_steps=3 format=3 uid="uid://btljkv3nlruwl"]
+
+[ext_resource type="Script" uid="uid://cr0kufm170dc4" path="res://Actors/Enemies/Boss/boss_laser.gd" id="1_eumap"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hjhxy"]
+size = Vector2(128, 128)
+
+[node name="BossLaser" type="Node2D"]
+z_index = 10
+script = ExtResource("1_eumap")
+
+[node name="Hitbox" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox"]
+shape = SubResource("RectangleShape2D_hjhxy")
+
+[node name="RayCast2D" type="RayCast2D" parent="."]
+collision_mask = 0
+
+[node name="WarningLine" type="Line2D" parent="."]
+points = PackedVector2Array(0, 0, 0, 0)
+width = 30.0
+begin_cap_mode = 1
+end_cap_mode = 1
+
+[node name="Line2D" type="Line2D" parent="."]
+points = PackedVector2Array(0, 0, 0, 0)
+width = 30.0
+begin_cap_mode = 1
+end_cap_mode = 1
+
+[connection signal="body_entered" from="Hitbox" to="." method="_on_hitbox_body_entered"]

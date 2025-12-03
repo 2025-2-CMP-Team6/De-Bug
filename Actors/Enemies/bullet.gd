@@ -1,6 +1,8 @@
 # bullet.gd
 extends Area2D
 
+@onready var lifetimer = $LifeTimer
+
 var direction: Vector2 = Vector2.RIGHT
 var speed: float = 400.0
 
@@ -14,5 +16,5 @@ func _on_body_entered(body):
 		
 		queue_free()
 	
-func _on_screen_exited():
+func _on_visible_on_screen_enabler_2d_timeout() -> void:
 	queue_free()
