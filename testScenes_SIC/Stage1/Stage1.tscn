@@ -1,6 +1,7 @@
-[gd_scene load_steps=19 format=3 uid="uid://d2kexrpmwtbw0"]
+[gd_scene load_steps=20 format=3 uid="uid://d2kexrpmwtbw0"]
 
 [ext_resource type="Script" uid="uid://3wb8r3l1jd6n" path="res://testScenes_SIC/Stage1/Stage1.gd" id="1_stage_script"]
+[ext_resource type="AudioStream" uid="uid://d0gurxkh8locc" path="res://Sounds/bgm/8bit_song.wav" id="2_irmgc"]
 [ext_resource type="PackedScene" uid="uid://en1mqsrf58ka" path="res://Actors/Player/player.tscn" id="2_yyxtu"]
 [ext_resource type="Texture2D" uid="uid://csfttyi8ghxd3" path="res://Portal-Sheet.png" id="4_g1wns"]
 [ext_resource type="Texture2D" uid="uid://cxm7sj15p6nj0" path="res://graphics/resource/Stage1/background_dark_city_more_pixeltic.png" id="4_wjadl"]
@@ -76,11 +77,12 @@ shader_parameter/base_rain_speed = 0.5
 shader_parameter/additional_rain_speed = 0.5
 shader_parameter/slant = 0.2
 
-[node name="Stage1" type="Node2D" node_paths=PackedStringArray("player", "skill_get_ui", "skill_ui")]
+[node name="Stage1" type="Node2D" node_paths=PackedStringArray("skill_get_ui", "skill_ui")]
 script = ExtResource("1_stage_script")
-player = NodePath("")
 skill_get_ui = NodePath("SkillGetUI")
 skill_ui = NodePath("SkillUI")
+stage_bgm = ExtResource("2_irmgc")
+bgm_volume_db = 10.0
 
 [node name="Player" parent="." instance=ExtResource("2_yyxtu")]
 position = Vector2(-1818.0002, 3130)
