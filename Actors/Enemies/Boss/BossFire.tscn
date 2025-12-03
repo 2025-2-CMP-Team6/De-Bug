@@ -1,0 +1,59 @@
+[gd_scene load_steps=8 format=3 uid="uid://tdponf4h4jyg"]
+
+[ext_resource type="Script" uid="uid://b5yc8o6g2l5ab" path="res://Actors/Enemies/Boss/boss_fire.gd" id="1_8c8bo"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_2jtio"]
+size = Vector2(256, 996)
+
+[sub_resource type="Curve" id="Curve_2jtio"]
+_data = [Vector2(0.011278182, 1), 0.0, 0.0, 0, 0, Vector2(0.7593985, 0.82398456), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="CurveTexture" id="CurveTexture_8c8bo"]
+curve = SubResource("Curve_2jtio")
+
+[sub_resource type="Gradient" id="Gradient_0s7l3"]
+offsets = PackedFloat32Array(0, 0.5566038, 1)
+colors = PackedColorArray(1, 0.7833333, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_wvjc4"]
+gradient = SubResource("Gradient_0s7l3")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_735kf"]
+particle_flag_disable_z = true
+emission_shape = 1
+emission_sphere_radius = 100.0
+angle_min = -360.0
+angle_max = 360.00003
+gravity = Vector3(0, -98, 0)
+scale_min = 30.0
+scale_max = 100.0
+color = Color(1.028, 1.028, 1.028, 1)
+color_ramp = SubResource("GradientTexture1D_wvjc4")
+alpha_curve = SubResource("CurveTexture_8c8bo")
+hue_variation_min = -2.2351742e-08
+hue_variation_max = -2.2351742e-08
+
+[node name="FireWall" type="Area2D"]
+script = ExtResource("1_8c8bo")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -496)
+shape = SubResource("RectangleShape2D_2jtio")
+
+[node name="GPUParticles2D" type="GPUParticles2D" parent="."]
+position = Vector2(0, -64)
+rotation = 0.0018402756
+amount = 96
+lifetime = 4.069999999999999
+speed_scale = 5.0
+process_material = SubResource("ParticleProcessMaterial_735kf")
+
+[node name="LifeTimer" type="Timer" parent="."]
+wait_time = 10.0
+autostart = true
+
+[node name="ReadyTimer" type="Timer" parent="."]
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]
+[connection signal="timeout" from="LifeTimer" to="." method="_on_life_timer_timeout"]
