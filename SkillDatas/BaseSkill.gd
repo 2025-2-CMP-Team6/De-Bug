@@ -61,7 +61,7 @@ func _play_sound():
 			var config = _audio_manager.get_plus("skill_cast")
 			if config:
 				# 원본 피치에서 약간만 변형
-				config.pitch_scale = sound_pitch_scale + randf_range(-0.1, 0.1)
+				config.pitch_scale = sound_pitch_scale + randf_range(-0.2, 0.2)
 		
 		# 재생 명령
 		_audio_manager.play_plus("skill_cast")
