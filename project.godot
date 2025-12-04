@@ -34,7 +34,7 @@ project/assembly_name="teamproject"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/dialogue_manager/plugin.cfg")
+enabled=PackedStringArray("res://addons/audio_manager/plugin.cfg", "res://addons/dialogue_manager/plugin.cfg")
 
 [importer_defaults]
 
