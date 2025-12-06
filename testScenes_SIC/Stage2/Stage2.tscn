@@ -1,57 +1,143 @@
-[gd_scene load_steps=7 format=3 uid="uid://bkau6hrhass7g"]
+[gd_scene load_steps=19 format=3 uid="uid://bkau6hrhass7g"]
 
 [ext_resource type="Texture2D" uid="uid://d2m7w3keylowg" path="res://graphics/resource/Stage2/Jungel Layer 0.png" id="1_js4qc"]
+[ext_resource type="Script" uid="uid://t0rk8kka8da0" path="res://testScenes_SIC/Stage2/Stage2.gd" id="1_vjhlr"]
 [ext_resource type="Texture2D" uid="uid://dgsfi0rnxd6uu" path="res://graphics/resource/Stage2/Jungel Layer 1.png" id="2_khtno"]
 [ext_resource type="Texture2D" uid="uid://cwe68ho5vxpui" path="res://graphics/resource/Stage2/Jungel Layer 2.png" id="3_e1cl4"]
 [ext_resource type="Texture2D" uid="uid://cw0uhfmb1nmta" path="res://graphics/resource/Stage2/Jungel Layer 3.png" id="4_vjhlr"]
 [ext_resource type="Texture2D" uid="uid://bg0dllinrjvgd" path="res://graphics/resource/Stage2/Jungel Layer 4.png" id="5_pivpb"]
 [ext_resource type="Texture2D" uid="uid://dn6yw8jie312v" path="res://graphics/resource/Stage2/Jungel Layer 5.png" id="6_7vc0t"]
+[ext_resource type="PackedScene" uid="uid://en1mqsrf58ka" path="res://Actors/Player/player.tscn" id="7_js4qc"]
+[ext_resource type="Texture2D" uid="uid://csfttyi8ghxd3" path="res://Portal-Sheet.png" id="8_e1cl4"]
+[ext_resource type="Script" uid="uid://cqw1qj4qrccjq" path="res://testScenes_SIC/portal_anim.gd" id="9_vjhlr"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_js4qc"]
+size = Vector2(5781.5, 298.5)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_h4ln0"]
+atlas = ExtResource("8_e1cl4")
+region = Rect2(256, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_uu262"]
+atlas = ExtResource("8_e1cl4")
+region = Rect2(192, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_yyxtu"]
+atlas = ExtResource("8_e1cl4")
+region = Rect2(128, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_irmgc"]
+atlas = ExtResource("8_e1cl4")
+region = Rect2(64, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4dk8a"]
+atlas = ExtResource("8_e1cl4")
+region = Rect2(0, 0, 64, 64)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_pivpb"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_h4ln0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_uu262")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_yyxtu")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_irmgc")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4dk8a")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_7vc0t"]
+radius = 24.0
+height = 94.0
 
 [node name="Stage2" type="Node2D"]
+script = ExtResource("1_vjhlr")
 
-[node name="ParallaxBackground" type="ParallaxBackground" parent="."]
+[node name="background" type="Node2D" parent="."]
 
-[node name="Parallax2D" type="Parallax2D" parent="ParallaxBackground"]
-scroll_offset = Vector2(192, 1349)
+[node name="Parallax2D" type="Parallax2D" parent="background"]
+scroll_scale = Vector2(0.1, 1)
 
-[node name="Sprite2D" type="Sprite2D" parent="ParallaxBackground/Parallax2D"]
-position = Vector2(1087.5, -634.50006)
-scale = Vector2(6.6640625, 8.210227)
+[node name="Sprite2D" type="Sprite2D" parent="background/Parallax2D" groups=["CameraMapLimit"]]
+scale = Vector2(15, 15)
 texture = ExtResource("1_js4qc")
+centered = false
 
-[node name="Parallax2D2" type="Parallax2D" parent="ParallaxBackground"]
+[node name="Parallax2D2" type="Parallax2D" parent="background"]
+scroll_scale = Vector2(0.2, 1)
 
-[node name="Sprite2D" type="Sprite2D" parent="ParallaxBackground/Parallax2D2"]
-position = Vector2(199, 1183)
+[node name="Sprite2D" type="Sprite2D" parent="background/Parallax2D2" groups=["CameraMapLimit"]]
+scale = Vector2(15, 15)
 texture = ExtResource("2_khtno")
+centered = false
 
-[node name="Parallax2D3" type="Parallax2D" parent="ParallaxBackground"]
-scroll_offset = Vector2(609, 1095)
+[node name="Parallax2D3" type="Parallax2D" parent="background"]
+scroll_scale = Vector2(0.3, 1)
 
-[node name="Sprite2D" type="Sprite2D" parent="ParallaxBackground/Parallax2D3"]
-position = Vector2(669.5001, -362.5)
-scale = Vector2(6.716146, 8.244318)
+[node name="Sprite2D" type="Sprite2D" parent="background/Parallax2D3" groups=["CameraMapLimit"]]
+scale = Vector2(15, 15)
 texture = ExtResource("3_e1cl4")
+centered = false
 
-[node name="Parallax2D4" type="Parallax2D" parent="ParallaxBackground"]
-scroll_offset = Vector2(616, 536)
+[node name="Parallax2D4" type="Parallax2D" parent="background"]
+scroll_scale = Vector2(0.4, 1)
 
-[node name="Sprite2D" type="Sprite2D" parent="ParallaxBackground/Parallax2D4"]
-position = Vector2(661.50006, 207.49998)
-scale = Vector2(6.7161455, 8.096591)
+[node name="Sprite2D" type="Sprite2D" parent="background/Parallax2D4" groups=["CameraMapLimit"]]
+scale = Vector2(15, 15)
 texture = ExtResource("4_vjhlr")
+centered = false
 
-[node name="Parallax2D5" type="Parallax2D" parent="ParallaxBackground"]
+[node name="Parallax2D5" type="Parallax2D" parent="background"]
+scroll_scale = Vector2(0.5, 1)
 
-[node name="Sprite2D" type="Sprite2D" parent="ParallaxBackground/Parallax2D5"]
-position = Vector2(1296.3635, 734.75)
-scale = Vector2(6.6699805, 8.241477)
+[node name="Sprite2D" type="Sprite2D" parent="background/Parallax2D5" groups=["CameraMapLimit"]]
+scale = Vector2(15, 15)
 texture = ExtResource("5_pivpb")
+centered = false
 
-[node name="Parallax2D6" type="Parallax2D" parent="ParallaxBackground"]
-scroll_offset = Vector2(74, 206)
+[node name="Parallax2D6" type="Parallax2D" parent="background"]
+scroll_scale = Vector2(0.6, 1)
 
-[node name="Sprite2D" type="Sprite2D" parent="ParallaxBackground/Parallax2D6"]
-position = Vector2(1210, 523)
-scale = Vector2(6.6796875, 8.204545)
+[node name="Sprite2D" type="Sprite2D" parent="background/Parallax2D6" groups=["CameraMapLimit"]]
+scale = Vector2(15, 15)
 texture = ExtResource("6_7vc0t")
+centered = false
+
+[node name="Player" parent="." instance=ExtResource("7_js4qc")]
+position = Vector2(1327.9999, 1921.0001)
+
+[node name="StaticBody2D" type="StaticBody2D" parent="."]
+position = Vector2(-3, 2615)
+collision_layer = 2
+collision_mask = 13
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D"]
+position = Vector2(2890.75, -43.75)
+shape = SubResource("RectangleShape2D_js4qc")
+
+[node name="portal" type="Area2D" parent="."]
+position = Vector2(838, 2363)
+collision_layer = 2
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="portal"]
+position = Vector2(-0.99993896, 0.99993896)
+scale = Vector2(2.749998, 2.749998)
+sprite_frames = SubResource("SpriteFrames_pivpb")
+script = ExtResource("9_vjhlr")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="portal"]
+position = Vector2(1, 2)
+shape = SubResource("CapsuleShape2D_7vc0t")
+
+[connection signal="body_entered" from="portal" to="." method="_on_portal_body_entered"]
