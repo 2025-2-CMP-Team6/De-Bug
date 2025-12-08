@@ -1,3 +1,32 @@
-[gd_scene format=3 uid="uid://d3gnlfh1n8f8j"]
+[gd_scene load_steps=4 format=3 uid="uid://d3gnlfh1n8f8j"]
+
+[ext_resource type="Texture2D" uid="uid://bp3afg2epb7jc" path="res://testScenes_SIC/Stage3/Assets/Environment/background.png" id="1_rvv5c"]
+[ext_resource type="Texture2D" uid="uid://bo77fjadcab3q" path="res://testScenes_SIC/Stage3/Assets/Environment/mountains.png" id="2_oitkq"]
+[ext_resource type="Texture2D" uid="uid://dg4a7dwtnou72" path="res://testScenes_SIC/Stage3/Assets/Environment/graveyard.png" id="3_nmnnk"]
 
 [node name="Stage3" type="Node2D"]
+
+[node name="Background" type="Node2D" parent="."]
+
+[node name="Parallax2D" type="Parallax2D" parent="Background"]
+
+[node name="Sprite2D" type="Sprite2D" parent="Background/Parallax2D"]
+scale = Vector2(15, 15)
+texture = ExtResource("1_rvv5c")
+centered = false
+
+[node name="Parallax2D3" type="Parallax2D" parent="Background"]
+
+[node name="Sprite2D" type="Sprite2D" parent="Background/Parallax2D3"]
+position = Vector2(0, 673)
+scale = Vector2(30, 15)
+texture = ExtResource("2_oitkq")
+centered = false
+
+[node name="Parallax2D2" type="Parallax2D" parent="Background"]
+
+[node name="Sprite2D" type="Sprite2D" parent="Background/Parallax2D2"]
+position = Vector2(0, 1537)
+scale = Vector2(15, 15)
+texture = ExtResource("3_nmnnk")
+centered = false

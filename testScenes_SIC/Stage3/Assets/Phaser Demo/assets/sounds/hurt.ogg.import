@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://qiraxjbb6ufl"
+path="res://.godot/imported/hurt.ogg-e26ce7a3bf9c01042d9fc8b053a50d8c.oggvorbisstr"
+
+[deps]
+
+source_file="res://testScenes_SIC/Stage3/Assets/Phaser Demo/assets/sounds/hurt.ogg"
+dest_files=["res://.godot/imported/hurt.ogg-e26ce7a3bf9c01042d9fc8b053a50d8c.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

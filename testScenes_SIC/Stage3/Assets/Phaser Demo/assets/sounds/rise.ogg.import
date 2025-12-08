@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://dt74psk607wrj"
+path="res://.godot/imported/rise.ogg-3cd4145314c2a87487a58bd4e7008187.oggvorbisstr"
+
+[deps]
+
+source_file="res://testScenes_SIC/Stage3/Assets/Phaser Demo/assets/sounds/rise.ogg"
+dest_files=["res://.godot/imported/rise.ogg-3cd4145314c2a87487a58bd4e7008187.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4
