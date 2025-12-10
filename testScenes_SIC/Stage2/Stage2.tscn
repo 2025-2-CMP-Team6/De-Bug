@@ -64,58 +64,58 @@ height = 94.0
 [node name="Stage2" type="Node2D"]
 script = ExtResource("1_vjhlr")
 
-[node name="background" type="Node2D" parent="."]
+[node name="Background" type="Node2D" parent="."]
 
-[node name="Parallax2D" type="Parallax2D" parent="background"]
+[node name="Parallax2D" type="Parallax2D" parent="Background"]
 scroll_scale = Vector2(0.1, 1)
 
-[node name="Sprite2D" type="Sprite2D" parent="background/Parallax2D" groups=["CameraMapLimit"]]
+[node name="Sprite2D" type="Sprite2D" parent="Background/Parallax2D" groups=["CameraMapLimit"]]
 scale = Vector2(15, 15)
 texture = ExtResource("1_js4qc")
 centered = false
 
-[node name="Parallax2D2" type="Parallax2D" parent="background"]
+[node name="Parallax2D2" type="Parallax2D" parent="Background"]
 scroll_scale = Vector2(0.2, 1)
 
-[node name="Sprite2D" type="Sprite2D" parent="background/Parallax2D2" groups=["CameraMapLimit"]]
+[node name="Sprite2D" type="Sprite2D" parent="Background/Parallax2D2" groups=["CameraMapLimit"]]
 scale = Vector2(15, 15)
 texture = ExtResource("2_khtno")
 centered = false
 
-[node name="Parallax2D3" type="Parallax2D" parent="background"]
+[node name="Parallax2D3" type="Parallax2D" parent="Background"]
 scroll_scale = Vector2(0.3, 1)
 
-[node name="Sprite2D" type="Sprite2D" parent="background/Parallax2D3" groups=["CameraMapLimit"]]
+[node name="Sprite2D" type="Sprite2D" parent="Background/Parallax2D3" groups=["CameraMapLimit"]]
 scale = Vector2(15, 15)
 texture = ExtResource("3_e1cl4")
 centered = false
 
-[node name="Parallax2D4" type="Parallax2D" parent="background"]
+[node name="Parallax2D4" type="Parallax2D" parent="Background"]
 scroll_scale = Vector2(0.4, 1)
 
-[node name="Sprite2D" type="Sprite2D" parent="background/Parallax2D4" groups=["CameraMapLimit"]]
+[node name="Sprite2D" type="Sprite2D" parent="Background/Parallax2D4" groups=["CameraMapLimit"]]
 scale = Vector2(15, 15)
 texture = ExtResource("4_vjhlr")
 centered = false
 
-[node name="Parallax2D5" type="Parallax2D" parent="background"]
+[node name="Parallax2D5" type="Parallax2D" parent="Background"]
 scroll_scale = Vector2(0.5, 1)
 
-[node name="Sprite2D" type="Sprite2D" parent="background/Parallax2D5" groups=["CameraMapLimit"]]
+[node name="Sprite2D" type="Sprite2D" parent="Background/Parallax2D5" groups=["CameraMapLimit"]]
 scale = Vector2(15, 15)
 texture = ExtResource("5_pivpb")
 centered = false
 
-[node name="Parallax2D6" type="Parallax2D" parent="background"]
+[node name="Parallax2D6" type="Parallax2D" parent="Background"]
 scroll_scale = Vector2(0.6, 1)
 
-[node name="Sprite2D" type="Sprite2D" parent="background/Parallax2D6" groups=["CameraMapLimit"]]
+[node name="Sprite2D" type="Sprite2D" parent="Background/Parallax2D6" groups=["CameraMapLimit"]]
 scale = Vector2(15, 15)
 texture = ExtResource("6_7vc0t")
 centered = false
 
 [node name="Player" parent="." instance=ExtResource("7_js4qc")]
-position = Vector2(1327.9999, 1921.0001)
+position = Vector2(189.99988, 2233)
 
 [node name="Ground" type="StaticBody2D" parent="."]
 position = Vector2(-3, 2615)
