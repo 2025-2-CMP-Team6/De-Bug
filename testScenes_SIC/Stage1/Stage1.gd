@@ -13,7 +13,7 @@ func _ready():
 	await camera_intro_effect()
 
 	# 인트로 효과가 끝난 후 대화 시작
-	DialogueManager.show_example_dialogue_balloon(dialogue_resource, "start")
+	DialogueManager.show_dialogue_balloon_scene("res://testScenes_SIC/dialogue/stage1_balloon.tscn", dialogue_resource, "start")
 
 func _on_fall_prevention_body_entered(body: Node2D):
 	if body.is_in_group("player"):

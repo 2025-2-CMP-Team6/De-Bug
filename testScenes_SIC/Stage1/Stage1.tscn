@@ -404,7 +404,7 @@ scale = Vector2(100, 100)
 shape = SubResource("RectangleShape2D_opubu")
 
 [node name="Bottom" type="CollisionShape2D" parent="MapLimit"]
-position = Vector2(4636.9995, 7848.999)
+position = Vector2(4637.9995, 7848.999)
 scale = Vector2(100, 100)
 shape = SubResource("RectangleShape2D_opubu")
 

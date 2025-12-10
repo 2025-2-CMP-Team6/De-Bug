@@ -25,7 +25,7 @@ SceneTransition="*res://autoload/SceneTransition.tscn"
 
 [dialogue_manager]
 
-runtime/balloon_path="res://testScenes_SIC/dialogue/balloon.tscn"
+runtime/balloon_path="res://testScenes_SIC/dialogue/stage1_balloon.tscn"
 
 [display]
 
