@@ -1,6 +1,8 @@
 extends CanvasLayer
 ## A basic dialogue balloon for use with Dialogue Manager.
 
+## 대화가 완전히 종료되었을 때 발생하는 신호
+signal dialogue_finished
 
 ## The dialogue resource
 @export var dialogue_resource: DialogueResource
@@ -42,6 +44,7 @@ var dialogue_line: DialogueLine:
 			apply_dialogue_line()
 		else:
 			# The dialogue has finished so close the balloon
+			dialogue_finished.emit()  # 대화 종료 신호 발생
 			if owner == null:
 				queue_free()
 			else:
