@@ -5,9 +5,16 @@ var dialogue_resource = preload("res://testScenes_SIC/dialogue/stage1.dialogue")
 
 # 리스폰 관련 변수
 var spawn_position: Vector2 = Vector2(310.99988, 5081.0005) # 플레이어 시작 위치
+var current_respawn_position: Vector2 # 현재 리스폰 위치 (가장 최근 죽인 적의 위치)
 
 func _ready():
 	super() #오디오매니저 세팅을 위해 필요합니다. 인스펙터의 Stage Settings에 원하는 음악을 넣으면 됩니다.
+
+	# 리스폰 위치 초기화
+	current_respawn_position = spawn_position
+
+	# 튜토리얼 적들의 체크포인트 연결
+	_connect_enemy_checkpoints()
 
 	# 튜토리얼 트리거 신호 연결 (씬에 존재하는 경우)
 	_connect_tutorial_triggers()
@@ -29,6 +36,24 @@ func _ready():
 	# balloon의 dialogue_finished 신호 연결
 	balloon.dialogue_finished.connect(_on_dialogue_ended)
 
+# 튜토리얼 적들의 체크포인트 연결
+func _connect_enemy_checkpoints():
+	# virus, virus2, virus3의 enemy_died 신호를 연결
+	var enemies_to_track = ["Virus", "Virus2", "Virus3"]
+
+	for enemy_name in enemies_to_track:
+		var enemy = get_node_or_null(enemy_name)
+		if enemy and enemy.has_signal("enemy_died"):
+			# 적이 죽을 때 해당 적의 위치를 체크포인트로 설정
+			enemy.enemy_died.connect(func(): _on_enemy_checkpoint_reached(enemy, enemy_name))
+			print("체크포인트 연결됨: ", enemy_name)
+
+func _on_enemy_checkpoint_reached(enemy: Node2D, enemy_name: String):
+	# 적이 죽은 위치를 새로운 리스폰 지점으로 설정
+	current_respawn_position = enemy.global_position
+	print("=== 체크포인트 갱신: ", enemy_name, " ===")
+	print("새 리스폰 위치: ", current_respawn_position)
+
 # 튜토리얼 트리거들의 신호 자동 연결
 func _connect_tutorial_triggers():
 	# TutorialTrigger_Dash 연결
@@ -41,6 +66,10 @@ func _connect_tutorial_triggers():
 	var skill_trigger = get_node_or_null("SkillTutorial")
 	if skill_trigger:
 		skill_trigger.body_entered.connect(func(body): _on_tutorial_trigger_entered(body, "skill", "tutorial_skill"))
+		
+	var middleBoss_trigger = get_node_or_null("MiddleBossTutorial")
+	if middleBoss_trigger:
+		middleBoss_trigger.body_entered.connect(func(body): _on_tutorial_trigger_entered(body, "middleBoss", "tutorial_middleBoss"))
 
 func _on_fall_prevention_body_entered(body: Node2D):
 	if body.is_in_group("player"):
@@ -48,12 +77,12 @@ func _on_fall_prevention_body_entered(body: Node2D):
 
 func respawn_player(player: Node2D):
 	if player:
-		# 플레이어를 시작 위치로 이동
-		player.global_position = spawn_position
+		# 플레이어를 현재 체크포인트 위치로 이동
+		player.global_position = current_respawn_position
 		# 속도 초기화
 		if player is CharacterBody2D:
 			player.velocity = Vector2.ZERO
-		print("플레이어가 리스폰되었습니다!")
+		print("플레이어가 리스폰되었습니다! 위치: ", current_respawn_position)
 
 # 첫 번째 dialogue 종료 여부 추적
 var first_dialogue_done: bool = false

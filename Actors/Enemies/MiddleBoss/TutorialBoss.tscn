@@ -1,0 +1,132 @@
+[gd_scene load_steps=16 format=3 uid="uid://gsr1s4f7uduw"]
+
+[ext_resource type="Script" uid="uid://cmnlrutev6vf3" path="res://Actors/Enemies/MiddleBoss/TutorialBoss.gd" id="1_l5dpf"]
+[ext_resource type="Texture2D" uid="uid://mmuy24w1vjnr" path="res://Actors/Enemies/MiddleBoss/EnemyBox 1 64x48.png" id="2_vq45v"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_l5dpf"]
+radius = 7.75
+height = 21.0
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wfa4j"]
+atlas = ExtResource("2_vq45v")
+region = Rect2(320, 0, 64, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_rhjk4"]
+atlas = ExtResource("2_vq45v")
+region = Rect2(384, 0, 64, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qx3ee"]
+atlas = ExtResource("2_vq45v")
+region = Rect2(448, 0, 64, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_cx5qd"]
+atlas = ExtResource("2_vq45v")
+region = Rect2(512, 0, 64, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2x48y"]
+atlas = ExtResource("2_vq45v")
+region = Rect2(0, 48, 64, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_tjdsd"]
+atlas = ExtResource("2_vq45v")
+region = Rect2(64, 48, 64, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_bbrjh"]
+atlas = ExtResource("2_vq45v")
+region = Rect2(128, 48, 64, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_j2dur"]
+atlas = ExtResource("2_vq45v")
+region = Rect2(192, 48, 64, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gyap7"]
+atlas = ExtResource("2_vq45v")
+region = Rect2(0, 0, 64, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7d4ck"]
+atlas = ExtResource("2_vq45v")
+region = Rect2(128, 0, 64, 48)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_xda47"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_wfa4j")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_rhjk4")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qx3ee")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_cx5qd")
+}],
+"loop": true,
+"name": &"attack",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2x48y")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_tjdsd")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_bbrjh")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_j2dur")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gyap7")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_7d4ck")
+}],
+"loop": true,
+"name": &"move",
+"speed": 5.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_l5dpf"]
+size = Vector2(17, 20)
+
+[node name="TutorialBoss" type="CharacterBody2D" groups=["enemies"]]
+scale = Vector2(4, 4)
+collision_layer = 4
+collision_mask = 7
+script = ExtResource("1_l5dpf")
+metadata/_custom_type_script = "uid://cxvfbor6tlmi5"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0.25, 7.25)
+shape = SubResource("CapsuleShape2D_l5dpf")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_xda47")
+animation = &"idle"
+
+[node name="Hurtbox" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox"]
+position = Vector2(0.25, 7.25)
+shape = SubResource("CapsuleShape2D_l5dpf")
+
+[node name="AttackArea" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="AttackArea"]
+position = Vector2(16.5, 7.25)
+shape = SubResource("RectangleShape2D_l5dpf")
+
+[node name="IFramesTimer" type="Timer" parent="."]
+wait_time = 0.5
+one_shot = true
