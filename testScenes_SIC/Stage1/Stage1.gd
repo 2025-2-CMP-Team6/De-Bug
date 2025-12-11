@@ -6,6 +6,7 @@ var dialogue_resource = preload("res://testScenes_SIC/dialogue/stage1.dialogue")
 # 리스폰 관련 변수
 var spawn_position: Vector2 = Vector2(310.99988, 5081.0005) # 플레이어 시작 위치
 var current_respawn_position: Vector2 # 현재 리스폰 위치 (가장 최근 죽인 적의 위치)
+var highest_checkpoint_number: int = 0 # 현재 체크포인트로 설정된 적의 번호 (가장 높은 번호만 유지)
 
 func _ready():
 	super() #오디오매니저 세팅을 위해 필요합니다. 인스펙터의 Stage Settings에 원하는 음악을 넣으면 됩니다.
@@ -49,10 +50,31 @@ func _connect_enemy_checkpoints():
 			print("체크포인트 연결됨: ", enemy_name)
 
 func _on_enemy_checkpoint_reached(enemy: Node2D, enemy_name: String):
-	# 적이 죽은 위치를 새로운 리스폰 지점으로 설정
-	current_respawn_position = enemy.global_position
-	print("=== 체크포인트 갱신: ", enemy_name, " ===")
-	print("새 리스폰 위치: ", current_respawn_position)
+	# 적 이름에서 번호 추출 ("Virus" -> 1, "Virus2" -> 2, "Virus3" -> 3)
+	var enemy_number = _extract_enemy_number(enemy_name)
+
+	print("=== 적 처치: ", enemy_name, " (번호: ", enemy_number, ") ===")
+	print("현재 최고 체크포인트 번호: ", highest_checkpoint_number)
+
+	# 더 높은 번호의 적을 죽였을 때만 체크포인트 업데이트
+	if enemy_number > highest_checkpoint_number:
+		highest_checkpoint_number = enemy_number
+		current_respawn_position = enemy.global_position
+		print(">>> 체크포인트 갱신! 새 리스폰 위치: ", current_respawn_position)
+	else:
+		print(">>> 체크포인트 유지 (현재 체크포인트가 더 높은 번호)")
+
+# 적 이름에서 번호를 추출하는 함수
+func _extract_enemy_number(enemy_name: String) -> int:
+	# "Virus" -> 1, "Virus2" -> 2, "Virus3" -> 3
+	if enemy_name == "Virus":
+		return 1
+	elif enemy_name.begins_with("Virus"):
+		# "Virus2", "Virus3" 등에서 숫자 부분만 추출
+		var number_part = enemy_name.substr(5)  # "Virus" 다음 문자들
+		if number_part.is_valid_int():
+			return int(number_part)
+	return 0  # 알 수 없는 경우 0 반환
 
 # 튜토리얼 트리거들의 신호 자동 연결
 func _connect_tutorial_triggers():
