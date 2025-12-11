@@ -1,4 +1,4 @@
-[gd_scene load_steps=36 format=4 uid="uid://d2kexrpmwtbw0"]
+[gd_scene load_steps=37 format=4 uid="uid://d2kexrpmwtbw0"]
 
 [ext_resource type="Script" uid="uid://3wb8r3l1jd6n" path="res://testScenes_SIC/Stage1/Stage1.gd" id="1_stage_script"]
 [ext_resource type="AudioStream" uid="uid://d0gurxkh8locc" path="res://Sounds/bgm/8bit_song.wav" id="2_irmgc"]
@@ -19,6 +19,7 @@
 [ext_resource type="Texture2D" uid="uid://ccgl22ktyonn6" path="res://graphics/resource/Stage1/smog2.png" id="10_ypiqe"]
 [ext_resource type="Texture2D" uid="uid://rwtqajnu2k00" path="res://testScenes_SIC/Stage1/GandalfHardcore City Tiles/Building Tiles 32x32.png" id="18_mg0fs"]
 [ext_resource type="Texture2D" uid="uid://bf46f0polhm8l" path="res://testScenes_SIC/Stage1/GandalfHardcore City Tiles/Decoration 32x32.png" id="19_18u52"]
+[ext_resource type="PackedScene" uid="uid://gsr1s4f7uduw" path="res://Actors/Enemies/MiddleBoss/TutorialBoss.tscn" id="20_mg0fs"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_h4ln0"]
 atlas = ExtResource("4_g1wns")
@@ -954,7 +955,7 @@ tile_set = SubResource("TileSet_ajit4")
 
 [node name="Deco" type="TileMapLayer" parent="."]
 scale = Vector2(2, 2)
-tile_map_data = PackedByteArray("AAA8AJcAAAAGAAAAAAA8AJgAAAAGAAEAAAA9AJcAAAAHAAAAAAA9AJgAAAAHAAEAAABlAIkAAAADAAYAAABlAIoAAAARAAIAAABlAIsAAAARAAMAAABlAIwAAAARAAQAAABlAI0AAAARAAUAAABlAI4AAAARAAYAAABlAI8AAAARAAcAAABmAIkAAAAFAAIAAABmAIoAAAARAAIAAABmAIsAAAARAAMAAABmAIwAAAARAAQAAABmAI0AAAARAAUAAABmAI4AAAARAAYAAABmAI8AAAARAAcAAABnAIgAAAAKAAAAAABnAIkAAAAKAAEAAABoAIgAAAALAAAAAABoAIkAAAALAAEAAABoAIoAAAALAAIAAABoAIsAAAALAAMAAABoAIwAAAALAAQAAABoAI0AAAALAAUAAABoAI4AAAALAAYAAABoAI8AAAALAAcAAAA+AJcAAAAEAAAAAAA+AJgAAAAEAAEAAAA/AJcAAAAFAAAAAAA/AJgAAAAFAAEAAAAqAJcAAAAEAAAAAAAqAJgAAAAEAAEAAAArAJcAAAAFAAAAAAArAJgAAAAFAAEAAAAsAJcAAAAIAAAAAAAsAJgAAAAIAAEAAAAtAJcAAAAJAAAAAAAtAJgAAAAJAAEAAAA=")
+tile_map_data = PackedByteArray("AAA8AJcAAAAGAAAAAAA8AJgAAAAGAAEAAAA9AJcAAAAHAAAAAAA9AJgAAAAHAAEAAABlAIkAAAADAAYAAABlAIoAAAARAAIAAABlAIsAAAARAAMAAABlAIwAAAARAAQAAABlAI0AAAARAAUAAABlAI4AAAARAAYAAABlAI8AAAARAAcAAABmAIkAAAAFAAIAAABmAIoAAAARAAIAAABmAIsAAAARAAMAAABmAIwAAAARAAQAAABmAI0AAAARAAUAAABmAI4AAAARAAYAAABmAI8AAAARAAcAAABnAIgAAAAKAAAAAABnAIkAAAAKAAEAAABoAIgAAAALAAAAAABoAIkAAAALAAEAAABoAIoAAAALAAIAAABoAIsAAAALAAMAAABoAIwAAAALAAQAAABoAI0AAAALAAUAAABoAI4AAAALAAYAAABoAI8AAAALAAcAAAA+AJcAAAAEAAAAAAA+AJgAAAAEAAEAAAA/AJcAAAAFAAAAAAA/AJgAAAAFAAEAAAAqAJcAAAAEAAAAAAAqAJgAAAAEAAEAAAArAJcAAAAFAAAAAAArAJgAAAAFAAEAAAAsAJcAAAAIAAAAAAAsAJgAAAAIAAEAAAAtAJcAAAAJAAAAAAAtAJgAAAAJAAEAAACfAHIAAAAMAAIAAACfAHMAAAAMAAMAAACgAHIAAAANAAIAAACgAHMAAAANAAMAAACgAHQAAAANAAQAAACgAHUAAAANAAUAAACgAHYAAAANAAYAAACgAHcAAAANAAcAAACfAHUAAAARAAUAAACfAHYAAAARAAYAAACfAHcAAAARAAcAAACfAHQAAAAHAAQAAACnAGgAAAAIAAAAAACnAGkAAAAIAAEAAACoAGgAAAAJAAAAAACoAGkAAAAJAAEAAACpAGgAAAAEAAAAAACpAGkAAAAEAAEAAACqAGgAAAAFAAAAAACqAGkAAAAFAAEAAADBAFkAAAAEAAAAAADBAFoAAAAEAAEAAADCAFkAAAAFAAAAAADCAFoAAAAFAAEAAADhAEAAAAARAAMAAADhAD8AAAARAAIAAADhAEEAAAARAAQAAADhAEIAAAARAAUAAADhAEMAAAARAAYAAADhAEQAAAARAAcAAADhAD4AAAAHAAIAAADfAD8AAAAOAAIAAADfAEAAAAAOAAMAAADgAD8AAAAPAAIAAADgAEAAAAAPAAMAAADgAEEAAAAPAAQAAADgAEIAAAAPAAUAAADgAEMAAAAPAAYAAADgAEQAAAAPAAcAAAACATcAAAARAAIAAAACATgAAAARAAMAAAACATkAAAARAAQAAAACAToAAAARAAUAAAACATsAAAARAAYAAAACATwAAAARAAcAAAACATYAAAABAAIAAAAHATcAAAARAAIAAAAHATgAAAARAAMAAAAHATkAAAARAAQAAAAHAToAAAARAAUAAAAHATsAAAARAAYAAAAHATwAAAARAAcAAAAHATYAAAAHAAIAAAA=")
 tile_set = SubResource("TileSet_mg0fs")
 
 [node name="MapLimit" type="StaticBody2D" parent="."]
@@ -1002,6 +1003,12 @@ position = Vector2(5031, 3820)
 [node name="CollisionShape2D" type="CollisionShape2D" parent="SkillTutorial"]
 shape = SubResource("RectangleShape2D_mg0fs")
 
+[node name="MiddleBossTutorial" type="Area2D" parent="."]
+position = Vector2(7101, 2186)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="MiddleBossTutorial"]
+shape = SubResource("RectangleShape2D_mg0fs")
+
 [node name="monsterMoveLimit" type="StaticBody2D" parent="."]
 position = Vector2(6358, 2390)
 collision_layer = 16
@@ -1030,6 +1037,17 @@ shape = SubResource("RectangleShape2D_18u52")
 [node name="CollisionShape2D6" type="CollisionShape2D" parent="monsterMoveLimit"]
 position = Vector2(-582, 969)
 shape = SubResource("RectangleShape2D_18u52")
+
+[node name="CollisionShape2D7" type="CollisionShape2D" parent="monsterMoveLimit"]
+position = Vector2(1035, -453)
+shape = SubResource("RectangleShape2D_18u52")
+
+[node name="CollisionShape2D8" type="CollisionShape2D" parent="monsterMoveLimit"]
+position = Vector2(2248, -456)
+shape = SubResource("RectangleShape2D_18u52")
+
+[node name="TutorialBoss" parent="." instance=ExtResource("20_mg0fs")]
+position = Vector2(8488, 1878)
 
 [connection signal="body_entered" from="portal" to="." method="_on_portal_body_entered"]
 [connection signal="body_entered" from="FallPrevention" to="." method="_on_fall_prevention_body_entered"]

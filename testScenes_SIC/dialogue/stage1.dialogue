@@ -18,5 +18,11 @@
 ???: It's too high to jump up there!
 ???: Those must be Glitches.
 ???: Monsters born from corrupted code.
+???: See? Taking damage from a Glitch reduces your health by one block.
 ???: I should use a skill. Let's try left-clicking at the enemy.
 => END
+
+~ tutorial_middleBoss
+???: Look! There's a heavily corrupted Mid-Boss Glitch in front of the portal!
+???: It's stronger than the normal ones, but defeating it might grant you a new skill or upgrade an existing one.
+???: Want to take it on?
