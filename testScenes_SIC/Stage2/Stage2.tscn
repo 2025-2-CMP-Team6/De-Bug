@@ -12,7 +12,7 @@
 [ext_resource type="Script" uid="uid://cqw1qj4qrccjq" path="res://testScenes_SIC/portal_anim.gd" id="9_vjhlr"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_js4qc"]
-size = Vector2(6331.75, 298.5)
+size = Vector2(11917.875, 298.5)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_h4ln0"]
 atlas = ExtResource("8_e1cl4")
@@ -64,13 +64,31 @@ height = 94.0
 [node name="Stage2" type="Node2D"]
 script = ExtResource("1_vjhlr")
 
+[node name="ParallaxBackground" type="ParallaxBackground" parent="."]
+visible = false
+
+[node name="ParallaxLayer" type="ParallaxLayer" parent="ParallaxBackground"]
+
+[node name="Sprite2D" type="Sprite2D" parent="ParallaxBackground/ParallaxLayer" groups=["CameraMapLimit"]]
+scale = Vector2(30, 30)
+texture = ExtResource("1_js4qc")
+centered = false
+
+[node name="ParallaxLayer2" type="ParallaxLayer" parent="ParallaxBackground"]
+
+[node name="Sprite2D" type="Sprite2D" parent="ParallaxBackground/ParallaxLayer2"]
+
+[node name="ParallaxLayer3" type="ParallaxLayer" parent="ParallaxBackground"]
+
+[node name="Sprite2D" type="Sprite2D" parent="ParallaxBackground/ParallaxLayer3"]
+
 [node name="Background" type="Node2D" parent="."]
 
 [node name="Parallax2D" type="Parallax2D" parent="Background"]
 scroll_scale = Vector2(0.1, 1)
 
 [node name="Sprite2D" type="Sprite2D" parent="Background/Parallax2D" groups=["CameraMapLimit"]]
-scale = Vector2(15, 15)
+scale = Vector2(30, 30)
 texture = ExtResource("1_js4qc")
 centered = false
 
@@ -78,7 +96,7 @@ centered = false
 scroll_scale = Vector2(0.2, 1)
 
 [node name="Sprite2D" type="Sprite2D" parent="Background/Parallax2D2" groups=["CameraMapLimit"]]
-scale = Vector2(15, 15)
+scale = Vector2(30, 30)
 texture = ExtResource("2_khtno")
 centered = false
 
@@ -86,7 +104,7 @@ centered = false
 scroll_scale = Vector2(0.3, 1)
 
 [node name="Sprite2D" type="Sprite2D" parent="Background/Parallax2D3" groups=["CameraMapLimit"]]
-scale = Vector2(15, 15)
+scale = Vector2(30, 30)
 texture = ExtResource("3_e1cl4")
 centered = false
 
@@ -94,7 +112,7 @@ centered = false
 scroll_scale = Vector2(0.4, 1)
 
 [node name="Sprite2D" type="Sprite2D" parent="Background/Parallax2D4" groups=["CameraMapLimit"]]
-scale = Vector2(15, 15)
+scale = Vector2(30, 30)
 texture = ExtResource("4_vjhlr")
 centered = false
 
@@ -102,7 +120,7 @@ centered = false
 scroll_scale = Vector2(0.5, 1)
 
 [node name="Sprite2D" type="Sprite2D" parent="Background/Parallax2D5" groups=["CameraMapLimit"]]
-scale = Vector2(15, 15)
+scale = Vector2(30, 30)
 texture = ExtResource("5_pivpb")
 centered = false
 
@@ -110,12 +128,12 @@ centered = false
 scroll_scale = Vector2(0.6, 1)
 
 [node name="Sprite2D" type="Sprite2D" parent="Background/Parallax2D6" groups=["CameraMapLimit"]]
-scale = Vector2(15, 15)
+scale = Vector2(30, 30)
 texture = ExtResource("6_7vc0t")
 centered = false
 
 [node name="Player" parent="." instance=ExtResource("7_js4qc")]
-position = Vector2(189.99988, 2233)
+position = Vector2(491.00003, 2374)
 
 [node name="Ground" type="StaticBody2D" parent="."]
 position = Vector2(-3, 2615)
@@ -128,16 +146,16 @@ rotation = -1.5707964
 shape = SubResource("RectangleShape2D_js4qc")
 
 [node name="Bottom" type="CollisionShape2D" parent="Ground"]
-position = Vector2(2890.75, -43.75)
+position = Vector2(5926.0625, 2804)
 shape = SubResource("RectangleShape2D_js4qc")
 
 [node name="Right" type="CollisionShape2D" parent="Ground"]
-position = Vector2(5902, -1514)
+position = Vector2(11695, -368)
 rotation = 1.5707964
 shape = SubResource("RectangleShape2D_js4qc")
 
 [node name="Top" type="CollisionShape2D" parent="Ground"]
-position = Vector2(2875, -2790)
+position = Vector2(5628, -2766)
 shape = SubResource("RectangleShape2D_js4qc")
 
 [node name="portal" type="Area2D" parent="."]
