@@ -36,7 +36,7 @@ func _setup_stage_music():
 	_audio_manager.play_plus(_bgm_key)
 
 func _ready():
-	# InventoryManager가 이미 skill_database를 로딩해놨을 테니 그걸 가져옵니다.
+	# InventoryManager가 이미 skill_database를 로딩. 그걸 이용함.
 	var all_skills = InventoryManager.skill_database
 	
 	print("--- 월드 진입: 테스트 스킬 지급 ---")
