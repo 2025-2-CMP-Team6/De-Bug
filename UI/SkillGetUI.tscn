@@ -1,9 +1,9 @@
 [gd_scene load_steps=5 format=3 uid="uid://dgv1ef1ng7ngs"]
 
 [ext_resource type="Script" uid="uid://laa5mby47uwa" path="res://UI/SkillGetUI.gd" id="1_y5hbc"]
-[ext_resource type="Texture2D" uid="uid://b8vqxr174b80m" path="res://graphics/Yes.png" id="2_d328u"]
+[ext_resource type="Texture2D" uid="uid://cyr0dpuqer51h" path="res://graphics/Yes-1.png.png" id="2_d328u"]
 [ext_resource type="PackedScene" uid="uid://bur16abmo4xqw" path="res://UI/skillselect.tscn" id="3_0esga"]
-[ext_resource type="Texture2D" uid="uid://bapss5f7rqqcn" path="res://graphics/No.png" id="3_ygqnk"]
+[ext_resource type="Texture2D" uid="uid://b541cot13862p" path="res://graphics/Yes-2.png.png" id="3_ygqnk"]
 
 [node name="SkillGetUI" type="CanvasLayer" node_paths=PackedStringArray("skill_select1", "skill_select2", "skill_select3", "select_button", "background_panel", "cancel_button")]
 script = ExtResource("1_y5hbc")
