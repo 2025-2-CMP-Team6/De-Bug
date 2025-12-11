@@ -822,6 +822,7 @@ size = Vector2(108.36, 9.41)
 size = Vector2(10844.5, 950.5)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_mg0fs"]
+size = Vector2(20, 181)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_18u52"]
 size = Vector2(30, 28)
@@ -900,6 +901,7 @@ centered = false
 
 [node name="Player" parent="." instance=ExtResource("2_yyxtu")]
 position = Vector2(310.99988, 5081.0005)
+hit_sound = null
 
 [node name="portal" type="Area2D" parent="."]
 position = Vector2(8736, 1718)
@@ -995,18 +997,21 @@ shape = SubResource("RectangleShape2D_vpomu")
 position = Vector2(3203, 4574)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="DashTutorial"]
+position = Vector2(0, -80.5)
 shape = SubResource("RectangleShape2D_mg0fs")
 
 [node name="SkillTutorial" type="Area2D" parent="."]
 position = Vector2(5031, 3820)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="SkillTutorial"]
+position = Vector2(0, -69)
 shape = SubResource("RectangleShape2D_mg0fs")
 
 [node name="MiddleBossTutorial" type="Area2D" parent="."]
 position = Vector2(7101, 2186)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="MiddleBossTutorial"]
+position = Vector2(-5, -64)
 shape = SubResource("RectangleShape2D_mg0fs")
 
 [node name="monsterMoveLimit" type="StaticBody2D" parent="."]
@@ -1047,7 +1052,7 @@ position = Vector2(2248, -456)
 shape = SubResource("RectangleShape2D_18u52")
 
 [node name="TutorialBoss" parent="." instance=ExtResource("20_mg0fs")]
-position = Vector2(8488, 1878)
+position = Vector2(7939, 1874)
 
 [connection signal="body_entered" from="portal" to="." method="_on_portal_body_entered"]
 [connection signal="body_entered" from="FallPrevention" to="." method="_on_fall_prevention_body_entered"]
