@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://t0s3qc8e42qg"
-path="res://.godot/imported/fc1073.png-f9a2fe18a3c4105056bc259a95e2ee09.ctex"
+uid="uid://ct4ytouv30a8n"
+path="res://.godot/imported/fc840.png-ba773d3e47299426d642481123e3a1c2.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://SkillDatas/Skill_Heal/fc1073.png"
-dest_files=["res://.godot/imported/fc1073.png-f9a2fe18a3c4105056bc259a95e2ee09.ctex"]
+source_file="res://SkillDatas/Skill_BlinkSlash/fc840.png"
+dest_files=["res://.godot/imported/fc840.png-ba773d3e47299426d642481123e3a1c2.ctex"]
 
 [params]
 
