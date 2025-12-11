@@ -9,14 +9,38 @@ var spawn_position: Vector2 = Vector2(310.99988, 5081.0005) # 플레이어 시�
 func _ready():
 	super() #오디오매니저 세팅을 위해 필요합니다. 인스펙터의 Stage Settings에 원하는 음악을 넣으면 됩니다.
 
+	# 튜토리얼 트리거 신호 연결 (씬에 존재하는 경우)
+	_connect_tutorial_triggers()
+
 	# 카메라 인트로 효과 실행 (world.gd의 공통 함수 사용)
 	await camera_intro_effect()
+
+	# 플레이어 찾기
+	var stage_player = player if player != null else get_node_or_null("Player")
+
+	# 인트로 대화 시작 전에 플레이어 입력 잠금
+	if stage_player and stage_player.has_method("set_input_locked"):
+		stage_player.set_input_locked(true)
+		print("=== 인트로 시작: 플레이어 입력 잠금 ===")
 
 	# 인트로 효과가 끝난 후 대화 시작
 	var balloon = DialogueManager.show_dialogue_balloon_scene("res://testScenes_SIC/dialogue/stage1_balloon.tscn", dialogue_resource, "start")
 
 	# balloon의 dialogue_finished 신호 연결
 	balloon.dialogue_finished.connect(_on_dialogue_ended)
+
+# 튜토리얼 트리거들의 신호 자동 연결
+func _connect_tutorial_triggers():
+	# TutorialTrigger_Dash 연결
+	var dash_trigger = get_node_or_null("DashTutorial")
+	if dash_trigger:
+		dash_trigger.body_entered.connect(func(body): _on_tutorial_trigger_entered(body, "dash", "tutorial_dash"))
+		print("대시 튜토리얼 트리거 연결됨")
+
+	# 추가 튜토리얼 트리거가 있다면 여기에 추가
+	var skill_trigger = get_node_or_null("SkillTutorial")
+	if skill_trigger:
+		skill_trigger.body_entered.connect(func(body): _on_tutorial_trigger_entered(body, "skill", "tutorial_skill"))
 
 func _on_fall_prevention_body_entered(body: Node2D):
 	if body.is_in_group("player"):
@@ -34,6 +58,9 @@ func respawn_player(player: Node2D):
 # 첫 번째 dialogue 종료 여부 추적
 var first_dialogue_done: bool = false
 
+# 튜토리얼 트리거 추적 (한 번만 실행되도록)
+var tutorial_triggers_activated: Dictionary = {}
+
 # dialogue가 끝났을 때 호출되는 함수
 func _on_dialogue_ended():
 	if not first_dialogue_done:
@@ -41,7 +68,7 @@ func _on_dialogue_ended():
 		print("=== 첫 번째 dialogue 종료, 포탈 줌 시작 ===")
 		first_dialogue_done = true
 
-		# 포탈로 카메라 줌 효과 실행
+		# 포탈로 카메라 줌 효과 실행 (입력은 계속 잠금 상태 유지)
 		await camera_zoom_to_portal(2.0, 1.5, Vector2(1.5, 1.5), Vector2(-400, 200))
 
 		# 카메라 줌이 끝난 후 두 번째 dialogue 시작
@@ -49,8 +76,13 @@ func _on_dialogue_ended():
 		var balloon = DialogueManager.show_dialogue_balloon_scene("res://testScenes_SIC/dialogue/stage1_balloon.tscn", dialogue_resource, "after_portal")
 		balloon.dialogue_finished.connect(_on_dialogue_ended)
 	else:
-		# 두 번째 dialogue가 끝났을 때
-		print("=== 모든 dialogue 완료 ===")
+		# 두 번째 dialogue가 끝났을 때 - 이제 플레이어 입력 잠금 해제
+		print("=== 모든 인트로 dialogue 완료, 플레이어 입력 잠금 해제 ===")
+
+		var stage_player = player if player != null else get_node_or_null("Player")
+		if stage_player and stage_player.has_method("set_input_locked"):
+			stage_player.set_input_locked(false)
+			print("플레이어가 이제 움직일 수 있습니다!")
 
 # 포탈로 카메라를 줌인했다가 다시 플레이어로 돌아오는 효과
 func camera_zoom_to_portal(
@@ -128,6 +160,60 @@ func camera_zoom_to_portal(
 
 	# 카메라 스무딩 원래대로 복원
 	camera.position_smoothing_enabled = original_smoothing
+
+# 튜토리얼 트리거 처리 (Area2D의 body_entered 신호에 연결)
+func _on_tutorial_trigger_entered(body: Node2D, trigger_name: String, dialogue_title: String):
+	# 플레이어가 아니면 무시
+	if not body.is_in_group("player"):
+		return
+
+	# 이미 활성화된 트리거면 무시 (한 번만 실행)
+	if tutorial_triggers_activated.get(trigger_name, false):
+		return
+
+	print("=== 튜토리얼 트리거 활성화: ", trigger_name, " ===")
+	tutorial_triggers_activated[trigger_name] = true
+
+	# 플레이어 찾기
+	var stage_player = player if player != null else body
+
+	# 플레이어 입력 잠금 (움직임 금지)
+	if stage_player.has_method("set_input_locked"):
+		stage_player.set_input_locked(true)
+		print("플레이어 입력 잠금")
+
+	# skill 튜토리얼인 경우 모든 적 AI 비활성화
+	var paused_enemies = []
+	if trigger_name == "skill":
+		var enemies = get_tree().get_nodes_in_group("enemies")
+		for enemy in enemies:
+			if enemy and is_instance_valid(enemy):
+				enemy.set_process(false)
+				enemy.set_physics_process(false)
+				paused_enemies.append(enemy)
+		print("적 AI 비활성화: ", paused_enemies.size(), "마리")
+
+	# 튜토리얼 대화 시작
+	var balloon = DialogueManager.show_dialogue_balloon_scene(
+		"res://testScenes_SIC/dialogue/stage1_balloon.tscn",
+		dialogue_resource,
+		dialogue_title
+	)
+
+	# 대화가 끝나면 플레이어 입력 잠금 해제 및 적 AI 복원
+	balloon.dialogue_finished.connect(func():
+		if stage_player.has_method("set_input_locked"):
+			stage_player.set_input_locked(false)
+			print("플레이어 입력 잠금 해제")
+
+		# skill 튜토리얼이었다면 적 AI 다시 활성화
+		if trigger_name == "skill":
+			for enemy in paused_enemies:
+				if enemy and is_instance_valid(enemy):
+					enemy.set_process(true)
+					enemy.set_physics_process(true)
+			print("적 AI 활성화: ", paused_enemies.size(), "마리")
+	)
 
 func _on_portal_body_entered(body):
 	if body.is_in_group("player"):

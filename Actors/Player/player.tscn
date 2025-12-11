@@ -7,8 +7,9 @@
 [ext_resource type="PackedScene" uid="uid://byv8rt76sqhox" path="res://UI/SkillHudIcon.tscn" id="4_b63gh"]
 [ext_resource type="Script" uid="uid://crv50bot4wkpv" path="res://testScenes_SIC/player_anim.gd" id="4_isd1h"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_onrkg"]
-size = Vector2(78.12495, 116.51672)
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_isd1h"]
+radius = 39.062454
+height = 123.8483
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_onrkg"]
 bg_color = Color(0.6751306, 0.77538246, 1.2880678, 1)
@@ -378,8 +379,8 @@ hud_skill_3_icon = NodePath("HUD/HudContainer/SkillHudIcon3")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(-3.0048008, 5.741638)
-scale = Vector2(1.0000006, 1)
-shape = SubResource("RectangleShape2D_onrkg")
+scale = Vector2(1.0000007, 1)
+shape = SubResource("CapsuleShape2D_isd1h")
 
 [node name="RecoveryTimer" type="Timer" parent="."]
 one_shot = true

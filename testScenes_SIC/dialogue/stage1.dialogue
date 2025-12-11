@@ -1,10 +1,22 @@
 ~ start
-Hero: Ugh... my head. Wait, where am I? The whole world is made of... pixels? Aaaah! Even my hands are pixels!
-Hero: Oh my god, did I fall into a game world? This feeling... it's exactly like that arcade game I used to play as a kid.
-Hero: (A red portal is glowing in the distance. Camera zooms in.)
+???: Ugh... my head. Wait, where am I? The whole world is made of... pixels? Aaaah! Even my hands are pixels!
+???: Oh my god, did I fall into a game world? This feeling... it's exactly like that arcade game I used to play as a kid.
 => END
 
 ~ after_portal
-Hero: That portal... it might be the only way out of here.
-Hero: I guess there's no turning back now. Let's see where this leads!
+???: That portal... it might be the only way out of here.
+???: I guess there's no turning back now. Let's see where this leads!
+???: Huh... looks like I can move with WASD.
+=> END
+
+~ tutorial_dash
+???: To reach the next platform, I'll need to dash while jumping!
+???: Let me try pressing SHIFT while in the air.
+=> END
+
+~ tutorial_skill
+???: It's too high to jump up there!
+???: Those must be Glitches.
+???: Monsters born from corrupted code.
+???: I should use a skill. Let's try left-clicking at the enemy.
 => END
