@@ -3,7 +3,7 @@ extends BaseSkill
 #region 스킬 설정
 @export_group("ThunderSlash Settings")
 @export var slash_count: int = 3           # 연속 공격 횟수
-@export var slash_interval: float = 0.3    # ★ 요청하신 대로 0.3초로 변경
+@export var slash_interval: float = 0.3    # 공격 속
 @export var search_radius: float = 400.0   # 다음 적 찾는 범위
 
 @export_group("Movement Settings")
@@ -13,7 +13,7 @@ extends BaseSkill
 @export var slash_visual_texture: Texture
 
 @export_group("Audio Settings")
-@export var slash_sound: AudioStream # ★ 여기에 효과음 파일을 넣으세요
+@export var slash_sound: AudioStream # 효과음
 #endregion
 
 var is_slashing_sequence: bool = false
@@ -44,7 +44,6 @@ func execute(owner: CharacterBody2D, target: Node2D = null):
 			current_target = _find_nearest_enemy(owner)
 			if current_target == null: break
 		
-		# ★ 소리 재생 (베기 직전에 소리부터!)
 		_play_sound()
 		
 		# 베기 실행
@@ -81,14 +80,14 @@ func _perform_slash(owner: CharacterBody2D, target: Node2D):
 # 3. 유틸리티 함수들 (소리 재생 추가됨)
 # -----------------------------------------------------------
 
-# ★ 소리 재생 함수 (일회용 스피커 생성)
+# 소리 재생 함수 (일회용 스피커 생성)
 func _play_sound():
 	if slash_sound == null: return
 	
 	var asp = AudioStreamPlayer.new()
 	asp.stream = slash_sound
-	asp.volume_db = -5.0 # 소리가 너무 크면 여기서 줄이세요 (-숫자)
-	asp.pitch_scale = randf_range(0.9, 1.1) # 음높이를 살짝 랜덤하게 (덜 지루함)
+	asp.volume_db = -5.0 # 소리 조절
+	asp.pitch_scale = randf_range(0.9, 1.1) # 음높이 랜덤
 	
 	get_tree().current_scene.add_child(asp)
 	asp.play()

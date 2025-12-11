@@ -1,24 +1,20 @@
 extends BaseSkill
 
 #region 1. 노드 참조 & 설정
-# 템플릿의 hitbox 대신, 복제해서 쓸 총알 원본을 가져옵니다.
+# 총알 복제
 @onready var bullet_template = $BulletTemplate
 
 func _init():
-	# [설계 사항 입력]
 	# 타겟팅 필요 여부 (false: 논타겟 스킬, 바라보는 방향 발사)
 	requires_target = false
-	
 	# 중력 적용 비율 (1.0: 땅에 붙어있음, 시전 중 붕 뜨지 않음)
 	gravity_multiplier = 1.0
-	
 	# 조건부 종료 여부 (false: 시전 시간 지나면 스킬 상태 끝)
 	ends_on_condition = false
 
 func _ready():
-	super._ready() # ★ 필수: 쿨타임 타이머 초기화
-	
-	# 총알 원본은 게임 시작 시 안 보이게 꺼둡니다.
+	super._ready() # 쿨타임 타이머 초기화
+
 	if bullet_template:
 		bullet_template.visible = false
 		bullet_template.monitoring = false
@@ -26,7 +22,7 @@ func _ready():
 
 # region 2. 스킬 실행 (Execute)
 func execute(owner: CharacterBody2D, target: Node2D = null):
-	super.execute(owner, target) # ★ 필수: 상태값 변경
+	super.execute(owner, target) # 상태값 변경
 	
 	print(skill_name + " 발동! (멀티샷)")
 	
@@ -36,7 +32,7 @@ func execute(owner: CharacterBody2D, target: Node2D = null):
 	var distance = 600.0       # 사거리
 	var travel_time = 0.8      # 날아가는 시간
 	
-	# 주신 코드의 기본 회전각
+	# 불렛의 기본 회전각
 	var angle_right = -138.2
 	var angle_left = 138.2
 	# ----------------
@@ -53,7 +49,7 @@ func execute(owner: CharacterBody2D, target: Node2D = null):
 		# 씬 트리에 먼저 추가 (그래야 rotation 제어가 잘 먹힘)
 		get_tree().current_scene.add_child(bullet)
 
-		# 2. 방향 및 기본 회전 설정 (주신 로직 적용)
+		# 2. 방향 및 기본 회전 설정
 		var base_direction = Vector2.RIGHT
 		var base_rotation = 0.0
 		
@@ -109,22 +105,15 @@ func execute(owner: CharacterBody2D, target: Node2D = null):
 
 # 스킬이 끝났을 때 호출할 함수
 func _on_skill_finished():
-	# 투사체 방식은 발사 후 할 게 별로 없지만, 
-	# 만약 캐스팅 바 같은 UI가 있다면 여기서 끕니다.
 	pass
 #endregion
 
 #region 3. 물리 처리 (Physics)
-# 스킬 시전 중 매 프레임 실행됩니다.
 func process_skill_physics(owner: CharacterBody2D, delta: float):
-	# 시전 시간(Cast Duration) 동안 플레이어 멈추기 (선딜레이)
-	# 이동키를 눌러도 못 움직이게 속도를 0으로 고정
 	owner.velocity.x = 0
 #endregion
 
 #region 4. 충돌 처리 (Collision)
-# ★ 투사체 방식에서는 사용하지 않습니다. 
-# (위의 execute 함수 안에서 bullet.body_entered로 처리했습니다)
 func _on_hitbox_area_entered(area):
 	pass
 #endregion

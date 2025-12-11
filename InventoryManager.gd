@@ -20,7 +20,7 @@ func _ready():
 	load_skills_from_directory(SKILL_DIRECTORY)
 	
 	add_skill_to_inventory("res://SkillDatas/Skill_Melee/Skill_Melee.tscn")
-	add_skill_to_inventory("res://SkillDatas/Skill_Melee/Skill_Melee.tscn")
+	add_skill_to_inventory("res://SkillDatas/Skill_Heal/Skill_Heal.tscn")
 	add_skill_to_inventory("res://SkillDatas/Skill_ThunderSlash/Skill_ThunderSlash.tscn")
 	add_skill_to_inventory("res://SkillDatas/Skill_MultiShot/Skill_MultiShot.tscn")
 	add_skill_to_inventory("res://SkillDatas/Skill_PiercingShot/Skill_PiercingShot.tscn")
