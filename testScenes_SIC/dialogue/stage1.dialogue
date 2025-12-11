@@ -26,3 +26,14 @@
 ???: Look! There's a heavily corrupted Mid-Boss Glitch in front of the portal!
 ???: It's stronger than the normal ones, but defeating it might grant you a new skill or upgrade an existing one.
 ???: Want to take it on?
+=> END
+
+~ tutorial_boss_defeated
+???: Great job. You have defeated the Tutorial Boss!
+???: You've earned a skill reward. Please select the skill you wish to acquire.
+=> END
+
+~ after_skill_selection
+???: The skill you acquired can be equipped by pressing K to open the skill menu.
+???: You can also synthesize or upgrade skills there.
+???: Now, shall we start 'debugging' the errors in this game?

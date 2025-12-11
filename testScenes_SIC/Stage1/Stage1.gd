@@ -8,6 +8,10 @@ var spawn_position: Vector2 = Vector2(310.99988, 5081.0005) # 플레이어 시�
 var current_respawn_position: Vector2 # 현재 리스폰 위치 (가장 최근 죽인 적의 위치)
 var highest_checkpoint_number: int = 0 # 현재 체크포인트로 설정된 적의 번호 (가장 높은 번호만 유지)
 
+# 스킬창 잠금 관련 변수
+var skill_ui_unlocked: bool = false # 스킬창 사용 가능 여부 (튜토리얼 보스 처치 후 해제)
+var is_first_skill_selection: bool = false # 튜토리얼 보스 처치 후 첫 스킬 선택인지 추적
+
 func _ready():
 	super() #오디오매니저 세팅을 위해 필요합니다. 인스펙터의 Stage Settings에 원하는 음악을 넣으면 됩니다.
 
@@ -19,6 +23,13 @@ func _ready():
 
 	# 튜토리얼 트리거 신호 연결 (씬에 존재하는 경우)
 	_connect_tutorial_triggers()
+
+	# 튜토리얼 보스 처치 시 스킬창 해제
+	_connect_tutorial_boss()
+
+	# 스킬 선택 후 dialogue 표시를 위한 신호 연결
+	if is_instance_valid(skill_get_ui):
+		skill_get_ui.closed.connect(_on_first_skill_selected)
 
 	# 카메라 인트로 효과 실행 (world.gd의 공통 함수 사용)
 	await camera_intro_effect()
@@ -75,6 +86,73 @@ func _extract_enemy_number(enemy_name: String) -> int:
 		if number_part.is_valid_int():
 			return int(number_part)
 	return 0  # 알 수 없는 경우 0 반환
+
+# 튜토리얼 보스 처치 시 스킬창 해제
+func _connect_tutorial_boss():
+	var tutorial_boss = get_node_or_null("TutorialBoss")
+	if tutorial_boss and tutorial_boss.has_signal("enemy_died"):
+		tutorial_boss.enemy_died.connect(_on_tutorial_boss_defeated)
+		print("튜토리얼 보스 신호 연결됨")
+
+func _on_tutorial_boss_defeated():
+	print("=== 튜토리얼 보스 처치! ===")
+
+	# 첫 스킬 선택 플래그 설정
+	is_first_skill_selection = true
+
+	# 플레이어 찾기
+	var stage_player = player if player != null else get_node_or_null("Player")
+
+	# 플레이어 입력 잠금 (dialogue 표시 중)
+	if stage_player and stage_player.has_method("set_input_locked"):
+		stage_player.set_input_locked(true)
+		print("플레이어 입력 잠금 (보스 처치 후 dialogue)")
+
+	# 보스 처치 후 dialogue 시작
+	var balloon = DialogueManager.show_dialogue_balloon_scene(
+		"res://testScenes_SIC/dialogue/stage1_balloon.tscn",
+		dialogue_resource,
+		"tutorial_boss_defeated"
+	)
+
+	# dialogue가 끝나면 플레이어 입력 잠금 해제 (스킬 선택 창이 열림)
+	balloon.dialogue_finished.connect(func():
+		if stage_player and stage_player.has_method("set_input_locked"):
+			stage_player.set_input_locked(false)
+			print("플레이어 입력 잠금 해제 - 스킬 선택 가능")
+	)
+
+# 첫 스킬 선택 후 호출되는 함수
+func _on_first_skill_selected():
+	# 첫 스킬 선택이 아니면 무시
+	if not is_first_skill_selection:
+		return
+
+	is_first_skill_selection = false
+	print("=== 첫 스킬 선택 완료! ===")
+
+	# 플레이어 찾기
+	var stage_player = player if player != null else get_node_or_null("Player")
+
+	# 플레이어 입력 잠금 (dialogue 표시 중)
+	if stage_player and stage_player.has_method("set_input_locked"):
+		stage_player.set_input_locked(true)
+		print("플레이어 입력 잠금 (스킬 설명 dialogue)")
+
+	# 스킬 사용법 설명 dialogue 시작
+	var balloon = DialogueManager.show_dialogue_balloon_scene(
+		"res://testScenes_SIC/dialogue/stage1_balloon.tscn",
+		dialogue_resource,
+		"after_skill_selection"
+	)
+
+	# dialogue가 끝나면 스킬창 해제 및 플레이어 입력 잠금 해제
+	balloon.dialogue_finished.connect(func():
+		unlock_skill_ui()
+		if stage_player and stage_player.has_method("set_input_locked"):
+			stage_player.set_input_locked(false)
+			print("플레이어 입력 잠금 해제 - 게임 계속")
+	)
 
 # 튜토리얼 트리거들의 신호 자동 연결
 func _connect_tutorial_triggers():
@@ -271,3 +349,39 @@ func _on_portal_body_entered(body):
 		print("플레이어가 포탈에 진입했습니다!")
 		# 여기에 포탈 이동 로직을 추가하세요
 		SceneTransition.fade_to_scene("res://testScenes_SIC/Stage2/Stage2.tscn")
+
+# K 키로 스킬창 열기/닫기
+func _unhandled_input(event):
+	# K 키를 눌렀을 때
+	if event.is_action_pressed("ui_text_completion_accept") or (event is InputEventKey and event.pressed and event.keycode == KEY_K):
+		toggle_skill_ui()
+
+func toggle_skill_ui():
+	# 스킬창이 아직 잠겨있는지 확인
+	if not skill_ui_unlocked:
+		print("스킬창이 아직 잠겨있습니다. 튜토리얼을 진행하세요!")
+		return
+
+	# World에서 상속받은 skill_ui 변수 사용
+	if not is_instance_valid(skill_ui):
+		print("경고: SkillUI를 찾을 수 없습니다. Stage1 씬에 SkillUI가 설정되어 있는지 확인하세요.")
+		return
+
+	# 스킬창 토글
+	skill_ui.visible = not skill_ui.visible
+
+	var stage_player = player if player != null else get_node_or_null("Player")
+	if is_instance_valid(stage_player):
+		# 플레이어 입력 잠금/해제
+		if stage_player.has_method("set_input_locked"):
+			stage_player.set_input_locked(skill_ui.visible)
+			print("스킬창 ", "열림" if skill_ui.visible else "닫힘")
+
+		# 스킬창이 열렸을 때 UI 갱신
+		if skill_ui.visible and skill_ui.has_method("refresh_ui"):
+			skill_ui.refresh_ui(stage_player)
+
+# 스킬창 잠금 해제 (튜토리얼 보스 처치 후 또는 dialogue에서 호출)
+func unlock_skill_ui():
+	skill_ui_unlocked = true
+	print("=== 스킬창이 해제되었습니다! K 키를 눌러 스킬창을 열 수 있습니다. ===")
