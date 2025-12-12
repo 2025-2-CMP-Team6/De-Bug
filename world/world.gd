@@ -71,7 +71,10 @@ func _on_enemy_died():
 		print("모든 적 처치 완료! 보상 선택 창 오픈")
 		portal_enabled = true
 		print(">>> 포탈이 활성화되었습니다! <<<")
-		skill_get_ui.open_reward_screen()
+		if is_instance_valid(skill_get_ui):
+			skill_get_ui.open_reward_screen()
+		else:
+			print("경고: SkillGetUI가 설정되지 않았습니다. 보상 창을 열 수 없습니다.")
 	else:
 		print("적이 사망했습니다. 남은 적: " + str(remaining_enemies.size() - 1))
 

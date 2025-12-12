@@ -9,8 +9,9 @@
 [ext_resource type="Script" uid="uid://crv50bot4wkpv" path="res://testScenes_SIC/player_anim.gd" id="4_isd1h"]
 [ext_resource type="AudioStream" uid="uid://b0qxvcf0rkv6r" path="res://Sounds/effects/s_hurt-sound-435314.mp3" id="7_8gtf5"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_8gtf5"]
-size = Vector2(63.10088, 113.11295)
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_awv0x"]
+radius = 35.55684
+height = 117.1527
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_onrkg"]
 bg_color = Color(0.6751306, 0.77538246, 1.2880678, 1)
@@ -354,6 +355,8 @@ animations = [{
 position = Vector2(23.999998, 24)
 scale = Vector2(0.99840045, 0.99016076)
 collision_mask = 6
+floor_max_angle = 1.0471976
+safe_margin = 0.5
 script = ExtResource("1_onrkg")
 max_speed = 800.0
 jump_velocity = -1200.0
@@ -384,7 +387,7 @@ sfx_player = NodePath("AudioStreamPlayer")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(-3.5056114, 8.079493)
 scale = Vector2(1.0000012, 1)
-shape = SubResource("RectangleShape2D_8gtf5")
+shape = SubResource("CapsuleShape2D_awv0x")
 
 [node name="RecoveryTimer" type="Timer" parent="."]
 one_shot = true
