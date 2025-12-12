@@ -1,4 +1,4 @@
-[gd_scene load_steps=31 format=4 uid="uid://bkau6hrhass7g"]
+[gd_scene load_steps=32 format=4 uid="uid://bkau6hrhass7g"]
 
 [ext_resource type="Texture2D" uid="uid://d2m7w3keylowg" path="res://graphics/resource/Stage2/Jungel Layer 0.png" id="1_js4qc"]
 [ext_resource type="Script" uid="uid://t0rk8kka8da0" path="res://testScenes_SIC/Stage2/Stage2.gd" id="1_vjhlr"]
@@ -930,6 +930,8 @@ texture = ExtResource("12_7vc0t")
 [sub_resource type="TileSet" id="TileSet_4waes"]
 sources/0 = SubResource("TileSetAtlasSource_ircvx")
 
+[sub_resource type="ImageTexture" id="ImageTexture_uwilw"]
+
 [node name="Stage2" type="Node2D" node_paths=PackedStringArray("player", "skill_get_ui", "skill_ui")]
 script = ExtResource("1_vjhlr")
 player = NodePath("Player")
@@ -941,7 +943,7 @@ skill_ui = NodePath("SkillUI")
 [node name="Parallax2D" type="Parallax2D" parent="Background"]
 scroll_scale = Vector2(0.1, 1)
 
-[node name="Sprite2D" type="Sprite2D" parent="Background/Parallax2D" groups=["CameraMapLimit"]]
+[node name="Sprite2D" type="Sprite2D" parent="Background/Parallax2D"]
 scale = Vector2(30, 30)
 texture = ExtResource("1_js4qc")
 centered = false
@@ -988,7 +990,7 @@ texture = ExtResource("6_7vc0t")
 centered = false
 
 [node name="Player" parent="." instance=ExtResource("7_js4qc")]
-position = Vector2(10196, 4156)
+position = Vector2(1419.0002, 1417.9999)
 scale = Vector2(0.998, 0.99)
 
 [node name="Ground" type="StaticBody2D" parent="."]
@@ -1083,6 +1085,10 @@ max_health = 30.0
 
 [node name="JungleBoss" parent="." instance=ExtResource("17_uwilw")]
 position = Vector2(875, 1413)
+
+[node name="CameraMapLimit" type="Sprite2D" parent="." groups=["CameraMapLimit"]]
+scale = Vector2(11521, 5281)
+texture = SubResource("ImageTexture_uwilw")
 
 [connection signal="body_entered" from="portal" to="." method="_on_portal_body_entered"]
 [connection signal="body_entered" from="FallPrevention" to="." method="_on_fall_prevention_body_entered"]

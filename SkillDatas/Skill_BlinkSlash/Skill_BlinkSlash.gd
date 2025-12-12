@@ -55,6 +55,10 @@ func execute(owner: CharacterBody2D, target: Node2D = null):
 
 	owner.global_position = target_position
 
+	# Physics Interpolation 리셋 (텔레포트 후 물리 쿼리가 올바른 위치를 사용하도록)
+	if owner.has_method("reset_physics_interpolation"):
+		owner.reset_physics_interpolation()
+
 	apply_slash_damage(start_pos, target_position, owner)
 
 func apply_slash_damage(start_pos: Vector2, end_pos: Vector2, owner: CharacterBody2D):
@@ -70,40 +74,53 @@ func apply_slash_damage(start_pos: Vector2, end_pos: Vector2, owner: CharacterBo
 	var query = PhysicsShapeQueryParameters2D.new()
 	query.shape = shape
 	query.transform = xform
-	
+
 	# ★ 수정 1: Area2D(히트박스)도 감지하도록 변경
 	query.collide_with_areas = true
 	query.collide_with_bodies = true
-	
+
+	# ★ 수정: collision_mask 설정 (레이어 3 = Enemy)
+	query.collision_mask = 0xFFFFFFFF  # 모든 레이어 감지
+
 	query.exclude = [owner.get_rid()] # 플레이어 자신은 제외
 	
 	_debug_draw_hitbox(shape, xform, owner)
 
 	var results = space_state.intersect_shape(query)
-	
+
+	print("=== BlinkSlash 디버그 ===")
+	print("감지된 객체 수: ", results.size())
+
 	var did_hit_enemy = false
 	var hit_enemies = [] # 중복 타격 방지용 목록
-	
+
 	for res in results:
+		print("  - 감지된 객체: ", res.collider.name, " (타입: ", res.collider.get_class(), ")")
 		var collider = res.collider
 		var enemy_node = null
 		
 		# ★ 수정 2: 부딪힌 게 적 본체인지, 적의 히트박스인지 확인
+		print("    - enemies 그룹 소속? ", collider.is_in_group("enemies"))
 		if collider.is_in_group("enemies"):
 			# 적 본체(Body)와 충돌한 경우
 			enemy_node = collider
-			
+			print("    -> 적 본체로 인식")
+
 		elif collider is Area2D and collider.get_parent().is_in_group("enemies"):
 			# 적의 히트박스(Area)와 충돌한 경우 -> 부모를 적 본체로 설정
 			enemy_node = collider.get_parent()
-			
+			print("    -> 적의 히트박스로 인식, 부모: ", enemy_node.name)
+
 		# ★ 수정 3: 적을 찾았고, 아직 때리지 않았다면 데미지 적용
 		if enemy_node != null and not enemy_node in hit_enemies:
+			print("    -> 적 발견! take_damage 메서드 있음? ", enemy_node.has_method("take_damage"))
 			if enemy_node.has_method("take_damage"):
 				enemy_node.take_damage(damage)
-				print("벽력일섬 히트: " + enemy_node.name)
+				print("    ✓ 벽력일섬 히트: " + enemy_node.name + " (데미지: " + str(damage) + ")")
 				hit_enemies.append(enemy_node) # 타격 목록에 추가
 				did_hit_enemy = true
+			else:
+				print("    ✗ take_damage 메서드 없음!")
 
 	# 이펙트
 	if did_hit_enemy:
