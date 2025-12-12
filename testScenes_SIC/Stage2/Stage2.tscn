@@ -1045,9 +1045,11 @@ tile_set = SubResource("TileSet_4waes")
 
 [node name="Virus" parent="." instance=ExtResource("13_ircvx")]
 position = Vector2(7779, 3409)
+max_health = 40.0
 
 [node name="Virus2" parent="." instance=ExtResource("13_ircvx")]
 position = Vector2(8357, 3385)
+max_health = 40.0
 
 [node name="SkillUI" parent="." instance=ExtResource("10_skillui")]
 visible = false
@@ -1057,21 +1059,27 @@ visible = false
 
 [node name="RangeVirus" parent="." instance=ExtResource("16_c7gl0")]
 position = Vector2(6311, 2938)
+max_health = 30.0
 
 [node name="RangeVirus2" parent="." instance=ExtResource("16_c7gl0")]
 position = Vector2(6031, 2925)
+max_health = 30.0
 
 [node name="RangeVirus3" parent="." instance=ExtResource("16_c7gl0")]
 position = Vector2(5632, 2936)
+max_health = 30.0
 
 [node name="Virus3" parent="." instance=ExtResource("13_ircvx")]
 position = Vector2(3414, 2282)
+max_health = 40.0
 
 [node name="Virus4" parent="." instance=ExtResource("13_ircvx")]
 position = Vector2(4123, 2273)
+max_health = 40.0
 
 [node name="RangeVirus4" parent="." instance=ExtResource("16_c7gl0")]
 position = Vector2(3702, 2262)
+max_health = 30.0
 
 [node name="JungleBoss" parent="." instance=ExtResource("17_uwilw")]
 position = Vector2(875, 1413)
