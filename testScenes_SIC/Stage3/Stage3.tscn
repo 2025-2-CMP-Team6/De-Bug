@@ -1,4 +1,4 @@
-[gd_scene load_steps=25 format=4 uid="uid://d3gnlfh1n8f8j"]
+[gd_scene load_steps=33 format=4 uid="uid://d3gnlfh1n8f8j"]
 
 [ext_resource type="Script" uid="uid://cbas35sfacvvi" path="res://testScenes_SIC/Stage3/Stage3.gd" id="1_cej1a"]
 [ext_resource type="Texture2D" uid="uid://bp3afg2epb7jc" path="res://testScenes_SIC/Stage3/Assets/Environment/background.png" id="1_rvv5c"]
@@ -9,8 +9,11 @@
 [ext_resource type="Texture2D" uid="uid://dqe3il4sqyalg" path="res://testScenes_SIC/Stage3/Assets/Environment/objects.png" id="6_qc3on"]
 [ext_resource type="Texture2D" uid="uid://csfttyi8ghxd3" path="res://Portal-Sheet.png" id="8_o0gci"]
 [ext_resource type="Script" uid="uid://cqw1qj4qrccjq" path="res://testScenes_SIC/portal_anim.gd" id="9_t7ddc"]
+[ext_resource type="PackedScene" uid="uid://bb44trwnidu06" path="res://Actors/Enemies/Comon/virus/FlyEnemy.tscn" id="10_t7ddc"]
 [ext_resource type="PackedScene" uid="uid://hwvrl37b2dlk" path="res://UI/SkillUI.tscn" id="11_uw3g6"]
 [ext_resource type="PackedScene" uid="uid://dgv1ef1ng7ngs" path="res://UI/SkillGetUI.tscn" id="12_hwnot"]
+[ext_resource type="PackedScene" uid="uid://b53od7vli2rh5" path="res://Actors/Enemies/Boss/FlyBoss.tscn" id="13_hwnot"]
+[ext_resource type="Script" uid="uid://bxxchik2dyxhq" path="res://testScenes_SIC/Stage3/BoobyTrap.gd" id="14_ey0dt"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_nmnnk"]
 texture = ExtResource("4_oitkq")
@@ -67,9 +70,7 @@ texture = ExtResource("4_oitkq")
 7:4/0 = 0
 7:4/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 8:4/0 = 0
-8:4/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 9:4/0 = 0
-9:4/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 11:4/0 = 0
 11:4/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 2.3381634, -2.6978807, 8, 0.17985916, 8, 8, -8, 8)
 12:4/0 = 0
@@ -679,10 +680,23 @@ animations = [{
 radius = 24.0
 height = 94.0
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_k1t4n"]
+size = Vector2(130, 20)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_thkmq"]
+size = Vector2(190, 20)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_sc4t4"]
+size = Vector2(221, 20)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_lsi5k"]
+size = Vector2(95, 20)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_l5ddo"]
+size = Vector2(64, 20)
+
 [node name="Stage3" type="Node2D"]
 script = ExtResource("1_cej1a")
-is_test_mode = null
-bgm_volume_db = null
 
 [node name="Background" type="ParallaxBackground" parent="."]
 
@@ -763,4 +777,149 @@ visible = false
 [node name="SkillGetUI" parent="." instance=ExtResource("12_hwnot")]
 visible = false
 
+[node name="FlyEnemy" parent="." instance=ExtResource("10_t7ddc")]
+position = Vector2(1969, 2903)
+
+[node name="FlyEnemy2" parent="." instance=ExtResource("10_t7ddc")]
+position = Vector2(2227, 2914)
+
+[node name="FlyEnemy3" parent="." instance=ExtResource("10_t7ddc")]
+position = Vector2(3227, 2820)
+
+[node name="FlyEnemy4" parent="." instance=ExtResource("10_t7ddc")]
+position = Vector2(3609, 2816)
+
+[node name="FlyEnemy5" parent="." instance=ExtResource("10_t7ddc")]
+position = Vector2(4009, 2819)
+
+[node name="FlyEnemy6" parent="." instance=ExtResource("10_t7ddc")]
+position = Vector2(5076, 2718)
+
+[node name="FlyEnemy7" parent="." instance=ExtResource("10_t7ddc")]
+position = Vector2(5537, 2708)
+
+[node name="FlyEnemy8" parent="." instance=ExtResource("10_t7ddc")]
+position = Vector2(7960, 2211)
+
+[node name="FlyEnemy9" parent="." instance=ExtResource("10_t7ddc")]
+position = Vector2(6823, 2514)
+
+[node name="FlyEnemy10" parent="." instance=ExtResource("10_t7ddc")]
+position = Vector2(9607, 1996)
+
+[node name="FlyEnemy11" parent="." instance=ExtResource("10_t7ddc")]
+position = Vector2(10351, 1999)
+
+[node name="FlyBoss" parent="." instance=ExtResource("13_hwnot")]
+position = Vector2(11325, 1803)
+
+[node name="BoobyTrap" type="Area2D" parent="."]
+position = Vector2(3401, 2986)
+collision_layer = 2
+script = ExtResource("14_ey0dt")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BoobyTrap"]
+position = Vector2(-1, -1)
+shape = SubResource("RectangleShape2D_k1t4n")
+
+[node name="BoobyTrap2" type="Area2D" parent="."]
+position = Vector2(3850, 2985)
+collision_layer = 2
+script = ExtResource("14_ey0dt")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BoobyTrap2"]
+position = Vector2(0, 1)
+shape = SubResource("RectangleShape2D_k1t4n")
+
+[node name="BoobyTrap3" type="Area2D" parent="."]
+position = Vector2(6235, 2760)
+collision_layer = 2
+script = ExtResource("14_ey0dt")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BoobyTrap3"]
+position = Vector2(-2, 0)
+shape = SubResource("RectangleShape2D_thkmq")
+
+[node name="BoobyTrap5" type="Area2D" parent="."]
+position = Vector2(6617, 2762)
+collision_layer = 2
+script = ExtResource("14_ey0dt")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BoobyTrap5"]
+position = Vector2(-0.5, 0)
+shape = SubResource("RectangleShape2D_sc4t4")
+
+[node name="BoobyTrap6" type="Area2D" parent="."]
+position = Vector2(6617, 2762)
+collision_layer = 2
+script = ExtResource("14_ey0dt")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BoobyTrap6"]
+position = Vector2(832, -174)
+shape = SubResource("RectangleShape2D_sc4t4")
+
+[node name="BoobyTrap7" type="Area2D" parent="."]
+position = Vector2(6617, 2762)
+collision_layer = 2
+script = ExtResource("14_ey0dt")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BoobyTrap7"]
+position = Vector2(2527, -370)
+shape = SubResource("RectangleShape2D_sc4t4")
+
+[node name="BoobyTrap8" type="Area2D" parent="."]
+position = Vector2(9734, 2385)
+collision_layer = 2
+script = ExtResource("14_ey0dt")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BoobyTrap8"]
+position = Vector2(1, 10)
+shape = SubResource("RectangleShape2D_lsi5k")
+
+[node name="BoobyTrap9" type="Area2D" parent="."]
+position = Vector2(9734, 2385)
+collision_layer = 2
+script = ExtResource("14_ey0dt")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BoobyTrap9"]
+position = Vector2(402, 8)
+shape = SubResource("RectangleShape2D_lsi5k")
+
+[node name="BoobyTrap10" type="Area2D" parent="."]
+position = Vector2(9734, 2385)
+collision_layer = 2
+script = ExtResource("14_ey0dt")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BoobyTrap10"]
+position = Vector2(788, 9)
+shape = SubResource("RectangleShape2D_lsi5k")
+
+[node name="BoobyTrap11" type="Area2D" parent="."]
+position = Vector2(9845, 2388)
+collision_layer = 2
+script = ExtResource("14_ey0dt")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BoobyTrap11"]
+position = Vector2(2, 7)
+shape = SubResource("RectangleShape2D_l5ddo")
+
+[node name="BoobyTrap12" type="Area2D" parent="."]
+position = Vector2(9845, 2388)
+collision_layer = 2
+script = ExtResource("14_ey0dt")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BoobyTrap12"]
+position = Vector2(418, 6)
+shape = SubResource("RectangleShape2D_l5ddo")
+
+[node name="BoobyTrap13" type="Area2D" parent="."]
+position = Vector2(9845, 2388)
+collision_layer = 2
+script = ExtResource("14_ey0dt")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BoobyTrap13"]
+position = Vector2(803, 5)
+shape = SubResource("RectangleShape2D_l5ddo")
+
 [connection signal="body_entered" from="portal" to="." method="_on_portal_body_entered"]
+[connection signal="body_entered" from="BoobyTrap" to="BoobyTrap" method="_on_body_entered"]

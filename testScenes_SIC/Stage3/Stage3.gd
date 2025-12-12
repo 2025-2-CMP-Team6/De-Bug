@@ -22,3 +22,7 @@ func _on_portal_body_entered(body):
 
 	print("플레이어가 포탈에 진입했습니다!")
 	SceneTransition.fade_to_scene("res://testScenes_SIC/Stage4/Stage4.tscn")
+
+
+func _on_booby_trap_body_entered(body: Node2D) -> void:
+	pass # Replace with function body.
