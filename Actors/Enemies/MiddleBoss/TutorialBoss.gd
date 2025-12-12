@@ -2,67 +2,54 @@
 extends BaseEnemy
 
 #region 설정 변수
-@export var move_speed: float = 80.0
-@export var attack_range: float = 100.0  # 칼 공격 범위 (근접) - 조금 넓게
-@export var chase_range: float = 400.0  # 추격 범위
+@export var move_speed: float = 100.0
+@export var attack_range: float = 100.0 # 칼 공격 범위 (근접) - 조금 넓게
+@export var dash_range: float = 300.0 # 돌진 범위
+@export var chase_range: float = 800.0 # 추격 범위
 @export var attack_cooldown: float = 2.0
-@export var attack_duration: float = 0.6  # 공격 애니메이션 길이
-@export var attack_hit_delay: float = 0.2  # 공격 시작 후 데미지 판정까지 딜레이
+@export var attack_duration: float = 0.6 # 공격 애니메이션 길이
+@export var attack_hit_delay: float = 0.2 # 공격 시작 후 데미지 판정까지 딜레이
 
 # 보스 상태 enum
 enum State {
-	IDLE,      # 대기/배회
-	CHASE,     # 플레이어 추적
-	ATTACK,    # 공격 중
-	COOLDOWN   # 공격 후 쿨타임
+	IDLE, # 대기/배회
+	CHASE, # 플레이어 추적
+	ATTACK, # 공격 중
+	DASH, # 돌진 공격
+	COOLDOWN # 공격 후 쿨타임
 }
 
 # 상태 변수
 var current_state: State = State.IDLE
-var state_timer: float = 0.0  # 상태별 타이머
+var state_timer: float = 0.0 # 상태별 타이머
 var patrol_direction: int = 1
 var patrol_timer: float = 0.0
-var has_dealt_damage: bool = false  # 현재 공격에서 데미지를 줬는지 여부
+var has_dealt_damage: bool = false # 현재 공격에서 데미지를 줬는지 여부
+var pattern_timer: Timer
+var floor_checker: RayCast2D
 #endregion
 
 #region 노드 참조
 # 현재 씬 구조에 맞게 수정
-@onready var main_sprite = $AnimatedSprite2D  # Visuals 없이 직접 자식
-@onready var attack_area = get_node_or_null("AttackArea")  # 칼의 히트박스 (추가 필요)
+@onready var main_sprite = $AnimatedSprite2D # Visuals 없이 직접 자식
+@onready var attack_area = get_node_or_null("AttackArea") # 칼의 히트박스 (추가 필요)
 #endregion
 
 func _ready():
 	super._ready()
 
-	# enemies 그룹에 추가 (스킬 타겟팅을 위해 필수!)
 	add_to_group("enemies")
 
-	# 디버깅: 노드 확인
-	print("=== TutorialBoss _ready 시작 ===")
-	print("enemies 그룹 추가됨: ", is_in_group("enemies"))
-	print("main_sprite 찾음: ", main_sprite != null)
 	if main_sprite:
-		print("sprite_frames 있음: ", main_sprite.sprite_frames != null)
-		# 초기 애니메이션 강제 재생
 		main_sprite.play("idle")
-		print("idle 애니메이션 재생 시작")
-
-	print("attack_area 찾음: ", attack_area != null)
-
-	# AttackArea 초기 설정 (항상 monitoring true로 유지)
 	if attack_area:
 		attack_area.monitoring = true
-		print("AttackArea 초기 설정:")
-		print("  - monitoring: ", attack_area.monitoring)
-		print("  - collision_layer: ", attack_area.collision_layer)
-		print("  - collision_mask: ", attack_area.collision_mask)
 
 		# CollisionShape2D 확인
 		var shape_count = 0
 		for child in attack_area.get_children():
 			if child is CollisionShape2D:
 				shape_count += 1
-				print("  - CollisionShape2D 있음, shape: ", child.shape != null)
 		if shape_count == 0:
 			print("  - 경고: CollisionShape2D가 없습니다!")
 
@@ -77,7 +64,19 @@ func _ready():
 		attack_area.body_entered.connect(_on_attack_area_body_entered)
 		print("AttackArea.body_entered 신호 연결됨")
 
-	print("=== TutorialBoss _ready 완료 ===")
+	# 바닥 감지용 RayCast 생성
+	floor_checker = RayCast2D.new()
+	floor_checker.target_position = Vector2(0, 50) # 아래로 감지
+	floor_checker.collision_mask = collision_mask # 이동 가능한 레이어(바닥) 감지
+	floor_checker.enabled = true
+	add_child(floor_checker)
+
+	pattern_timer = Timer.new()
+	pattern_timer.one_shot = true
+	pattern_timer.timeout.connect(_on_pattern_timer_timeout)
+	add_child(pattern_timer)
+	start_pattern_timer()
+
 
 func _process_movement(delta):
 	# 죽었으면 멈춤
@@ -103,6 +102,9 @@ func _process_movement(delta):
 		State.ATTACK:
 			handle_attack_state(delta)
 
+		State.DASH:
+			handle_dash_state(delta, player)
+
 		State.COOLDOWN:
 			handle_cooldown_state(delta, player)
 
@@ -112,10 +114,10 @@ func _process_movement(delta):
 
 		# AttackArea 위치도 스프라이트 방향에 맞춰 조정
 		if attack_area:
-			if main_sprite.flip_h:  # 왼쪽을 보고 있으면
-				attack_area.position = Vector2(-16.5, 7.25)
-			else:  # 오른쪽을 보고 있으면
-				attack_area.position = Vector2(16.5, 7.25)
+			if main_sprite.flip_h: # 왼쪽을 보고 있으면
+				attack_area.position = Vector2(-42, 7.25)
+			else: # 오른쪽을 보고 있으면
+				attack_area.position = Vector2(8, 7.25)
 
 # --- 상태별 처리 함수들 ---
 
@@ -196,16 +198,58 @@ func handle_cooldown_state(delta, player):
 		var distance = global_position.distance_to(player.global_position)
 		if distance <= chase_range:
 			chase_player(player)
-			velocity.x *= 0.5  # 속도 50%로 감소
+			velocity.x *= 0.5 # 속도 50%로 감소
 		else:
 			patrol_behavior(delta)
 	else:
 		patrol_behavior(delta)
 
+func handle_dash_state(delta, player):
+	# 애니메이션이 dash가 아니면 리턴
+	if not main_sprite or main_sprite.animation != "dash":
+		return
+
+	var frame = main_sprite.frame
+	
+	# 2. 차징 (프레임 0, 1) - 멈춤
+	if frame <= 1:
+		velocity.x = move_toward(velocity.x, 0, 200 * delta)
+	# 3. 돌진 (프레임 2, 3 이상) - 앞으로 이동 (속도 3배)
+	else:
+		var dir = -1 if main_sprite.flip_h else 1
+		
+		# 진행 방향 바닥 체크
+		if floor_checker:
+			floor_checker.position.x = dir * 30 # 앞쪽 확인 거리
+			floor_checker.force_raycast_update()
+			if not floor_checker.is_colliding():
+				velocity.x = 0
+				return
+
+		velocity.x = dir * move_speed * 6.0
+		
+		# AttackArea 활성화 (충돌 체크)
+		if not has_dealt_damage and attack_area:
+			var overlapping_bodies = attack_area.get_overlapping_bodies()
+			for body in overlapping_bodies:
+				if body.is_in_group("player"):
+					_on_attack_area_body_entered(body)
+
 # --- 행동 패턴 함수들 ---
 
 func chase_player(player):
 	var direction = (player.global_position - global_position).normalized()
+
+	# 추격 중 바닥 체크
+	if direction.x != 0 and floor_checker:
+		var check_dir = 1 if direction.x > 0 else -1
+		floor_checker.position.x = check_dir * 30
+		floor_checker.force_raycast_update()
+		if not floor_checker.is_colliding():
+			velocity.x = 0
+			if main_sprite: main_sprite.play("idle")
+			return
+
 	velocity.x = direction.x * move_speed
 	if main_sprite:
 		main_sprite.play("move")
@@ -226,7 +270,14 @@ func patrol_behavior(delta):
 		elif random_choice == 3:
 			patrol_direction = -1
 		else:
-			patrol_direction = -patrol_direction
+			patrol_direction = - patrol_direction
+
+	# 이동 중 바닥이 없으면 방향 전환
+	if patrol_direction != 0 and floor_checker:
+		floor_checker.position.x = patrol_direction * 30
+		floor_checker.force_raycast_update()
+		if not floor_checker.is_colliding():
+			patrol_direction *= -1
 
 	velocity.x = patrol_direction * (move_speed * 0.5)
 
@@ -236,7 +287,6 @@ func patrol_behavior(delta):
 		else:
 			main_sprite.play("move")
 
-# --- 상태 전환 ---
 
 func change_state(new_state: State):
 	if current_state == new_state:
@@ -258,58 +308,64 @@ func change_state(new_state: State):
 		State.ATTACK:
 			state_timer = attack_duration
 			velocity = Vector2.ZERO
-			has_dealt_damage = false  # 새 공격 시작 시 데미지 플래그 리셋
+			has_dealt_damage = false # 새 공격 시작 시 데미지 플래그 리셋
 			if main_sprite:
 				main_sprite.play("attack")
 
 			# AttackArea 위치를 현재 보는 방향에 맞춰 설정
 			if attack_area and main_sprite:
-				if main_sprite.flip_h:  # 왼쪽을 보고 있으면
-					attack_area.position = Vector2(-16.5, 7.25)
-				else:  # 오른쪽을 보고 있으면
-					attack_area.position = Vector2(16.5, 7.25)
-
-			print("[DEBUG] ===== ATTACK 상태 시작 =====")
-			print("[DEBUG] has_dealt_damage 리셋: ", has_dealt_damage)
-			print("[DEBUG] main_sprite.flip_h: ", main_sprite.flip_h if main_sprite else "N/A")
-			print("[DEBUG] attack_area 존재: ", attack_area != null)
-			if attack_area:
-				print("[DEBUG] attack_area.monitoring: ", attack_area.monitoring)
-				print("[DEBUG] attack_area.position: ", attack_area.position)
+				if main_sprite.flip_h: # 왼쪽을 보고 있으면
+					attack_area.position = Vector2(-42, 7.25)
+				else: # 오른쪽을 보고 있으면
+					attack_area.position = Vector2(8, 7.25)
+		
+		State.DASH:
+			has_dealt_damage = false
+			if main_sprite:
+				main_sprite.play("dash")
+				
+				var player = get_tree().get_first_node_in_group("player")
+				if player:
+					var dir_x = player.global_position.x - global_position.x
+					if dir_x != 0:
+						main_sprite.flip_h = (dir_x < 0)
+						# AttackArea 위치 조정
+						if attack_area:
+							if main_sprite.flip_h:
+								attack_area.position = Vector2(-42, 7.25)
+							else:
+								attack_area.position = Vector2(8, 7.25)
 
 		State.COOLDOWN:
+			velocity = Vector2.ZERO # 돌진 관성 제거
 			state_timer = attack_cooldown
 			if main_sprite:
 				main_sprite.play("idle")
-			print("TutorialBoss: 쿨타임 시작 (", attack_cooldown, "초)")
 
-# --- 공격 시퀀스 (더 이상 사용하지 않음, change_state로 대체) ---
-
-# 공격 애니메이션의 특정 프레임에서 히트박스 활성화 (더 이상 사용하지 않음)
 func _on_sprite_frame_changed():
 	pass
 
-# 공격 애니메이션이 끝났을 때 (참고용으로 남겨둠, 필요시 활용 가능)
 func _on_animation_finished():
-	# 타이머 기반으로 상태 전환을 처리하므로 이 시그널은 사용하지 않음
-	pass
+	if main_sprite.animation == "dash":
+		change_state(State.COOLDOWN)
 
-# --- 충돌 처리 ---
+func start_pattern_timer():
+	pattern_timer.wait_time = randf_range(1.0, 3.0)
+	pattern_timer.start()
+
+func _on_pattern_timer_timeout():
+	if current_state == State.IDLE or current_state == State.CHASE:
+		if randf() < 0.5:
+			change_state(State.DASH)
+	start_pattern_timer()
+
 
 # 칼 공격이 플레이어에게 닿았을 때
 func _on_attack_area_body_entered(body):
-	# ATTACK 상태가 아니거나 이미 데미지를 줬으면 무시
-	if current_state != State.ATTACK or has_dealt_damage:
+	if (current_state != State.ATTACK and current_state != State.DASH) or has_dealt_damage:
 		return
 
-	print("AttackArea 충돌 감지: ", body.name, ", 플레이어 그룹: ", body.is_in_group("player"))
-
 	if body.is_in_group("player"):
-		print("=== TutorialBoss의 칼이 플레이어 적중! ===")
 		if body.has_method("lose_life"):
 			body.lose_life()
-			print("플레이어 lose_life() 호출됨")
-			has_dealt_damage = true  # 데미지를 줬다고 표시
-			print("데미지 플래그 설정 (이번 공격에서 더 이상 데미지 없음)")
-		else:
-			print("경고: 플레이어에게 lose_life() 메소드가 없습니다!")
+			has_dealt_damage = true

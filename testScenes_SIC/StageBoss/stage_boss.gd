@@ -1,7 +1,7 @@
 # stage_boss.gd
 extends Node2D
 
-enum Pattern {METEOR, AIMED_LASER, PATTERN_3}
+enum Pattern {METEOR, AIMED_LASER, FIRE}
 
 const BossMeteor = preload("res://Actors/Enemies/Boss/BossMeteor.tscn")
 const BossFire = preload("res://Actors/Enemies/Boss/BossFire.tscn")
@@ -9,7 +9,7 @@ const BossFire = preload("res://Actors/Enemies/Boss/BossFire.tscn")
 
 @export var map_pattern_timer: Timer
 @export var map_lasers: Array[Node2D]
-var map_patterns = [Pattern.METEOR, Pattern.AIMED_LASER, Pattern.PATTERN_3]
+var map_patterns = [Pattern.METEOR, Pattern.AIMED_LASER, Pattern.FIRE]
 
 
 func _ready():
@@ -37,7 +37,12 @@ func _on_map_pattern_timer_timeout():
 		Pattern.AIMED_LASER:
 			trigger_lasers()
 			print("Executing map pattern 2")
-		Pattern.PATTERN_3:
+		Pattern.FIRE:
+			if check_fire_exist():
+				print("Fires already exist, skipping FIRE pattern.")
+				map_pattern_timer.wait_time = randf_range(0.1, 0.2)
+				map_pattern_timer.start()
+				return
 			var num_fires = randi_range(2, 4)
 			var fireX: float
 			var fireA = get_random_positions(256, 1920, num_fires)
@@ -67,3 +72,11 @@ func trigger_lasers():
 	for laser in map_lasers:
 		if is_instance_valid(laser) and laser.has_method("start_laser_pattern"):
 			laser.start_laser_pattern()
+
+func check_fire_exist():
+	var fires = get_tree().get_nodes_in_group("boss_fire")
+	
+	if fires.size() > 0:
+		return true
+	else:
+		return false

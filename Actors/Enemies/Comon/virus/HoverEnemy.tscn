@@ -1,0 +1,87 @@
+[gd_scene load_steps=12 format=3 uid="uid://dpo0uibgqtdie"]
+
+[ext_resource type="Script" uid="uid://g7xbx4lioytb" path="res://Actors/Enemies/Comon/virus/hover_enemy.gd" id="1_l0umg"]
+[ext_resource type="Texture2D" uid="uid://bckm5c1uqmouh" path="res://graphics/Actors/hover.png" id="2_l0umg"]
+[ext_resource type="Texture2D" uid="uid://b6iy1ivj363h7" path="res://graphics/Actors/bullet_fire.png" id="2_xmvk2"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_wvvw6"]
+size = Vector2(64, 58)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xmvk2"]
+atlas = ExtResource("2_l0umg")
+region = Rect2(0, 0, 184, 140)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_vk6mw"]
+atlas = ExtResource("2_l0umg")
+region = Rect2(184, 0, 184, 140)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3femn"]
+atlas = ExtResource("2_l0umg")
+region = Rect2(368, 0, 184, 140)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7j2xt"]
+atlas = ExtResource("2_l0umg")
+region = Rect2(552, 0, 184, 140)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_gvytb"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_xmvk2")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_vk6mw")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_3femn")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_7j2xt")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 20.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_e6p7e"]
+size = Vector2(64, 58)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_ioyle"]
+radius = 195.00256
+
+[node name="HoverEnemy" type="CharacterBody2D" groups=["enemies"]]
+collision_layer = 4
+collision_mask = 3
+script = ExtResource("1_l0umg")
+max_health = 10.0
+projectile_texture = ExtResource("2_xmvk2")
+metadata/_custom_type_script = "uid://cxvfbor6tlmi5"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_wvvw6")
+
+[node name="Visuals" type="Node2D" parent="."]
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Visuals"]
+scale = Vector2(0.5, 0.5)
+sprite_frames = SubResource("SpriteFrames_gvytb")
+animation = &"idle"
+frame_progress = 0.8334093
+
+[node name="Hurtbox" type="Area2D" parent="."]
+collision_mask = 9
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox"]
+shape = SubResource("RectangleShape2D_e6p7e")
+debug_color = Color(0.8885578, 0.2553729, 0.5293614, 0.41960785)
+
+[node name="AttakArea" type="Area2D" parent="."]
+collision_layer = 0
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="AttakArea"]
+shape = SubResource("CircleShape2D_ioyle")
+
+[node name="IFramesTimer" type="Timer" parent="."]
+wait_time = 0.5
+one_shot = true

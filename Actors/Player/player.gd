@@ -7,6 +7,7 @@ const BaseSkill = preload("res://SkillDatas/BaseSkill.gd")
 @export var max_speed: float = 400.0
 @export var gravity: float = ProjectSettings.get_setting("physics/2d/default_gravity")
 @export var jump_velocity: float = -600.0
+@export var max_jumps: int = 2
 @export var dash_speed: float = 1200.0
 @export var dash_duration: float = 0.05
 @export var dash_cooldown: float = 0.8
@@ -28,7 +29,8 @@ var current_casting_skill: BaseSkill = null
 var current_cast_target: Node2D = null
 var is_invincible: bool = false
 var current_lives: int = 0
-var is_input_locked: bool = false
+var is_input_locked: bool = true
+var jumps_made: int = 0
 #endregion
 
 #region 노드 참조 (Node Cache)
@@ -136,6 +138,9 @@ func _physics_process(delta: float):
 	if GameManager.state == GameManager.State.SKILL_CASTING and is_instance_valid(current_casting_skill):
 		current_gravity_multiplier = current_casting_skill.gravity_multiplier
 	
+	if is_on_floor():
+		jumps_made = 0
+		
 	if GameManager.state != GameManager.State.DASH and not is_on_floor():
 		velocity.y += gravity * current_gravity_multiplier * delta
 
@@ -205,8 +210,9 @@ func handle_inputs():
 	if is_input_locked:
 		return
 	
-	if Input.is_action_just_pressed("jump") and is_on_floor():
+	if Input.is_action_just_pressed("jump") and jumps_made < max_jumps:
 		velocity.y = jump_velocity
+		jumps_made += 1
 		
 	if Input.is_action_just_pressed("skill_1"):
 		var target = find_nearest_enemy()
@@ -419,7 +425,7 @@ func update_lives_ui():
 				# 최대 체력 이상, 추가 체력 처리
 			if i >= max_lives and gold_life_icon != null:
 				icon.texture = gold_life_icon
-				icon.modulate = Color(1, 1, 1) 
+				icon.modulate = Color(1, 1, 1)
 				
 			lives_container.add_child(icon)
 
@@ -431,7 +437,7 @@ func lose_life():
 		sfx_player.stream = hit_sound
 		# 피치(음정)를 0.9 ~ 1.1 사이로 랜덤하게 조절하면 
 		# 매번 똑같은 소리가 나지 않아 덜 지루하고 자연스럽습니다.
-		sfx_player.pitch_scale = randf_range(0.9, 1.1) 
+		sfx_player.pitch_scale = randf_range(0.9, 1.1)
 		sfx_player.play()
 		
 	current_lives -= 1
@@ -449,6 +455,8 @@ func die():
 	print("플레이어가 사망했습니다.")
 	is_invincible = false
 	if visuals: visuals.visible = true
+	set_physics_process(false)
+	await get_tree().create_timer(1.0).timeout
 	get_tree().reload_current_scene()
 	
 func _on_i_frames_timeout():

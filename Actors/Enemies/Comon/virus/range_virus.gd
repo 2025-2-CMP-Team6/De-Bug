@@ -124,6 +124,8 @@ func shoot():
 	bullet.direction = direction
 	bullet.global_position = global_position
 	bullet.speed = current_bullet_speed
+	if projectile_texture:
+		bullet.custom_texture = projectile_texture
 	get_parent().add_child(bullet)
 
 func _on_wave_finished():

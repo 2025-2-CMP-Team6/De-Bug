@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://gsr1s4f7uduw"]
+[gd_scene load_steps=20 format=3 uid="uid://gsr1s4f7uduw"]
 
 [ext_resource type="Script" uid="uid://cmnlrutev6vf3" path="res://Actors/Enemies/MiddleBoss/TutorialBoss.gd" id="1_l5dpf"]
 [ext_resource type="Texture2D" uid="uid://mmuy24w1vjnr" path="res://Actors/Enemies/MiddleBoss/EnemyBox 1 64x48.png" id="2_vq45v"]
@@ -22,6 +22,22 @@ region = Rect2(448, 0, 64, 48)
 [sub_resource type="AtlasTexture" id="AtlasTexture_cx5qd"]
 atlas = ExtResource("2_vq45v")
 region = Rect2(512, 0, 64, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_l5dpf"]
+atlas = ExtResource("2_vq45v")
+region = Rect2(320, 48, 64, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_vq45v"]
+atlas = ExtResource("2_vq45v")
+region = Rect2(384, 48, 64, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xda47"]
+atlas = ExtResource("2_vq45v")
+region = Rect2(448, 48, 64, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ala1y"]
+atlas = ExtResource("2_vq45v")
+region = Rect2(512, 48, 64, 48)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_2x48y"]
 atlas = ExtResource("2_vq45v")
@@ -64,7 +80,24 @@ animations = [{
 }],
 "loop": true,
 "name": &"attack",
-"speed": 5.0
+"speed": 7.5
+}, {
+"frames": [{
+"duration": 2.0,
+"texture": SubResource("AtlasTexture_l5dpf")
+}, {
+"duration": 2.0,
+"texture": SubResource("AtlasTexture_vq45v")
+}, {
+"duration": 3.0,
+"texture": SubResource("AtlasTexture_xda47")
+}, {
+"duration": 3.0,
+"texture": SubResource("AtlasTexture_ala1y")
+}],
+"loop": false,
+"name": &"dash",
+"speed": 7.5
 }, {
 "frames": [{
 "duration": 1.0,
@@ -81,7 +114,7 @@ animations = [{
 }],
 "loop": true,
 "name": &"idle",
-"speed": 5.0
+"speed": 7.5
 }, {
 "frames": [{
 "duration": 1.0,
@@ -92,18 +125,19 @@ animations = [{
 }],
 "loop": true,
 "name": &"move",
-"speed": 5.0
+"speed": 7.5
 }]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_l5dpf"]
-size = Vector2(17, 20)
+size = Vector2(20, 37.25)
 
 [node name="TutorialBoss" type="CharacterBody2D" groups=["enemies"]]
 scale = Vector2(4, 4)
-collision_layer = 4
+collision_layer = 20
 collision_mask = 7
 script = ExtResource("1_l5dpf")
 attack_hit_delay = 0.4
+is_boss = true
 metadata/_custom_type_script = "uid://cxvfbor6tlmi5"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
@@ -112,7 +146,9 @@ shape = SubResource("CapsuleShape2D_l5dpf")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_xda47")
-animation = &"idle"
+animation = &"dash"
+frame = 3
+frame_progress = 1.0
 
 [node name="Hurtbox" type="Area2D" parent="."]
 
@@ -125,7 +161,7 @@ collision_layer = 0
 collision_mask = 3
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="AttackArea"]
-position = Vector2(16.5, 7.25)
+position = Vector2(18, -1.375)
 shape = SubResource("RectangleShape2D_l5dpf")
 
 [node name="IFramesTimer" type="Timer" parent="."]

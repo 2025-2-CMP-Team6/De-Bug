@@ -1,7 +1,8 @@
-[gd_scene load_steps=5 format=3 uid="uid://deraqiym6ih4h"]
+[gd_scene load_steps=6 format=3 uid="uid://deraqiym6ih4h"]
 
 [ext_resource type="Texture2D" uid="uid://c0wgft5avfblx" path="res://graphics/Actors/Boss.png" id="1_rsbw7"]
-[ext_resource type="Script" uid="uid://cvkqrhuny154i" path="res://Actors/Enemies/Boss/boss.gd" id="1_x4ak8"]
+[ext_resource type="Script" uid="uid://cvkqrhuny154i" path="res://Actors/Enemies/Boss/boss_virus.gd" id="1_x4ak8"]
+[ext_resource type="Texture2D" uid="uid://b6iy1ivj363h7" path="res://graphics/Actors/bullet_fire.png" id="2_lfqv2"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_rsbw7"]
 size = Vector2(129, 128)
@@ -9,13 +10,15 @@ size = Vector2(129, 128)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_m4boa"]
 size = Vector2(129, 128)
 
-[node name="Boss" type="CharacterBody2D" node_paths=PackedStringArray("pattern_timer", "teleport_timer") groups=["enemies"]]
+[node name="BossVirus" type="CharacterBody2D" node_paths=PackedStringArray("pattern_timer", "teleport_timer") groups=["enemies"]]
 collision_layer = 16
 collision_mask = 0
 script = ExtResource("1_x4ak8")
 pattern_timer = NodePath("PatternTimer")
 teleport_timer = NodePath("TeleportTimer")
 effsize = 10.0
+is_boss = true
+projectile_texture = ExtResource("2_lfqv2")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 position = Vector2(8, -16)

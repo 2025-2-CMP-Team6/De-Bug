@@ -822,7 +822,7 @@ size = Vector2(108.36, 9.41)
 size = Vector2(10844.5, 950.5)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_mg0fs"]
-size = Vector2(20, 181)
+size = Vector2(20, 995)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_18u52"]
 size = Vector2(30, 28)
@@ -900,7 +900,7 @@ texture = ExtResource("10_ypiqe")
 centered = false
 
 [node name="Player" parent="." instance=ExtResource("2_yyxtu")]
-position = Vector2(310.99988, 5081.0005)
+position = Vector2(319.99854, 5056)
 hit_sound = null
 
 [node name="portal" type="Area2D" parent="."]
@@ -920,7 +920,6 @@ position = Vector2(1, 2)
 shape = SubResource("CapsuleShape2D_wvjil")
 
 [node name="RainEffect" type="CanvasLayer" parent="."]
-visible = false
 
 [node name="ColorRect" type="ColorRect" parent="RainEffect"]
 material = SubResource("ShaderMaterial_uu262")
@@ -1000,21 +999,21 @@ shape = SubResource("RectangleShape2D_vpomu")
 position = Vector2(3203, 4574)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="DashTutorial"]
-position = Vector2(0, -80.5)
+position = Vector2(-3, -486)
 shape = SubResource("RectangleShape2D_mg0fs")
 
 [node name="SkillTutorial" type="Area2D" parent="."]
 position = Vector2(5031, 3820)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="SkillTutorial"]
-position = Vector2(0, -69)
+position = Vector2(9, -484)
 shape = SubResource("RectangleShape2D_mg0fs")
 
 [node name="MiddleBossTutorial" type="Area2D" parent="."]
 position = Vector2(7101, 2186)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="MiddleBossTutorial"]
-position = Vector2(-5, -64)
+position = Vector2(-29, -466)
 shape = SubResource("RectangleShape2D_mg0fs")
 
 [node name="monsterMoveLimit" type="StaticBody2D" parent="."]

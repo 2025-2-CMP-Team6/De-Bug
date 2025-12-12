@@ -6,6 +6,11 @@ class_name BaseEnemy extends CharacterBody2D
 var current_health: float
 @export var gravity: float = ProjectSettings.get_setting("physics/2d/default_gravity")
 @export var effsize: float = 1.0
+@export var is_boss: bool = false
+@export var boss_ui_scene: PackedScene
+@export var projectile_texture: Texture2D = null
+var boss_ui_instance = null
+const DEFAULT_BOSS_UI_PATH = "res://Actors/Enemies/Boss/boss_hp_bar.tscn"
 
 # 사망 시그널
 signal enemy_died
@@ -43,6 +48,18 @@ func _ready():
 		if sprite.material:
 			sprite.material = sprite.material.duplicate()
 		EffectManager.set_hit_flash_amount(sprite, 0.0)
+	if is_boss:
+		if boss_ui_scene == null:
+			if ResourceLoader.exists(DEFAULT_BOSS_UI_PATH):
+				boss_ui_scene = load(DEFAULT_BOSS_UI_PATH)
+			else:
+				print("오류: Boss UI 파일을 찾을 수 없습니다! 경로를 확인하세요: ", DEFAULT_BOSS_UI_PATH)
+	if is_boss and boss_ui_scene:
+		boss_ui_instance = boss_ui_scene.instantiate()
+		add_child(boss_ui_instance)
+		
+		if boss_ui_instance.has_method("initialize"):
+			boss_ui_instance.initialize(self.name, max_health, current_health)
 #endregion
 
 #region 물리 처리
@@ -81,7 +98,9 @@ func take_damage(amount: float):
 	is_invincible = true
 	if i_frames_timer != null:
 		i_frames_timer.start()
-	
+	if is_boss and is_instance_valid(boss_ui_instance):
+		boss_ui_instance.update_health(current_health)
+
 	if current_health <= 0:
 		die()
 
@@ -97,6 +116,9 @@ func die():
 	is_invincible = false
 	if sprite:
 		EffectManager.set_hit_flash_amount(sprite, 0.0)
+	if is_boss and is_instance_valid(boss_ui_instance):
+		if boss_ui_instance.has_method("on_boss_died"):
+			boss_ui_instance.on_boss_died()
 	emit_signal("enemy_died")
 	queue_free()
 

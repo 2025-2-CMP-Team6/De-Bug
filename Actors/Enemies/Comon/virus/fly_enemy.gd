@@ -37,6 +37,7 @@ var player: Node2D = null
 var initial_pos: Vector2
 var target_velocity: Vector2 = Vector2.ZERO
 var move_change_timer: float = 0.0
+var time_alive: float = 0.0
 
 # 공격용 타이머 및 벡터
 var state_timer: float = 0.0
@@ -62,6 +63,7 @@ func _ready():
 	_change_state(State.WANDER)
 
 func _physics_process(delta: float):
+	time_alive += delta
 	match current_state:
 		State.WANDER:
 			_process_wander(delta)
@@ -87,7 +89,7 @@ func _process_wander(delta: float):
 	_apply_erratic_movement(delta)
 	
 	# 플레이어 감지
-	if player:
+	if player and time_alive > 1.0:
 		var dist = global_position.distance_to(player.global_position)
 		if dist < detect_range:
 			_change_state(State.CHASE)

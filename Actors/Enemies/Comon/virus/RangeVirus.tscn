@@ -1,7 +1,8 @@
-[gd_scene load_steps=24 format=3 uid="uid://dai8mvtukr1k"]
+[gd_scene load_steps=25 format=3 uid="uid://dai8mvtukr1k"]
 
 [ext_resource type="Script" uid="uid://csgk5edsaxw77" path="res://Actors/Enemies/Comon/virus/range_virus.gd" id="1_6a2mq"]
 [ext_resource type="Texture2D" uid="uid://mxkcyhtpgwqo" path="res://graphics/Actors/comon_virus_idle.png" id="2_r5jm4"]
+[ext_resource type="Texture2D" uid="uid://b6iy1ivj363h7" path="res://graphics/Actors/bullet_fire.png" id="2_u3dxx"]
 [ext_resource type="Texture2D" uid="uid://bmyruxu7et08o" path="res://graphics/Actors/comon_virus_attak.png" id="3_cbbj0"]
 [ext_resource type="Texture2D" uid="uid://d17iyotjvbsve" path="res://graphics/Actors/comon_virus_walk.png" id="4_cx2ij"]
 [ext_resource type="Texture2D" uid="uid://dgu34dxoa1dn6" path="res://graphics/Actors/comon_virus_attak_wave.png" id="5_8msyq"]
@@ -140,6 +141,7 @@ animations = [{
 collision_layer = 4
 collision_mask = 3
 script = ExtResource("1_6a2mq")
+projectile_texture = ExtResource("2_u3dxx")
 metadata/_custom_type_script = "uid://cxvfbor6tlmi5"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]

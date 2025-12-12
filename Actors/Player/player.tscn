@@ -411,6 +411,7 @@ offset_right = 104.0
 offset_bottom = -41.0
 
 [node name="Camera2D" type="Camera2D" parent="."]
+position_smoothing_enabled = true
 script = ExtResource("3_isd1h")
 
 [node name="StaminaBar" type="ProgressBar" parent="."]

@@ -61,8 +61,8 @@ func _process_movement(delta):
 		if dist <= attack_range:
 			start_attack_sequence()
 			
-		# [상황 2] 추격 (사거리의 2배 안)
-		elif dist <= (attack_range * 2.0):
+		# [상황 2] 추격 (사거리의 4배 안)
+		elif dist <= (attack_range * 4.0):
 			chase_player(player)
 			
 		# [상황 3] 멀면 배회

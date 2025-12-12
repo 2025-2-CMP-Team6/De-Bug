@@ -1,6 +1,6 @@
 [gd_scene load_steps=25 format=3 uid="uid://bdh7rx37q7ghf"]
 
-[ext_resource type="Script" uid="uid://csgk5edsaxw77" path="res://Actors/Enemies/Comon/virus/range_virus.gd" id="1_ufd6t"]
+[ext_resource type="Script" uid="uid://cady7fgo38muf" path="res://Actors/Enemies/Comon/virus/virus.gd" id="1_ufd6t"]
 [ext_resource type="Texture2D" uid="uid://d17iyotjvbsve" path="res://graphics/Actors/comon_virus_walk.png" id="2_85b8k"]
 [ext_resource type="Texture2D" uid="uid://bmyruxu7et08o" path="res://graphics/Actors/comon_virus_attak.png" id="2_e2ihw"]
 [ext_resource type="Texture2D" uid="uid://mxkcyhtpgwqo" path="res://graphics/Actors/comon_virus_idle.png" id="2_wvvw6"]

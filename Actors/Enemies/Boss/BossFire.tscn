@@ -34,7 +34,7 @@ alpha_curve = SubResource("CurveTexture_8c8bo")
 hue_variation_min = -2.2351742e-08
 hue_variation_max = -2.2351742e-08
 
-[node name="FireWall" type="Area2D"]
+[node name="FireWall" type="Area2D" groups=["boss_fire"]]
 script = ExtResource("1_8c8bo")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
