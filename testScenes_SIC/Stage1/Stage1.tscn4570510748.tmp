@@ -829,9 +829,11 @@ size = Vector2(30, 28)
 
 [node name="Stage1" type="Node2D" node_paths=PackedStringArray("skill_get_ui", "skill_ui")]
 script = ExtResource("1_stage_script")
+is_test_mode = null
 skill_get_ui = NodePath("SkillGetUI")
 skill_ui = NodePath("SkillUI")
 stage_bgm = ExtResource("2_irmgc")
+bgm_volume_db = null
 
 [node name="Background" type="Node2D" parent="."]
 

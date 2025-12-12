@@ -8,6 +8,12 @@ class_name World extends Node2D
 @export var skill_get_ui: SkillGetUI
 @export var skill_ui: SkillUI
 
+# 포탈 활성화 상태
+var portal_enabled: bool = false
+
+# 스킬창 잠금 관련 변수
+var skill_ui_unlocked: bool = false # 스킬창 사용 가능 여부
+
 # 인스펙터에서 스테이지별 음악을 넣을 수 있는 변수
 @export_category("Stage Settings")
 @export var stage_bgm: AudioStream # 여기에 mp3 파일을 넣기
@@ -63,6 +69,8 @@ func _on_enemy_died():
 	var remaining_enemies = get_tree().get_nodes_in_group("enemies")
 	if remaining_enemies.size() <= 1:
 		print("모든 적 처치 완료! 보상 선택 창 오픈")
+		portal_enabled = true
+		print(">>> 포탈이 활성화되었습니다! <<<")
 		skill_get_ui.open_reward_screen()
 	else:
 		print("적이 사망했습니다. 남은 적: " + str(remaining_enemies.size() - 1))
@@ -72,6 +80,12 @@ func _on_skill_get_ui_closed():
 		player.set_input_locked(false)
 
 func _unhandled_input(event):
+	# K 키로 스킬창 열기/닫기
+	if event.is_action_pressed("ui_text_completion_accept") or (event is InputEventKey and event.pressed and event.keycode == KEY_K):
+		toggle_skill_ui()
+		return
+
+	# 치트 모드 기능들
 	if !GameManager.is_cheat:
 		return
 	# 보상 테스트
@@ -112,6 +126,11 @@ func camera_intro_effect(
 		print("경고: Player의 Camera2D를 찾을 수 없습니다.")
 		return
 
+	# 카메라 limit을 현재 스테이지에 맞게 재설정
+	if camera.has_method("find_and_set_limits"):
+		camera.find_and_set_limits()
+		print("카메라 limit 재설정 완료")
+
 	# Background 노드 찾기
 	var background = get_node_or_null("Background")
 	var parallax_nodes = []
@@ -150,3 +169,47 @@ func camera_intro_effect(
 
 	# 애니메이션 완료까지 대기
 	await zoom_tween.finished
+
+# 포탈 진입 처리 (각 Stage에서 오버라이드 가능)
+func _on_portal_body_entered(body):
+	if not body.is_in_group("player"):
+		return
+
+	# 포탈이 활성화되지 않았으면 진입 불가
+	if not portal_enabled:
+		print(">>> 아직 포탈을 사용할 수 없습니다! 모든 적을 처치하세요. <<<")
+		return
+
+	print("포탈이 활성화되어 있습니다. 다음 스테이지로 이동하려면 Stage에서 이 함수를 오버라이드하세요.")
+	# 각 Stage에서 이 함수를 오버라이드해서 SceneTransition.fade_to_scene() 호출
+
+# 스킬창 토글 함수
+func toggle_skill_ui():
+	# 스킬창이 아직 잠겨있는지 확인
+	if not skill_ui_unlocked:
+		print("스킬창이 아직 잠겨있습니다.")
+		return
+
+	# skill_ui 확인
+	if not is_instance_valid(skill_ui):
+		print("경고: SkillUI를 찾을 수 없습니다.")
+		return
+
+	# 스킬창 토글
+	skill_ui.visible = not skill_ui.visible
+
+	var stage_player = player if player != null else get_node_or_null("Player")
+	if is_instance_valid(stage_player):
+		# 플레이어 입력 잠금/해제
+		if stage_player.has_method("set_input_locked"):
+			stage_player.set_input_locked(skill_ui.visible)
+			print("스킬창 ", "열림" if skill_ui.visible else "닫힘")
+
+		# 스킬창이 열렸을 때 UI 갱신
+		if skill_ui.visible and skill_ui.has_method("refresh_ui"):
+			skill_ui.refresh_ui(stage_player)
+
+# 스킬창 잠금 해제
+func unlock_skill_ui():
+	skill_ui_unlocked = true
+	print("=== 스킬창이 해제되었습니다! K 키를 눌러 스킬창을 열 수 있습니다. ===")

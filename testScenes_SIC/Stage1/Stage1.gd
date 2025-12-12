@@ -8,8 +8,7 @@ var spawn_position: Vector2 = Vector2(310.99988, 5081.0005) # 플레이어 시�
 var current_respawn_position: Vector2 # 현재 리스폰 위치 (가장 최근 죽인 적의 위치)
 var highest_checkpoint_number: int = 0 # 현재 체크포인트로 설정된 적의 번호 (가장 높은 번호만 유지)
 
-# 스킬창 잠금 관련 변수
-var skill_ui_unlocked: bool = false # 스킬창 사용 가능 여부 (튜토리얼 보스 처치 후 해제)
+# 튜토리얼 관련 변수
 var is_first_skill_selection: bool = false # 튜토리얼 보스 처치 후 첫 스킬 선택인지 추적
 
 func _ready():
@@ -345,43 +344,13 @@ func _on_tutorial_trigger_entered(body: Node2D, trigger_name: String, dialogue_t
 	)
 
 func _on_portal_body_entered(body):
-	if body.is_in_group("player"):
-		print("플레이어가 포탈에 진입했습니다!")
-		# 여기에 포탈 이동 로직을 추가하세요
-		SceneTransition.fade_to_scene("res://testScenes_SIC/Stage2/Stage2.tscn")
-
-# K 키로 스킬창 열기/닫기
-func _unhandled_input(event):
-	# K 키를 눌렀을 때
-	if event.is_action_pressed("ui_text_completion_accept") or (event is InputEventKey and event.pressed and event.keycode == KEY_K):
-		toggle_skill_ui()
-
-func toggle_skill_ui():
-	# 스킬창이 아직 잠겨있는지 확인
-	if not skill_ui_unlocked:
-		print("스킬창이 아직 잠겨있습니다. 튜토리얼을 진행하세요!")
+	if not body.is_in_group("player"):
 		return
 
-	# World에서 상속받은 skill_ui 변수 사용
-	if not is_instance_valid(skill_ui):
-		print("경고: SkillUI를 찾을 수 없습니다. Stage1 씬에 SkillUI가 설정되어 있는지 확인하세요.")
+	# World의 포탈 체크 먼저 실행 (모든 적 처치 확인)
+	if not portal_enabled:
+		print(">>> 아직 포탈을 사용할 수 없습니다! 모든 적을 처치하세요. <<<")
 		return
 
-	# 스킬창 토글
-	skill_ui.visible = not skill_ui.visible
-
-	var stage_player = player if player != null else get_node_or_null("Player")
-	if is_instance_valid(stage_player):
-		# 플레이어 입력 잠금/해제
-		if stage_player.has_method("set_input_locked"):
-			stage_player.set_input_locked(skill_ui.visible)
-			print("스킬창 ", "열림" if skill_ui.visible else "닫힘")
-
-		# 스킬창이 열렸을 때 UI 갱신
-		if skill_ui.visible and skill_ui.has_method("refresh_ui"):
-			skill_ui.refresh_ui(stage_player)
-
-# 스킬창 잠금 해제 (튜토리얼 보스 처치 후 또는 dialogue에서 호출)
-func unlock_skill_ui():
-	skill_ui_unlocked = true
-	print("=== 스킬창이 해제되었습니다! K 키를 눌러 스킬창을 열 수 있습니다. ===")
+	print("플레이어가 포탈에 진입했습니다!")
+	SceneTransition.fade_to_scene("res://testScenes_SIC/Stage2/Stage2.tscn")
