@@ -2,7 +2,7 @@
 extends Node
 class_name BaseSkill
 
-#region 스킬 속성
+#region Skill Properties
 @export var skill_name: String = "기본 스킬"
 @export var skill_description: String = "스킬 설명."
 @export var skill_icon: Texture
@@ -18,15 +18,15 @@ class_name BaseSkill
 
 @export var upgrades: Array[SkillUpgradeData]
 
-# 스킬 사운드 설정
+# Skill sound settings
 @export_group("Sound Settings")
-@export var cast_sound: AudioStream # 여기에 파일을 넣
+@export var cast_sound: AudioStream # Put file here
 @export var sound_volume_db: float = 1.0
 @export var sound_pitch_scale: float = 1.0
-@export var random_pitch: bool = true # 피치 섞을지 여부(지루함 감소)
+@export var random_pitch: bool = true # Whether to randomize pitch (reduces monotony)
 #endregion
 
-# 에러/실패 사운드
+# Error/failure sound
 @export var error_sound: AudioStream 
 @export var error_volume_db: float = 0.0 
 @export var error_pitch_scale: float = 1.0
@@ -36,26 +36,26 @@ class_name BaseSkill
 var cooldown_timer: Timer
 var is_active: bool = false
 
-# ★ (추가) 이 스킬 노드의 현재 레벨 (SkillInstance로부터 받아옴)
+# Current level of this skill node (received from SkillInstance)
 var current_level: int = 0:
 	set(value):
 		current_level = value
-		# 변수 값이 바뀌자마자 스탯 적용 함수 강제 실행!
+		# Force stat application function as soon as the variable value changes!
 		apply_upgrades(current_level)
 
-# ★ (추가) 이 스킬이 참조하는 인벤토리의 원본 데이터 (SkillInstance)
+# Original data in inventory that this skill references (SkillInstance)
 var skill_instance_ref: SkillInstance = null
 
-# 오디오 플레이어 매니
+# Audio player manager
 var _audio_manager: AudioManager
 
-# 사운드 설정 함수 
+# Sound setup function 
 func _setup_sound():
 	if (cast_sound or error_sound) and _audio_manager == null:
 		_audio_manager = AudioManager.new()
 		add_child(_audio_manager)
 
-	# 시전 소리 등록
+	# Register cast sound
 	if cast_sound:
 		var sound_config = AudioManagerPlus.new()
 		sound_config.stream = cast_sound
@@ -64,7 +64,7 @@ func _setup_sound():
 		sound_config.audio_name = "skill_cast"
 		_audio_manager.add_plus("skill_cast", sound_config)
 
-	# 에러 소리 등록
+	# Register error sound
 	if error_sound:
 		var error_config = AudioManagerPlus.new()
 		error_config.stream = error_sound
@@ -73,20 +73,20 @@ func _setup_sound():
 		error_config.audio_name = "skill_error" 
 		_audio_manager.add_plus("skill_error", error_config)
 		
-# 재생 함수
+# Playback function
 func _play_sound():
 	if _audio_manager:
-		# 랜덤 피치 로직 
-		if random_pitch: #지루함 감소
+		# Random pitch logic 
+		if random_pitch: # Reduce monotony
 			var config = _audio_manager.get_plus("skill_cast")
 			if config:
-				# 원본 피치에서 약간만 변형
+				# Slightly modify from original pitch
 				config.pitch_scale = sound_pitch_scale + randf_range(-0.2, 0.2)
 		
-		# 재생 명령
+		# Play command
 		_audio_manager.play_plus("skill_cast")
 		
-# ★ 에러 소리 재생
+# Play error sound
 func play_error_sound():
 	if _audio_manager and error_sound:
 		if error_random_pitch:
@@ -102,17 +102,17 @@ func _ready():
 	
 	_setup_sound()
 
-# 스킬 사용 가능 여부
+# Skill availability
 func is_ready() -> bool:
 	if cooldown_timer == null:
 		return false
 	return cooldown_timer.is_stopped()
 
-#region 스킬 시전
+#region Skill Casting
 func execute(owner: CharacterBody2D, target: Node2D = null):
 	is_active = true
-	print(owner.name + "가 " + skill_name + " 시전!")
-	# 소리 재생
+	print(owner.name + " casts " + skill_name + "!")
+	# Play sound
 	_play_sound()
 	
 
@@ -130,11 +130,11 @@ func get_cooldown_time_left() -> float:
 	return 0.0
 #endregion
 
-#스킬 업그레이드
+# Skill upgrade
 func apply_upgrades(level: int):
 	for data in upgrades:
 		if data.stat_name in self:
 			if level < data.stat_values_by_level.size():
-				# 값 덮어쓰기
+				# Overwrite value
 				self.set(data.stat_name, data.stat_values_by_level[level])
-				print("스킬 업그레이드 적용: ", data.stat_name, " -> ", data.stat_values_by_level[level])
+				print("Skill upgrade applied: ", data.stat_name, " -> ", data.stat_values_by_level[level])

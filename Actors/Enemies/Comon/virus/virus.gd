@@ -1,18 +1,18 @@
 extends BaseEnemy
 
-#region 설정 변수
+#region Config Variables
 @export var move_speed: float = 50.0
-@export var attack_range: float = 100.0 # 사거리
+@export var attack_range: float = 100.0 # Range
 @export var attack_cooldown: float = 3.0
 
-# 상태 변수
+# State variables
 var is_attacking: bool = false
 var on_cooldown: bool = false
 var patrol_direction: int = 1
 var patrol_timer: float = 0.0
 #endregion
 
-#region 노드 참조 (스크린샷 경로 기준)
+#region Node References
 @onready var main_sprite = $Visuals/AnimatedSprite2D
 @onready var wave_effect = $ShockwaveHolder/AttakVisual
 @onready var attack_area = $ShockwaveHolder/AttakArea
@@ -24,51 +24,51 @@ func _ready():
 	wave_effect.visible = false
 	attack_area.monitoring = false
 	
-	# 파동 애니메이션이 끝났을 때
+	# When the wave animation ends
 	if not wave_effect.animation_finished.is_connected(_on_wave_finished):
 		wave_effect.animation_finished.connect(_on_wave_finished)
 	
-	# 플레이어가 파동에 닿았을 때
+	# When the player touches the wave
 	if not attack_area.body_entered.is_connected(_on_attack_area_body_entered):
 		attack_area.body_entered.connect(_on_attack_area_body_entered)
 		
-	# 본체 애니메이션 프레임이 바뀔 때 
+	# When the main body animation frame changes
 	if not main_sprite.frame_changed.is_connected(_on_main_sprite_frame_changed):
 		main_sprite.frame_changed.connect(_on_main_sprite_frame_changed)
 
 func _process_movement(delta):
-	# 공격 중이거나 죽었으면 제자리에 멈춤
+	# Stop in place if attacking or dead
 	if is_attacking or current_health <= 0:
 		velocity.x = move_toward(velocity.x, 0, 200 * delta)
 		return
 
-	# 쿨타임 중일 때는 멈춤 또는 회
+	# Stop (or wander) during cooldown
 	if on_cooldown:
 		velocity.x = move_toward(velocity.x, 0, 100 * delta)
 		main_sprite.play("idle")
 		return
 
-	# 플레이어 찾기
+	# Find the player
 	var player = get_tree().get_first_node_in_group("player")
 	
 	if player:
 		var dist = global_position.distance_to(player.global_position)
 		
-		# [상황 1] 공격 사거리 안 -> 공격 시작
+		# [Case 1] Within attack range -> start attack
 		if dist <= attack_range:
 			start_attack_sequence()
 			
-		# [상황 2] 추격 (사거리의 4배 안)
+		# [Case 2] Chase (within 4x attack range)
 		elif dist <= (attack_range * 4.0):
 			chase_player(player)
 			
-		# [상황 3] 멀면 배회
+		# [Case 3] Too far -> patrol
 		else:
 			patrol_behavior(delta)
 	else:
 		patrol_behavior(delta)
 
-	# 방향 전환 (스프라이트 좌우 반전)
+	# Flip direction (sprite horizontal flip)
 	if velocity.x != 0:
 		main_sprite.flip_h = (velocity.x < 0)
 
@@ -81,20 +81,20 @@ func chase_player(player):
 func patrol_behavior(delta):
 	patrol_timer -= delta
 	
-	# 0.5 ~ 1.0초마다 행동을 바꿈 뽈뽈거리기
+	# Change behavior every 0.5 ~ 1.0 seconds (shuffle around)
 	if patrol_timer <= 0:
 		patrol_timer = randf_range(0.5, 1.0)
 		var random_choice = randi() % 5
 		
-		# 0, 1 나오면 멈춤 (40% 확률)
+		# Stop if 0 or 1 (40% chance)
 		if random_choice <= 1:
 			patrol_direction = 0
-		# 2: 오른쪽, 3: 왼쪽
+		# 2: right, 3: left
 		elif random_choice == 2:
 			patrol_direction = 1
 		elif random_choice == 3:
 			patrol_direction = -1
-		# 4: 반대 방향으로 턴
+		# 4: turn to the opposite direction
 		else:
 			patrol_direction = - patrol_direction
 			
@@ -109,27 +109,27 @@ func patrol_behavior(delta):
 func start_attack_sequence():
 	is_attacking = true
 	on_cooldown = true
-	velocity = Vector2.ZERO # 이동 정지
+	velocity = Vector2.ZERO # Stop moving
 	
 	main_sprite.play("shockwave")
 
-# 프레임 감지 함수
+# Frame detection function
 func _on_main_sprite_frame_changed():
-	# 현재 'shockwave' 동작 중이고 + 프레임이 4번(빨간색)이라면?
+	# If currently playing 'shockwave' and the frame is 4 (red), then...
 	if main_sprite.animation == "shockwave" and main_sprite.frame == 4:
 		fire_wave_effect()
 
-# 파동 발사
+# Fire the wave
 func fire_wave_effect():
-	# 파동 보이기 & 재생
+	# Show & play the wave
 	wave_effect.visible = true
 	wave_effect.frame = 0
 	wave_effect.play("wave")
 	
-	# 공격 판정 켜기 (플레이어 데미지용)
+	# Enable attack detection (for player damage)
 	attack_area.monitoring = true
 
-# 파동 애니메이션(wave)이 끝나면 호출됨
+# Called when the wave animation ends
 func _on_wave_finished():
 	wave_effect.visible = false
 	wave_effect.stop()
@@ -137,28 +137,28 @@ func _on_wave_finished():
 	
 	is_attacking = false
 	
-	# 본체 다시 idle 상태
+	# Return the main body to idle
 	main_sprite.play("idle")
 	
-	# 쿨타임 대기 (3초)
-	print("virus coolimte...")
+	# Cooldown wait (3 seconds)
+	print("virus cooldown...")
 	await get_tree().create_timer(attack_cooldown).timeout
 	
 	on_cooldown = false
-	print("virus coolimte end")
+	print("virus cooldown end")
 
-# --- 충돌 처리 ---
+# --- Collision Handling ---
 
 func _on_attack_area_body_entered(body):
 	if body.is_in_group("player"):
-		print(">> 플레이어 파동 적중")
+		print(">> Player hit by wave")
 		if body.has_method("lose_life"):
 			body.lose_life()
 
 func apply_slow(slow_ratio: float, duration: float):
-	print("으악! 이동 속도가 느려졌다!")
-	move_speed *= slow_ratio # 0.5가 들어오면 속도 반토막
+	print("Argh! My movement speed got slower!")
+	move_speed *= slow_ratio # If 0.5 comes in, speed is halved
 	
-	# 일정 시간 뒤 원상복구 (타이머 사용)
+	# Restore after a certain time (use a timer)
 	await get_tree().create_timer(duration).timeout
-	move_speed /= slow_ratio # 다시 원래대로
+	move_speed /= slow_ratio # Back to normal

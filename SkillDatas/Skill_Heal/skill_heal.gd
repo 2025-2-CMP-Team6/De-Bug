@@ -1,10 +1,10 @@
 extends BaseSkill
 
-#region 스킬 고유 설정
+#region Skill-Specific Settings
 @onready var particles = $HealParticles 
 #endregion
 
-# 쿨타임 차단용 내부 변수
+# Internal flag to block cooldown activation
 var _cancel_activation: bool = false
 
 func _init():
@@ -21,67 +21,67 @@ func _ready():
 		particles.one_shot = true
 
 func execute(owner: CharacterBody2D, target: Node2D = null):
-	# [1단계] 체력이 꽉 찼는지 검사
+	# [Step 1] Check if HP is full
 	if _is_hp_full(owner):
-		print("체력이 가득 차서 스킬을 쓸 수 없습니다.")
+		print("Cannot use the skill because HP is full.")
 		play_error_sound()
 		_cancel_activation = true
 		
-		# 스태미나 환불 
+		# Refund stamina
 		if "current_stamina" in owner:
 			owner.current_stamina += stamina_cost
-			# 최대치 넘지 않게 보정
+			# Clamp so it doesn't exceed the maximum
 			if "max_stamina" in owner:
 				owner.current_stamina = min(owner.current_stamina, owner.max_stamina)
 		
-		# 캐스팅 모션 즉시 취소 (강제 IDLE 전환)
+		# Immediately cancel casting motion (force switch to IDLE)
 		if owner.has_method("change_state"):
 			owner.change_state(GameManager.State.IDLE)
 			
 		return
 
-	# 정상 발동 
+	# Normal activation
 	super.execute(owner, target)
 	_cancel_activation = false 
 	
-	print("힐 스킬 발동!")
+	print("Heal skill activated!")
 
-	# 플레이어 상태 동기화
+	# Sync player state
 	if owner.has_method("change_state"):
 		owner.change_state(GameManager.State.SKILL_CASTING)
 
-	# 체력 회복 로직
+	# HP recovery logic
 	if "current_lives" in owner:
 		owner.current_lives += 1
 		owner.update_lives_ui()
-		print(" - 생명 회복! 현재: ", owner.current_lives)
+		print(" - Life recovered! Current: ", owner.current_lives)
 		
-	# 이펙트 재생
+	# Play effects
 	if particles:
 		particles.restart()
 		particles.emitting = true
 	
-	# 종료 예약
+	# Schedule end
 	get_tree().create_timer(cast_duration).timeout.connect(_on_skill_finished)
 
 func start_cooldown():
-	# 만약 발동 취소된 상태라면? 쿨타임 타이머를 켜지 않습니다.
+	# If activation was canceled, do not start the cooldown timer.
 	if _cancel_activation:
-		_cancel_activation = false # 초기화
+		_cancel_activation = false # Reset
 		return 
 
 	super.start_cooldown()
 
 func _is_hp_full(owner) -> bool:
-	# 하트(Lives) 시스템인 경우
+	# If using the hearts (Lives) system
 	if "current_lives" in owner and "max_lives" in owner:
 		return owner.current_lives >= owner.max_lives
 		
-	# 체력바(HP) 시스템인 경우
+	# If using the HP bar system
 	if "health" in owner and "max_health" in owner:
 		return owner.health >= owner.max_health
 		
-	return false # 변수가 없으면 일단 발동시킴
+	return false # If variables don't exist, allow activation by default
 
 func _on_skill_finished():
 	is_active = false

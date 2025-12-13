@@ -1,6 +1,6 @@
 class_name FlyingEnemy extends BaseEnemy
 
-#region 상태
+#region States
 enum State {
 	WANDER,
 	CHASE,
@@ -12,34 +12,34 @@ enum State {
 var current_state: State = State.WANDER
 #endregion
 
-#region 설정값 (Inspector)
+#region Settings (Inspector)
 @export_group("Movement")
 @export var fly_speed: float = 600.0
 @export var wander_radius: float = 300.0
 @export var surround_radius: float = 80.0
 
 @export_group("Detection")
-@export var detect_range: float = 400.0 # 플레이어 감지 거리
-@export var lose_interest_range: float = 600.0 # CHASE -> WANDER 복귀 거리
-@export var attack_trigger_range: float = 200.0 # CHASE -> AIMING 전환 거리
+@export var detect_range: float = 400.0 # Player detection distance
+@export var lose_interest_range: float = 600.0 # Distance to switch from CHASE -> WANDER
+@export var attack_trigger_range: float = 200.0 # Distance to switch from CHASE -> AIMING
 
 @export_group("Attack")
 @export var dash_speed: float = 1800.0
-@export var aim_duration: float = 1.0 # 조준 시간
-@export var lock_duration: float = 0.5 # 발사 직전 대기
-@export var dash_duration: float = 0.5 # 돌진 지속 시간
-@export var attack_cooldown: float = 0.25 # 실패 시 대기 시간
-@export var attack_width: float = 20.0 # 공격 예고 범위 폭
+@export var aim_duration: float = 1.0 # Aim time
+@export var lock_duration: float = 0.5 # Wait right before dash
+@export var dash_duration: float = 0.5 # Dash duration
+@export var attack_cooldown: float = 0.25 # Wait time on failure
+@export var attack_width: float = 20.0 # Attack warning width
 #endregion
 
-#region 내부 변수
+#region Internal Variables
 var player: Node2D = null
 var initial_pos: Vector2
 var target_velocity: Vector2 = Vector2.ZERO
 var move_change_timer: float = 0.0
 var time_alive: float = 0.0
 
-# 공격용 타이머 및 벡터
+# Timers and vectors for attacking
 var state_timer: float = 0.0
 var dash_direction: Vector2 = Vector2.ZERO
 var locked_target_pos: Vector2 = Vector2.ZERO
@@ -49,7 +49,7 @@ var locked_target_pos: Vector2 = Vector2.ZERO
 
 func _ready():
 	super._ready()
-	gravity = 0.0 # 중력 제거
+	gravity = 0.0 # Remove gravity
 	initial_pos = global_position
 	
 	if animation:
@@ -59,7 +59,7 @@ func _ready():
 	if players.size() > 0:
 		player = players[0]
 	
-	# 시작 상태
+	# Starting state
 	_change_state(State.WANDER)
 
 func _physics_process(delta: float):
@@ -79,16 +79,16 @@ func _physics_process(delta: float):
 			_process_cooldown(delta)
 
 	move_and_slide()
-	queue_redraw() # 공격 범위 그리기 업데이트
+	queue_redraw() # Update attack-range drawing
 
-#region 상태별 로직 (1~4)
+#region Per-state Logic (1~4)
 
 # WANDER
 func _process_wander(delta: float):
-	# 이동 
+	# Move
 	_apply_erratic_movement(delta)
 	
-	# 플레이어 감지
+	# Detect player
 	if player and time_alive > 1.0:
 		var dist = global_position.distance_to(player.global_position)
 		if dist < detect_range:
@@ -96,7 +96,7 @@ func _process_wander(delta: float):
 
 # CHASE
 func _process_chase(delta: float):
-	# 이동
+	# Move
 	_apply_erratic_movement(delta)
 	
 	if player == null:
@@ -120,7 +120,7 @@ func _process_chase(delta: float):
 
 # AIMING
 func _process_aiming(delta: float):
-	# 멈춰서 플레이어 바라보기
+	# Stop and face the player
 	velocity = velocity.lerp(Vector2.ZERO, 10.0 * delta)
 	if player:
 		_update_sprite_facing(player.global_position.x - global_position.x)
@@ -140,24 +140,24 @@ func _process_lock(delta: float):
 func _process_dash(delta: float):
 	velocity = dash_direction * dash_speed
 	
-	# 충돌 체크
+	# Collision check
 	for i in get_slide_collision_count():
 		var collision = get_slide_collision(i)
 		var collider = collision.get_collider()
 		
 		if collider.is_in_group("player"):
-			_explode(collider) # 성공 시 자폭
+			_explode(collider) # Self-destruct on success
 			return
 		else:
-			# 실패 쿨타임
-			print("벽 충돌! 추적 복귀 준비")
+			# Failure cooldown
+			print("Wall collision! Preparing to return to chase")
 			_change_state(State.COOLDOWN)
 			return
 	
-	# 실패 쿨타임
+	# Failure cooldown
 	state_timer -= delta
 	if state_timer <= 0:
-		print("돌진 빗나감! 추적 복귀 준비")
+		print("Dash missed! Preparing to return to chase")
 		_change_state(State.COOLDOWN)
 
 # COOLDOWN
@@ -166,13 +166,12 @@ func _process_cooldown(delta: float):
 	
 	state_timer -= delta
 	if state_timer <= 0:
-		# 쿨타임 끝나면 추적 모드
+		# Return to chase mode when cooldown ends
 		_change_state(State.CHASE)
 
 #endregion
 
-#region 이동 및 헬퍼 함수
-
+#region Movement and Helper Functions
 
 func _apply_erratic_movement(delta: float):
 	move_change_timer -= delta
@@ -248,11 +247,11 @@ func _draw():
 #endregion
 
 func apply_slow(slow_ratio: float, duration: float):
-	print("으악! 이동 속도가 느려졌다!")
-	fly_speed *= slow_ratio # 0.5가 들어오면 속도 반토막
+	print("Argh! My movement speed got slower!")
+	fly_speed *= slow_ratio # If 0.5 comes in, speed is halved
 	dash_speed *= slow_ratio
 	
-	# 일정 시간 뒤 원상복구 (타이머 사용)
+	# Restore after a certain time (use a timer)
 	await get_tree().create_timer(duration).timeout
-	fly_speed /= slow_ratio # 다시 원래대로
-	dash_speed /= slow_ratio # 다시 원래대로
+	fly_speed /= slow_ratio # Back to normal
+	dash_speed /= slow_ratio # Back to normal

@@ -1,171 +1,171 @@
 extends World
 
-# Dialogue 리소스 로드
+# Load Dialogue resource
 var dialogue_resource = preload("res://testScenes_SIC/dialogue/stage1.dialogue")
 
-# 리스폰 관련 변수
-var spawn_position: Vector2 = Vector2(310.99988, 5081.0005) # 플레이어 시작 위치
-var current_respawn_position: Vector2 # 현재 리스폰 위치 (가장 최근 죽인 적의 위치)
-var highest_checkpoint_number: int = 0 # 현재 체크포인트로 설정된 적의 번호 (가장 높은 번호만 유지)
+# Respawn related variables
+var spawn_position: Vector2 = Vector2(310.99988, 5081.0005) # Player start position
+var current_respawn_position: Vector2 # Current respawn position (position of most recently killed enemy)
+var highest_checkpoint_number: int = 0 # Number of enemy set as current checkpoint (only keep highest number)
 
-# 튜토리얼 관련 변수
-var is_first_skill_selection: bool = false # 튜토리얼 보스 처치 후 첫 스킬 선택인지 추적
+# Tutorial related variables
+var is_first_skill_selection: bool = false # Track if this is the first skill selection after defeating tutorial boss
 
 func _ready():
-	super() #오디오매니저 세팅을 위해 필요합니다. 인스펙터의 Stage Settings에 원하는 음악을 넣으면 됩니다.
+	super() # Required for audio manager setup. Put desired music in Stage Settings in inspector.
 
-	# 리스폰 위치 초기화
+	# Initialize respawn position
 	current_respawn_position = spawn_position
 
-	# 튜토리얼 적들의 체크포인트 연결
+	# Connect tutorial enemy checkpoints
 	_connect_enemy_checkpoints()
 
-	# 튜토리얼 트리거 신호 연결 (씬에 존재하는 경우)
+	# Connect tutorial trigger signals (if they exist in scene)
 	_connect_tutorial_triggers()
 
-	# 튜토리얼 보스 처치 시 스킬창 해제
+	# Unlock skill window when tutorial boss is defeated
 	_connect_tutorial_boss()
 
-	# 스킬 선택 후 dialogue 표시를 위한 신호 연결
+	# Connect signal to display dialogue after skill selection
 	if is_instance_valid(skill_get_ui):
 		skill_get_ui.closed.connect(_on_first_skill_selected)
 
-	# 카메라 인트로 효과 실행 (world.gd의 공통 함수 사용)
+	# Execute camera intro effect (use common function from world.gd)
 	await camera_intro_effect()
 
-	# 플레이어 찾기
+	# Find player
 	var stage_player = player if player != null else get_node_or_null("Player")
 
-	# 인트로 대화 시작 전에 플레이어 입력 잠금
+	# Lock player input before starting intro dialogue
 	if stage_player and stage_player.has_method("set_input_locked"):
 		stage_player.set_input_locked(true)
-		print("=== 인트로 시작: 플레이어 입력 잠금 ===")
+		print("=== Intro start: Player input locked ===")
 
-	# 인트로 효과가 끝난 후 대화 시작
+	# Start dialogue after intro effect ends
 	var balloon = DialogueManager.show_dialogue_balloon_scene("res://testScenes_SIC/dialogue/stage1_balloon.tscn", dialogue_resource, "start")
 
-	# balloon의 dialogue_finished 신호 연결
+	# Connect balloon's dialogue_finished signal
 	balloon.dialogue_finished.connect(_on_dialogue_ended)
 
-# 튜토리얼 적들의 체크포인트 연결
+# Connect tutorial enemy checkpoints
 func _connect_enemy_checkpoints():
-	# virus, virus2, virus3의 enemy_died 신호를 연결
+	# Connect enemy_died signals for virus, virus2, virus3
 	var enemies_to_track = ["Virus", "Virus2", "Virus3"]
 
 	for enemy_name in enemies_to_track:
 		var enemy = get_node_or_null(enemy_name)
 		if enemy and enemy.has_signal("enemy_died"):
-			# 적이 죽을 때 해당 적의 위치를 체크포인트로 설정
+			# Set that enemy's position as checkpoint when it dies
 			enemy.enemy_died.connect(func(): _on_enemy_checkpoint_reached(enemy, enemy_name))
-			print("체크포인트 연결됨: ", enemy_name)
+			print("Checkpoint connected: ", enemy_name)
 
 func _on_enemy_checkpoint_reached(enemy: Node2D, enemy_name: String):
-	# 적 이름에서 번호 추출 ("Virus" -> 1, "Virus2" -> 2, "Virus3" -> 3)
+	# Extract number from enemy name ("Virus" -> 1, "Virus2" -> 2, "Virus3" -> 3)
 	var enemy_number = _extract_enemy_number(enemy_name)
 
-	print("=== 적 처치: ", enemy_name, " (번호: ", enemy_number, ") ===")
-	print("현재 최고 체크포인트 번호: ", highest_checkpoint_number)
+	print("=== Enemy defeated: ", enemy_name, " (number: ", enemy_number, ") ===")
+	print("Current highest checkpoint number: ", highest_checkpoint_number)
 
-	# 더 높은 번호의 적을 죽였을 때만 체크포인트 업데이트
+	# Update checkpoint only when a higher numbered enemy is killed
 	if enemy_number > highest_checkpoint_number:
 		highest_checkpoint_number = enemy_number
 		current_respawn_position = enemy.global_position
-		print(">>> 체크포인트 갱신! 새 리스폰 위치: ", current_respawn_position)
+		print(">>> Checkpoint updated! New respawn position: ", current_respawn_position)
 	else:
-		print(">>> 체크포인트 유지 (현재 체크포인트가 더 높은 번호)")
+		print(">>> Checkpoint maintained (current checkpoint has higher number)")
 
-# 적 이름에서 번호를 추출하는 함수
+# Function to extract number from enemy name
 func _extract_enemy_number(enemy_name: String) -> int:
 	# "Virus" -> 1, "Virus2" -> 2, "Virus3" -> 3
 	if enemy_name == "Virus":
 		return 1
 	elif enemy_name.begins_with("Virus"):
-		# "Virus2", "Virus3" 등에서 숫자 부분만 추출
-		var number_part = enemy_name.substr(5)  # "Virus" 다음 문자들
+		# Extract only number part from "Virus2", "Virus3", etc.
+		var number_part = enemy_name.substr(5)  # Characters after "Virus"
 		if number_part.is_valid_int():
 			return int(number_part)
-	return 0  # 알 수 없는 경우 0 반환
+	return 0  # Return 0 for unknown cases
 
-# 튜토리얼 보스 처치 시 스킬창 해제
+# Unlock skill window when tutorial boss is defeated
 func _connect_tutorial_boss():
 	var tutorial_boss = get_node_or_null("TutorialBoss")
 	if tutorial_boss and tutorial_boss.has_signal("enemy_died"):
 		tutorial_boss.enemy_died.connect(_on_tutorial_boss_defeated)
-		print("튜토리얼 보스 신호 연결됨")
+		print("Tutorial boss signal connected")
 
 func _on_tutorial_boss_defeated():
-	print("=== 튜토리얼 보스 처치! ===")
+	print("=== Tutorial boss defeated! ===")
 
-	# 첫 스킬 선택 플래그 설정
+	# Set first skill selection flag
 	is_first_skill_selection = true
 
-	# 플레이어 찾기
+	# Find player
 	var stage_player = player if player != null else get_node_or_null("Player")
 
-	# 플레이어 입력 잠금 (dialogue 표시 중)
+	# Lock player input (during dialogue display)
 	if stage_player and stage_player.has_method("set_input_locked"):
 		stage_player.set_input_locked(true)
-		print("플레이어 입력 잠금 (보스 처치 후 dialogue)")
+		print("Player input locked (dialogue after boss defeat)")
 
-	# 보스 처치 후 dialogue 시작
+	# Start dialogue after boss defeat
 	var balloon = DialogueManager.show_dialogue_balloon_scene(
 		"res://testScenes_SIC/dialogue/stage1_balloon.tscn",
 		dialogue_resource,
 		"tutorial_boss_defeated"
 	)
 
-	# dialogue가 끝나면 플레이어 입력 잠금 해제 (스킬 선택 창이 열림)
+	# Unlock player input when dialogue ends (skill selection window opens)
 	balloon.dialogue_finished.connect(func():
 		if stage_player and stage_player.has_method("set_input_locked"):
 			stage_player.set_input_locked(false)
-			print("플레이어 입력 잠금 해제 - 스킬 선택 가능")
+			print("Player input unlocked - skill selection available")
 	)
 
-# 첫 스킬 선택 후 호출되는 함수
+# Function called after first skill selection
 func _on_first_skill_selected():
-	# 첫 스킬 선택이 아니면 무시
+	# Ignore if not first skill selection
 	if not is_first_skill_selection:
 		return
 
 	is_first_skill_selection = false
-	print("=== 첫 스킬 선택 완료! ===")
+	print("=== First skill selection complete! ===")
 
-	# 플레이어 찾기
+	# Find player
 	var stage_player = player if player != null else get_node_or_null("Player")
 
-	# 플레이어 입력 잠금 (dialogue 표시 중)
+	# Lock player input (during dialogue display)
 	if stage_player and stage_player.has_method("set_input_locked"):
 		stage_player.set_input_locked(true)
-		print("플레이어 입력 잠금 (스킬 설명 dialogue)")
+		print("Player input locked (skill explanation dialogue)")
 
-	# 스킬 사용법 설명 dialogue 시작
+	# Start dialogue explaining how to use skills
 	var balloon = DialogueManager.show_dialogue_balloon_scene(
 		"res://testScenes_SIC/dialogue/stage1_balloon.tscn",
 		dialogue_resource,
 		"after_skill_selection"
 	)
 
-	# dialogue가 끝나면 스킬창 해제 및 플레이어 입력 잠금 해제
+	# Unlock skill UI and unlock player input when dialogue ends
 	balloon.dialogue_finished.connect(func():
 		unlock_skill_ui()
 		if stage_player and stage_player.has_method("set_input_locked"):
 			stage_player.set_input_locked(false)
-			print("플레이어 입력 잠금 해제 - 게임 계속")
+			print("Player input unlocked - game continues")
 	)
 
-# 튜토리얼 트리거들의 신호 자동 연결
+# Automatically connect tutorial trigger signals
 func _connect_tutorial_triggers():
-	# TutorialTrigger_Dash 연결
+	# Connect TutorialTrigger_Dash
 	var dash_trigger = get_node_or_null("DashTutorial")
 	if dash_trigger:
 		dash_trigger.body_entered.connect(func(body): _on_tutorial_trigger_entered(body, "dash", "tutorial_dash"))
-		print("대시 튜토리얼 트리거 연결됨")
+		print("Dash tutorial trigger connected")
 
-	# 추가 튜토리얼 트리거가 있다면 여기에 추가
+	# Add additional tutorial triggers here if any
 	var skill_trigger = get_node_or_null("SkillTutorial")
 	if skill_trigger:
 		skill_trigger.body_entered.connect(func(body): _on_tutorial_trigger_entered(body, "skill", "tutorial_skill"))
-		
+
 	var middleBoss_trigger = get_node_or_null("MiddleBossTutorial")
 	if middleBoss_trigger:
 		middleBoss_trigger.body_entered.connect(func(body): _on_tutorial_trigger_entered(body, "middleBoss", "tutorial_middleBoss"))
@@ -176,106 +176,106 @@ func _on_fall_prevention_body_entered(body: Node2D):
 
 func respawn_player(player: Node2D):
 	if player:
-		# 플레이어를 현재 체크포인트 위치로 이동
+		# Move player to current checkpoint position
 		player.global_position = current_respawn_position
-		# 속도 초기화
+		# Reset velocity
 		if player is CharacterBody2D:
 			player.velocity = Vector2.ZERO
-		print("플레이어가 리스폰되었습니다! 위치: ", current_respawn_position)
+		print("Player respawned! Position: ", current_respawn_position)
 
-# 첫 번째 dialogue 종료 여부 추적
+# Track first dialogue completion
 var first_dialogue_done: bool = false
 
-# 튜토리얼 트리거 추적 (한 번만 실행되도록)
+# Track tutorial triggers (run only once)
 var tutorial_triggers_activated: Dictionary = {}
 
-# dialogue가 끝났을 때 호출되는 함수
+# Function called when dialogue ends
 func _on_dialogue_ended():
 	if not first_dialogue_done:
-		# 첫 번째 dialogue가 끝났을 때만 카메라 줌 실행
-		print("=== 첫 번째 dialogue 종료, 포탈 줌 시작 ===")
+		# Execute camera zoom only when first dialogue ends
+		print("=== First dialogue ended, starting portal zoom ===")
 		first_dialogue_done = true
 
-		# 포탈로 카메라 줌 효과 실행 (입력은 계속 잠금 상태 유지)
+		# Execute camera zoom effect to portal (keep input locked)
 		await camera_zoom_to_portal(2.0, 1.5, Vector2(1.5, 1.5), Vector2(-400, 200))
 
-		# 카메라 줌이 끝난 후 두 번째 dialogue 시작
-		print("=== 포탈 줌 완료, 두 번째 dialogue 시작 ===")
+		# Start second dialogue after camera zoom ends
+		print("=== Portal zoom complete, starting second dialogue ===")
 		var balloon = DialogueManager.show_dialogue_balloon_scene("res://testScenes_SIC/dialogue/stage1_balloon.tscn", dialogue_resource, "after_portal")
 		balloon.dialogue_finished.connect(_on_dialogue_ended)
 	else:
-		# 두 번째 dialogue가 끝났을 때 - 이제 플레이어 입력 잠금 해제
-		print("=== 모든 인트로 dialogue 완료, 플레이어 입력 잠금 해제 ===")
+		# When second dialogue ends - now unlock player input
+		print("=== All intro dialogues complete, unlocking player input ===")
 
 		var stage_player = player if player != null else get_node_or_null("Player")
 		if stage_player and stage_player.has_method("set_input_locked"):
 			stage_player.set_input_locked(false)
-			print("플레이어가 이제 움직일 수 있습니다!")
+			print("Player can now move!")
 
-# 포탈로 카메라를 줌인했다가 다시 플레이어로 돌아오는 효과
+# Effect to zoom camera to portal then back to player
 func camera_zoom_to_portal(
-	portal_show_duration: float = 2.0,  # 포탈을 보여주는 시간
-	zoom_duration: float = 1.5,         # 줌 이동 시간
-	portal_zoom_level: Vector2 = Vector2(1.5, 1.5),  # 포탈 줌 레벨
-	offset_adjustment: Vector2 = Vector2.ZERO  # 위치 미세 조정 (예: Vector2(50, -30))
+	portal_show_duration: float = 2.0,  # Time to show portal
+	zoom_duration: float = 1.5,         # Zoom movement time
+	portal_zoom_level: Vector2 = Vector2(1.5, 1.5),  # Portal zoom level
+	offset_adjustment: Vector2 = Vector2.ZERO  # Fine position adjustment (e.g.: Vector2(50, -30))
 ):
-	# 플레이어와 카메라 찾기
+	# Find player and camera
 	var stage_player = player if player != null else get_node_or_null("Player")
 	if stage_player == null:
-		print("경고: Player 노드를 찾을 수 없습니다.")
+		print("Warning: Cannot find Player node.")
 		return
 
 	var camera = stage_player.get_node_or_null("Camera2D")
 	if camera == null:
-		print("경고: Player의 Camera2D를 찾을 수 없습니다.")
+		print("Warning: Cannot find Player's Camera2D.")
 		return
 
-	# 포탈 노드 찾기 (Stage1.tscn에 있는 portal 노드)
+	# Find portal node (portal node in Stage1.tscn)
 	var portal = get_node_or_null("portal")
 	if portal == null:
-		print("경고: Portal 노드를 찾을 수 없습니다.")
-		print("사용 가능한 자식 노드들:")
+		print("Warning: Cannot find Portal node.")
+		print("Available child nodes:")
 		for child in get_children():
 			print("  - ", child.name)
 		return
 
-	print("Portal 노드 찾음:", portal.name, " 위치:", portal.global_position)
+	print("Portal node found:", portal.name, " position:", portal.global_position)
 
-	# 현재 카메라 설정 저장
+	# Save current camera settings
 	var original_offset = camera.offset
 	var original_zoom = camera.zoom
 	var original_smoothing = camera.position_smoothing_enabled
 
-	# 카메라 스무딩 비활성화 (즉시 반응하게)
+	# Disable camera smoothing (to respond immediately)
 	camera.position_smoothing_enabled = false
 
-	# 포탈의 중심 위치 계산
-	# portal이 Area2D이므로 정확한 중심을 가져옴
+	# Calculate portal center position
+	# Portal is Area2D so get exact center
 	var portal_center = portal.global_position
 
-	# 플레이어 기준으로 포탈까지의 offset 계산
+	# Calculate offset to portal from player's perspective
 	var portal_offset = portal_center - stage_player.global_position + offset_adjustment
 
-	print("플레이어 위치:", stage_player.global_position)
-	print("포탈 중심:", portal_center)
-	print("계산된 offset:", portal_offset)
-	print("조정값:", offset_adjustment)
+	print("Player position:", stage_player.global_position)
+	print("Portal center:", portal_center)
+	print("Calculated offset:", portal_offset)
+	print("Adjustment value:", offset_adjustment)
 
-	# 포탈 위치로 카메라 이동
+	# Move camera to portal position
 	var tween = create_tween()
 	tween.set_ease(Tween.EASE_IN_OUT)
 	tween.set_trans(Tween.TRANS_CUBIC)
-	tween.set_parallel(true)  # 동시에 실행
+	tween.set_parallel(true)  # Execute simultaneously
 
 	tween.tween_property(camera, "offset", portal_offset, zoom_duration)
 	tween.tween_property(camera, "zoom", portal_zoom_level, zoom_duration)
 
 	await tween.finished
 
-	# 포탈을 잠시 보여주기
+	# Show portal briefly
 	await get_tree().create_timer(portal_show_duration).timeout
 
-	# 다시 플레이어로 카메라 복귀
+	# Return camera back to player
 	var return_tween = create_tween()
 	return_tween.set_ease(Tween.EASE_IN_OUT)
 	return_tween.set_trans(Tween.TRANS_CUBIC)
@@ -286,31 +286,31 @@ func camera_zoom_to_portal(
 
 	await return_tween.finished
 
-	# 카메라 스무딩 원래대로 복원
+	# Restore camera smoothing to original
 	camera.position_smoothing_enabled = original_smoothing
 
-# 튜토리얼 트리거 처리 (Area2D의 body_entered 신호에 연결)
+# Handle tutorial trigger (connected to Area2D's body_entered signal)
 func _on_tutorial_trigger_entered(body: Node2D, trigger_name: String, dialogue_title: String):
-	# 플레이어가 아니면 무시
+	# Ignore if not player
 	if not body.is_in_group("player"):
 		return
 
-	# 이미 활성화된 트리거면 무시 (한 번만 실행)
+	# Ignore if trigger is already activated (run only once)
 	if tutorial_triggers_activated.get(trigger_name, false):
 		return
 
-	print("=== 튜토리얼 트리거 활성화: ", trigger_name, " ===")
+	print("=== Tutorial trigger activated: ", trigger_name, " ===")
 	tutorial_triggers_activated[trigger_name] = true
 
-	# 플레이어 찾기
+	# Find player
 	var stage_player = player if player != null else body
 
-	# 플레이어 입력 잠금 (움직임 금지)
+	# Lock player input (prevent movement)
 	if stage_player.has_method("set_input_locked"):
 		stage_player.set_input_locked(true)
-		print("플레이어 입력 잠금")
+		print("Player input locked")
 
-	# skill 튜토리얼인 경우 모든 적 AI 비활성화
+	# Disable all enemy AI for skill tutorial
 	var paused_enemies = []
 	if trigger_name == "skill":
 		var enemies = get_tree().get_nodes_in_group("enemies")
@@ -319,38 +319,38 @@ func _on_tutorial_trigger_entered(body: Node2D, trigger_name: String, dialogue_t
 				enemy.set_process(false)
 				enemy.set_physics_process(false)
 				paused_enemies.append(enemy)
-		print("적 AI 비활성화: ", paused_enemies.size(), "마리")
+		print("Enemy AI disabled: ", paused_enemies.size(), " enemies")
 
-	# 튜토리얼 대화 시작
+	# Start tutorial dialogue
 	var balloon = DialogueManager.show_dialogue_balloon_scene(
 		"res://testScenes_SIC/dialogue/stage1_balloon.tscn",
 		dialogue_resource,
 		dialogue_title
 	)
 
-	# 대화가 끝나면 플레이어 입력 잠금 해제 및 적 AI 복원
+	# Unlock player input and restore enemy AI when dialogue ends
 	balloon.dialogue_finished.connect(func():
 		if stage_player.has_method("set_input_locked"):
 			stage_player.set_input_locked(false)
-			print("플레이어 입력 잠금 해제")
+			print("Player input unlocked")
 
-		# skill 튜토리얼이었다면 적 AI 다시 활성화
+		# Re-enable enemy AI if it was skill tutorial
 		if trigger_name == "skill":
 			for enemy in paused_enemies:
 				if enemy and is_instance_valid(enemy):
 					enemy.set_process(true)
 					enemy.set_physics_process(true)
-			print("적 AI 활성화: ", paused_enemies.size(), "마리")
+			print("Enemy AI enabled: ", paused_enemies.size(), " enemies")
 	)
 
 func _on_portal_body_entered(body):
 	if not body.is_in_group("player"):
 		return
 
-	# World의 포탈 체크 먼저 실행 (모든 적 처치 확인)
+	# Execute World's portal check first (verify all enemies are defeated)
 	if not portal_enabled:
-		print(">>> 아직 포탈을 사용할 수 없습니다! 모든 적을 처치하세요. <<<")
+		print(">>> Portal cannot be used yet! Defeat all enemies. <<<")
 		return
 
-	print("플레이어가 포탈에 진입했습니다!")
+	print("Player entered portal!")
 	SceneTransition.fade_to_scene("res://testScenes_SIC/Stage2/Stage2.tscn")

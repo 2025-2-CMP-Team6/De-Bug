@@ -1,7 +1,7 @@
 # EquipSlot.gd
 extends PanelContainer
 
-#region 변수 및 시그널
+#region Variables and Signals
 @export var slot_index: int = 1
 
 signal skill_dropped_on_slot(skill_instance: SkillInstance, slot_index: int)
@@ -11,11 +11,11 @@ var can_drop_stylebox: StyleBoxFlat
 var type_mismatch_stylebox: StyleBoxFlat
 var hover_stylebox: StyleBoxFlat
 
-# 노드 참조
+# Node References
 @onready var icon_rect: TextureRect = $VBoxContainer/Icon
 @onready var name_label: Label = $VBoxContainer/NameLabel
 
-# 툴팁 표시를 위한 데이터
+# Data for tooltip display
 var _tooltip_name: String = ""
 var _tooltip_desc: String = ""
 var _tooltip_level: int = 0
@@ -24,26 +24,26 @@ var _tooltip_icon: Texture = null
 # UI/EquipSlot.gd
 
 func _ready():
-	# 기본 스타일
+	# Default style
 	default_stylebox = StyleBoxFlat.new()
 	default_stylebox.bg_color = Color(0, 0, 0, 0.5)
 	default_stylebox.set_border_width_all(1)
 	default_stylebox.border_color = Color(1, 1, 1, 0.2)
 	default_stylebox.set_corner_radius_all(4)
-	
-	# 호버 스타일 
+
+	# Hover style
 	hover_stylebox = default_stylebox.duplicate()
-	hover_stylebox.set_border_width_all(1) # 테두리 두께 3px
-	hover_stylebox.border_color = Color.WHITE # 완전 흰색
-	
-	# 드롭 가능 스타일 
+	hover_stylebox.set_border_width_all(1) # Border width 3px
+	hover_stylebox.border_color = Color.WHITE # Completely white
+
+	# Drop allowed style
 	can_drop_stylebox = StyleBoxFlat.new()
 	can_drop_stylebox.bg_color = Color(0.1, 1, 0.1, 0.2)
 	can_drop_stylebox.set_border_width_all(2)
 	can_drop_stylebox.border_color = Color(0.5, 1, 0.5)
 	can_drop_stylebox.set_corner_radius_all(4)
-	
-	# 불일치 스타일
+
+	# Mismatch style
 	type_mismatch_stylebox = StyleBoxFlat.new()
 	type_mismatch_stylebox.bg_color = Color(1, 0.1, 0.1, 0.2)
 	type_mismatch_stylebox.set_border_width_all(2)
@@ -60,8 +60,8 @@ func _ready():
 		icon_rect.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		
 		icon_rect.custom_minimum_size = Vector2(64, 64)
-	
-	# 마우스 이벤트 연결
+
+	# Connect mouse events
 	if not mouse_entered.is_connected(_on_mouse_entered):
 		mouse_entered.connect(_on_mouse_entered)
 	if not mouse_exited.is_connected(_on_mouse_exited):
@@ -69,33 +69,33 @@ func _ready():
 		
 	clear_skill_display()
 
-#region 호버 효과
-# 호버 시작
+#region Hover Effects
+# Hover start
 func _on_mouse_entered():
 	if get_viewport().gui_is_dragging(): return
 	add_theme_stylebox_override("panel", hover_stylebox)
 
-# 호버 종료
+# Hover end
 func _on_mouse_exited():
 	if get_viewport().gui_is_dragging(): return
 	add_theme_stylebox_override("panel", default_stylebox)
 #endregion
 
 
-#region 드래그 앤 드롭
+#region Drag and Drop
 func _can_drop_data(at_position, data) -> bool:
 	var can_drop = (data is Dictionary and data.has("type") and data.type == "skill_instance")
 	if not can_drop:
 		return false
-	if slot_index == 0 or slot_index == 10 or slot_index == 12 or slot_index == 13: # 강화 대상 슬롯, 합성 슬롯
+	if slot_index == 0 or slot_index == 10 or slot_index == 12 or slot_index == 13: # Upgrade target slot, synthesis slot
 		add_theme_stylebox_override("panel", can_drop_stylebox)
 		return true
-	if slot_index == 11: # 강화 재료 슬롯
+	if slot_index == 11: # Upgrade material slot
 		var skill_ui = get_tree().get_first_node_in_group("skill_ui")
 		if not is_instance_valid(skill_ui) or not is_instance_valid(skill_ui.current_upgrade_base):
 			return false
-		
-		# 경로가 같고 자기 자신이 아니어야 함
+
+		# Path must be the same and not itself
 		var is_same_path = (skill_ui.current_upgrade_base.skill_path == data.instance.skill_path)
 		var is_not_self = (skill_ui.current_upgrade_base != data.instance)
 		
@@ -106,7 +106,7 @@ func _can_drop_data(at_position, data) -> bool:
 			add_theme_stylebox_override("panel", type_mismatch_stylebox)
 			return true
 
-	if data.has("skill_type_int") and data.skill_type_int == slot_index: # 스킬 장착 슬롯
+	if data.has("skill_type_int") and data.skill_type_int == slot_index: # Skill equip slot
 		add_theme_stylebox_override("panel", can_drop_stylebox)
 		return true
 	else:
@@ -121,9 +121,9 @@ func _drop_data(at_position, data):
 	var current_style = get_theme_stylebox("panel")
 	
 	add_theme_stylebox_override("panel", default_stylebox)
-	
+
 	if current_style == type_mismatch_stylebox:
-		print("UI: 조건 불일치(빨간색)로 장착 거부됨")
+		print("UI: Equip rejected due to condition mismatch (red)")
 		return
 
 	if slot_index == 0 or slot_index >= 10:
@@ -150,9 +150,9 @@ func _get_drag_data(at_position):
 	return null
 #endregion
 
-#region 툴팁
+#region Tooltip
 func _make_custom_tooltip(_for_text):
-	# 스킬 정보가 없으면 기본 텍스트 툴팁 사용
+	# Use default text tooltip if no skill info
 	if _tooltip_name == "":
 		return null
 
@@ -185,7 +185,7 @@ func _make_custom_tooltip(_for_text):
 	return tooltip
 #endregion
 
-#region UI 업데이트
+#region UI Update
 func set_skill_display(icon: Texture, name: String, description: String, level: int = 0):
 	if level > 0:
 		name_label.text = name + " + " + str(level)
@@ -220,5 +220,5 @@ func clear_skill_display():
 	_tooltip_desc = ""
 	_tooltip_level = 0
 	_tooltip_icon = null
-	self.tooltip_text = "비어있는 슬롯"
+	self.tooltip_text = "Empty slot"
 #endregion

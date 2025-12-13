@@ -1,7 +1,7 @@
 extends CanvasLayer
 ## A basic dialogue balloon for use with Dialogue Manager.
 
-## 대화가 완전히 종료되었을 때 발생하는 신호
+## Signal emitted when dialogue has completely ended
 signal dialogue_finished
 
 ## The dialogue resource
@@ -44,7 +44,7 @@ var dialogue_line: DialogueLine:
 			apply_dialogue_line()
 		else:
 			# The dialogue has finished so close the balloon
-			dialogue_finished.emit()  # 대화 종료 신호 발생
+			dialogue_finished.emit()  # Emit dialogue end signal
 			if owner == null:
 				queue_free()
 			else:
@@ -70,7 +70,7 @@ var mutation_cooldown: Timer = Timer.new()
 ## Indicator to show that player can progress dialogue.
 @onready var progress: Polygon2D = %Progress
 
-## 초상화 추가
+## Portrait
 @onready var portrait: TextureRect = %Portrait
 
 

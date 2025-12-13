@@ -3,7 +3,7 @@ extends CharacterBody2D
 
 const BaseSkill = preload("res://SkillDatas/BaseSkill.gd")
 
-#region 플레이어 속성 (Player Attributes)
+#region Player Attributes
 @export var max_speed: float = 400.0
 @export var gravity: float = ProjectSettings.get_setting("physics/2d/default_gravity")
 @export var jump_velocity: float = -600.0
@@ -21,7 +21,7 @@ const BaseSkill = preload("res://SkillDatas/BaseSkill.gd")
 @export var hit_sound: AudioStream
 #endregion
 
-#region 상태 관리 변수
+#region State Management Variables
 var can_dash: bool = true
 var dash_direction: Vector2 = Vector2.ZERO
 var current_stamina: float = 0.0
@@ -33,8 +33,8 @@ var is_input_locked: bool = true
 var jumps_made: int = 0
 #endregion
 
-#region 노드 참조 (Node Cache)
-# --- 내부 노드 ---
+#region Node References (Node Cache)
+# --- Internal Nodes ---
 @export var duration_timer: Timer
 @export var cooldown_timer: Timer
 @export var skill_cast_timer: Timer
@@ -49,7 +49,7 @@ var jumps_made: int = 0
 @export var camera_node: Camera2D
 @export var screen_flash_rect: ColorRect
 
-# --- 외부 HUD 노드 ---
+# --- External HUD Nodes ---
 @export var skill_ui: SkillUI
 @export var skill_get_ui: SkillGetUI
 @export var hud_skill_1_icon: Control
@@ -60,7 +60,7 @@ var jumps_made: int = 0
 #endregion
 
 
-#region 초기화 (Initialization)
+#region Initialization
 func _ready():
 	if camera_node == null:
 		camera_node = get_node_or_null("Camera2D")
@@ -81,13 +81,13 @@ func _ready():
 	if stamina_bar:
 		stamina_bar.max_value = max_stamina
 		stamina_bar.value = current_stamina
-		# 스태미나 바가 타일이나 다른 요소에 가려지지 않도록 z_index 설정
+		# Set z_index so the stamina bar is not obscured by tiles or other elements
 		stamina_bar.z_index = 100
 
 	current_lives = max_lives
 	update_lives_ui()
 
-	# 생명 UI도 z_index 설정
+	# Set z_index for lives UI as well
 	if lives_container:
 		lives_container.z_index = 100
 
@@ -105,7 +105,7 @@ func _ready():
 			break
 
 	if has_saved_skills:
-		print("플레이어 부활: 저장된 스킬을 다시 장착합니다.")
+		print("Player respawn: Re-equipping saved skills.")
 		var inst1 = InventoryManager.equipped_skills[1]
 		if inst1: _load_skill_into_slot(inst1, 1)
 		var inst2 = InventoryManager.equipped_skills[2]
@@ -113,7 +113,7 @@ func _ready():
 		var inst3 = InventoryManager.equipped_skills[3]
 		if inst3: _load_skill_into_slot(inst3, 3)
 	else:
-		print("플레이어 첫 시작: 기본 스킬을 장착합니다.")
+		print("Player first start: Equipping default skills.")
 		var initial_skill_1_path = "res://SkillDatas/Skill_BlinkSlash/Skill_BlinkSlash.tscn"
 		var inst1 = InventoryManager.pop_skill_by_path(initial_skill_1_path)
 		if inst1: equip_skill(inst1, 1)
@@ -132,7 +132,7 @@ func _ready():
 	change_state(GameManager.State.IDLE)
 #endregion
 
-#region 물리 처리 (Physics Process)
+#region Physics Process
 func _physics_process(delta: float):
 	var current_gravity_multiplier = 1.0
 	if GameManager.state == GameManager.State.SKILL_CASTING and is_instance_valid(current_casting_skill):
@@ -171,7 +171,7 @@ func _physics_process(delta: float):
 	move_and_slide()
 #endregion
 
-#region 상태별 로직 (State Logic)
+#region State Logic
 func regenerate_stamina(delta: float):
 	current_stamina = clamp(current_stamina + stamina_regen_rate * delta, 0, max_stamina)
 
@@ -205,7 +205,7 @@ func state_logic_skill_casting(delta: float):
 		change_state(GameManager.State.IDLE)
 #endregion
 
-#region 입력 처리 (Input Handling)
+#region Input Handling
 func handle_inputs():
 	if is_input_locked:
 		return
@@ -228,7 +228,7 @@ func handle_inputs():
 			pass
 #endregion
 
-#region 스킬 관련 기능 (Skill Functions)
+#region Skill Functions
 func find_nearest_enemy() -> Node2D:
 	var all_enemies = get_tree().get_nodes_in_group("enemies")
 	var nearest_enemy: Node2D = null
@@ -244,30 +244,30 @@ func find_nearest_enemy() -> Node2D:
 func try_cast_skill(slot_node: Node, target: Node2D = null):
 	if not is_instance_valid(slot_node): return
 	if slot_node.get_child_count() == 0:
-		print("슬롯이 비어있음")
+		print("Slot is empty")
 		return
 	var skill: BaseSkill = slot_node.get_child(0)
 	if skill == null: return
 	if skill.requires_target and target == null:
-		print(skill.skill_name + "은(는) 적을 클릭해야 합니다.")
+		print(skill.skill_name + " requires clicking on an enemy.")
 		return
 	if skill.requires_target and skill.max_cast_range > 0:
 		var distance = global_position.distance_to(target.global_position)
 		if distance > skill.max_cast_range:
-			print(skill.skill_name + "의 사거리가 닿지 않습니다!")
+			print(skill.skill_name + " is out of range!")
 			return
 	if not skill.is_ready():
 		var time_left = skill.get_cooldown_time_left()
-		print(skill.skill_name + " 스킬 준비 안 됨 (쿨타임). 남은 시간: " + str(time_left) + "초")
+		print(skill.skill_name + " skill not ready (cooldown). Time remaining: " + str(time_left) + "s")
 		return
 	if current_stamina < skill.stamina_cost:
-		print(skill.skill_name + " 스킬 준비 안 됨 (스태미나 부족! 현재: " + str(current_stamina) + " / 필요: " + str(skill.stamina_cost) + ")")
+		print(skill.skill_name + " skill not ready (insufficient stamina! Current: " + str(current_stamina) + " / Required: " + str(skill.stamina_cost) + ")")
 		return
 	current_casting_skill = skill
 	current_cast_target = target
 	change_state(GameManager.State.SKILL_CASTING)
 
-#  부활 시 SkillInstance를 사용해 로드
+# Load using SkillInstance on respawn
 func _load_skill_into_slot(skill_instance: SkillInstance, slot_number: int):
 	var slot_node: Node = null
 	match slot_number:
@@ -287,12 +287,12 @@ func _load_skill_into_slot(skill_instance: SkillInstance, slot_number: int):
 	
 	if new_skill_node is BaseSkill:
 		if new_skill_node.type == slot_number:
-			# 레벨과 인스턴스 참조 설정
+			# Set level and instance reference
 			new_skill_node.current_level = skill_instance.level
 			new_skill_node.skill_instance_ref = skill_instance
 			slot_node.add_child(new_skill_node)
 		else:
-			print("부활 오류: 스킬 타입 불일치! " + skill_instance.skill_path)
+			print("Respawn error: Skill type mismatch! " + skill_instance.skill_path)
 			new_skill_node.queue_free()
 	else:
 		new_skill_node.queue_free()
@@ -309,32 +309,32 @@ func equip_skill(skill_to_equip: SkillInstance, slot_number: int):
 	if is_instance_valid(old_skill_instance):
 		InventoryManager.add_skill_to_inventory(old_skill_instance)
 
-	# 기존 스킬 파괴
+	# Destroy existing skill
 	if slot_node.get_child_count() > 0:
 		for child in slot_node.get_children():
 			child.queue_free()
 
-	# 새 스킬 인스턴스화
+	# Instantiate new skill
 	var skill_scene = load(skill_to_equip.skill_path)
 	if skill_scene == null: return
 	var new_skill_node = skill_scene.instantiate()
 	
 	if new_skill_node is BaseSkill:
 		if new_skill_node.type == slot_number:
-			print(new_skill_node.skill_name + "을(를) " + str(slot_number) + "번 슬롯에 장착!")
-			
-			# 레벨과 인스턴스 참조 설정
+			print(new_skill_node.skill_name + " equipped in slot " + str(slot_number) + "!")
+
+			# Set level and instance reference
 			new_skill_node.current_level = skill_to_equip.level
 			new_skill_node.skill_instance_ref = skill_to_equip
-			
+
 			slot_node.add_child(new_skill_node)
-			
-			#  InventoryManager에 등록
+
+			# Register in InventoryManager
 			InventoryManager.equipped_skills[slot_number] = skill_to_equip
 		else:
-			print("타입 불일치")
+			print("Type mismatch")
 			new_skill_node.queue_free()
-			#  장착 실패 인벤토리로 되돌림
+			# Return to inventory on equip failure
 			InventoryManager.add_skill_to_inventory(skill_to_equip)
 			return
 	else:
@@ -348,19 +348,19 @@ func unequip_skill(slot_number: int):
 		3: slot_node = skill_3_slot
 	
 	if is_instance_valid(slot_node) and slot_node.get_child_count() > 0:
-		print(str(slot_number) + "번 슬롯 장착 해제")
-		
-		#  InventoryManager에서 장착 해제된 SkillInstance를 가져옴
+		print("Unequipping slot " + str(slot_number))
+
+		# Get unequipped SkillInstance from InventoryManager
 		var unequipped_instance = InventoryManager.equipped_skills[slot_number]
 		if is_instance_valid(unequipped_instance):
 			InventoryManager.equipped_skills[slot_number] = null
-			InventoryManager.add_skill_to_inventory(unequipped_instance) # 인벤토리에 다시 추가
+			InventoryManager.add_skill_to_inventory(unequipped_instance) # Add back to inventory
 			
 		for child in slot_node.get_children():
 			child.queue_free()
 #endregion
 
-#region 상태 변경 로직 (State Change)
+#region State Change
 func change_state(new_state: GameManager.State):
 	if GameManager.state == new_state:
 		return
@@ -379,7 +379,7 @@ func change_state(new_state: GameManager.State):
 				duration_timer.wait_time = dash_duration
 				duration_timer.start()
 			else:
-				push_warning("DashDurationTimer가 @export로 할당되지 않았습니다!")
+				push_warning("DashDurationTimer is not assigned via @export!")
 				_on_dash_duration_timeout()
 				
 		GameManager.State.SKILL_CASTING:
@@ -393,7 +393,7 @@ func change_state(new_state: GameManager.State):
 					skill_cast_timer.start()
 #endregion
 
-#region 타이머 콜백 (Timer Callbacks)
+#region Timer Callbacks
 func _on_dash_duration_timeout():
 	velocity = Vector2.ZERO
 	change_state(GameManager.State.IDLE)
@@ -410,7 +410,7 @@ func _on_skill_cast_timeout():
 	current_cast_target = null
 #endregion
 
-#region 피격 및 생명 관리
+#region Hit and Life Management
 func update_lives_ui():
 	if not is_instance_valid(lives_container): return
 	for child in lives_container.get_children():
@@ -422,7 +422,7 @@ func update_lives_ui():
 			icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 			icon.custom_minimum_size = Vector2(32, 32)
 			
-				# 최대 체력 이상, 추가 체력 처리
+				# Handle extra lives beyond max health
 			if i >= max_lives and gold_life_icon != null:
 				icon.texture = gold_life_icon
 				icon.modulate = Color(1, 1, 1)
@@ -435,13 +435,13 @@ func lose_life():
 		
 	if sfx_player and hit_sound:
 		sfx_player.stream = hit_sound
-		# 피치(음정)를 0.9 ~ 1.1 사이로 랜덤하게 조절하면 
-		# 매번 똑같은 소리가 나지 않아 덜 지루하고 자연스럽습니다.
+		# Randomly adjusting pitch between 0.9 ~ 1.1
+		# makes the sound less monotonous and more natural by varying it each time.
 		sfx_player.pitch_scale = randf_range(0.9, 1.1)
 		sfx_player.play()
 		
 	current_lives -= 1
-	print("생명 1 잃음! 남은 생명: ", current_lives)
+	print("Lost 1 life! Remaining lives: ", current_lives)
 	update_lives_ui()
 	if current_lives <= 0:
 		die()
@@ -452,7 +452,7 @@ func lose_life():
 			i_frames_timer.start()
 
 func die():
-	print("플레이어가 사망했습니다.")
+	print("Player has died.")
 	is_invincible = false
 	if visuals: visuals.visible = true
 	set_physics_process(false)
@@ -468,5 +468,5 @@ func _on_i_frames_timeout():
 func set_input_locked(locked: bool):
 	is_input_locked = locked
 	if locked:
-		velocity = Vector2.ZERO # 입력을 잠글 때 움직임을 즉시 멈춤
+		velocity = Vector2.ZERO # Stop movement immediately when locking input
 #endregion

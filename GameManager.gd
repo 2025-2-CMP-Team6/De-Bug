@@ -4,7 +4,7 @@ extends Node
 var is_cheat: bool = false
 var is_free_cam: bool = false
 var is_dragging: bool = false
-#region 상태 머신 (State Machine)
+#region State Machine
 enum State {
 	IDLE,
 	MOVE,

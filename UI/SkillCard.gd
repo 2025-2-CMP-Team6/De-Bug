@@ -2,7 +2,7 @@
 extends PanelContainer
 class_name SkillCard
 
-#region 변수
+#region Variables
 var skill_instance: SkillInstance
 
 var skill_icon: Texture
@@ -14,7 +14,7 @@ var hover_stylebox: StyleBoxFlat
 var default_stylebox: StyleBoxFlat
 #endregion
 
-#region UI 설정
+#region UI Setup
 func _ready():
 	hover_stylebox = StyleBoxFlat.new()
 	hover_stylebox.bg_color = Color(1, 1, 1, 0.15)
@@ -28,17 +28,17 @@ func _ready():
 
 func setup_card_ui():
 	if not is_instance_valid(skill_instance):
-		print("SkillCard 오류: SkillInstance가 없습니다.")
+		print("SkillCard error: SkillInstance is missing.")
 		return
 
 	var skill_scene = load(skill_instance.skill_path)
 	if not skill_scene:
-		print("SkillCard 오류: 경로를 로드할 수 없음: " + skill_instance.skill_path)
+		print("SkillCard error: Cannot load path: " + skill_instance.skill_path)
 		return
-		
+
 	var skill_template = skill_scene.instantiate() as BaseSkill
 	if not is_instance_valid(skill_template):
-		print("SkillCard 오류: BaseSkill이 아님: " + skill_instance.skill_path)
+		print("SkillCard error: Not BaseSkill: " + skill_instance.skill_path)
 		return
 
 	skill_icon = skill_template.skill_icon
@@ -90,7 +90,7 @@ func setup_card_ui():
 		add_theme_stylebox_override("panel", default_stylebox)
 #endregion
 
-#region 툴팁
+#region Tooltip
 func _make_custom_tooltip(_for_text):
 	var scene = load("res://UI/SkillSelect.tscn")
 	if not scene:
@@ -121,7 +121,7 @@ func _make_custom_tooltip(_for_text):
 	return tooltip
 #endregion
 
-#region 드래그 앤 드롭
+#region Drag and Drop
 func _get_drag_data(at_position):
 	var drag_data = {
 		"type": "skill_instance",
@@ -138,7 +138,7 @@ func _get_drag_data(at_position):
 	return drag_data
 #endregion
 
-#region 호버 효과
+#region Hover Effects
 func _on_mouse_entered():
 	if hover_stylebox:
 		add_theme_stylebox_override("panel", hover_stylebox)

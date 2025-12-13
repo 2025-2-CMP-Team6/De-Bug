@@ -1,4 +1,4 @@
-# Boss.gd
+# boss_virus.gd
 extends BaseEnemy
 
 #region 보스 전용 설정

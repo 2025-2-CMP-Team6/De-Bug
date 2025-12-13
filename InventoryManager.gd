@@ -1,7 +1,7 @@
 # res://InventoryManager.gd
 extends Node
 
-#region 변수
+#region Variables
 const SKILL_DIRECTORY = "res://SkillDatas/"
 
 var skill_database: Array[String] = []
@@ -15,12 +15,12 @@ var equipped_skills: Dictionary = {
 }
 #endregion
 
-#region 초기화 및 스킬 DB
+#region Initialization and Skill Database
 func _ready():
 	load_skills_from_directory(SKILL_DIRECTORY)
 
-	# 테스트용: 게임 시작 시 모든 스킬을 인벤토리에 추가 (주석 처리됨)
-	# 스킬은 보상창에서 선택했을 때만 인벤토리에 추가되어야 함
+	# For testing: Add all skills to inventory at game start (commented out)
+	# Skills should only be added to inventory when selected from the reward screen
 	# add_skill_to_inventory("res://SkillDatas/Skill_Melee/Skill_Melee.tscn")
 	# add_skill_to_inventory("res://SkillDatas/Skill_Heal/Skill_Heal.tscn")
 	# add_skill_to_inventory("res://SkillDatas/Skill_ThunderSlash/Skill_ThunderSlash.tscn")
@@ -50,17 +50,17 @@ func load_skills_from_directory(path: String):
 					var instance = scene.instantiate()
 					if instance is BaseSkill:
 						skill_database.append(full_path)
-					instance.queue_free() # 메모리 누수 방지
+					instance.queue_free() # Prevent memory leak
 			
 			file_name = dir.get_next()
 #endregion
 
-#region 스킬 정보 조회
-# 모든 스킬 종류의 개수 반환
+#region Skill Information Query
+# Return the count of all skill types
 func get_skill_type_count() -> int:
 	return skill_database.size()
 
-# 랜덤 스킬 경로 반환
+# Return random skill path
 func get_random_skill_path() -> String:
 	if skill_database.is_empty():
 		printerr("Skill database is empty. Cannot get a random skill.")
@@ -69,8 +69,8 @@ func get_random_skill_path() -> String:
 	return skill_database[random_index]
 #endregion
 
-#region 인벤토리 관리
-# 스킬 추가
+#region Inventory Management
+# Add skill
 func add_skill_to_inventory(skill_data):
 	var instance_to_add: SkillInstance
 	
@@ -82,11 +82,11 @@ func add_skill_to_inventory(skill_data):
 	elif skill_data is SkillInstance:
 		instance_to_add = skill_data
 	else:
-		print("InventoryManager 오류: add_skill_to_inventory에 잘못된 타입이 들어옴")
+		print("InventoryManager error: Invalid type passed to add_skill_to_inventory")
 		return
 
 	player_inventory.append(instance_to_add)
-# 스킬 제거
+# Remove skill
 func remove_skill_from_inventory(instance_to_remove: SkillInstance) -> bool:
 	var index = player_inventory.find(instance_to_remove)
 	if index != -1:
@@ -94,7 +94,7 @@ func remove_skill_from_inventory(instance_to_remove: SkillInstance) -> bool:
 		return true
 	
 	return false
-# 스킬 팝
+# Pop skill
 func pop_skill_by_path(skill_path: String) -> SkillInstance:
 	for i in range(player_inventory.size()):
 		if player_inventory[i].skill_path == skill_path:
@@ -103,15 +103,15 @@ func pop_skill_by_path(skill_path: String) -> SkillInstance:
 	return null
 #endregion
 
-#region 스킬 강화
-# 강화 시도
+#region Skill Upgrade
+# Attempt upgrade
 func attempt_upgrade(base_skill: SkillInstance, material_skill: SkillInstance) -> bool:
 	if not (is_instance_valid(base_skill) and is_instance_valid(material_skill)):
-		print("강화 오류: 슬롯이 비어있습니다.")
+		print("Upgrade error: Slot is empty.")
 		return false
 
 	if base_skill.skill_path != material_skill.skill_path:
-		print("강화 오류: 같은 종류의 스킬이 아닙니다.")
+		print("Upgrade error: Not the same skill type.")
 		return false
 		
 	var base_chance = [0.6, 0.5, 0.4, 0.3, 0.2]
@@ -120,19 +120,19 @@ func attempt_upgrade(base_skill: SkillInstance, material_skill: SkillInstance) -
 	if current_level < base_chance.size():
 		chance = base_chance[current_level]
 	else:
-		chance = 0.1 # 최대 레벨 이후
+		chance = 0.1 # After max level
 		
 	var success_chance = chance + (base_skill.bonus_points * 0.01)
 	
 	if randf() < success_chance:
-		# 성공
+		# Success
 		base_skill.level += 1
-		base_skill.bonus_points = 0.0 # 보너스 초기화
-		print("강화 성공! " + base_skill.skill_path + " (Lv. " + str(base_skill.level) + ")")
+		base_skill.bonus_points = 0.0 # Reset bonus
+		print("Upgrade success! " + base_skill.skill_path + " (Lv. " + str(base_skill.level) + ")")
 		return true
 	else:
-		# 실패
-		base_skill.bonus_points += 10.0 # 보너스
-		print("강화 실패... " + base_skill.skill_path + " (보너스: " + str(base_skill.bonus_points) + "%)")
+		# Failure
+		base_skill.bonus_points += 10.0 # Bonus
+		print("Upgrade failed... " + base_skill.skill_path + " (Bonus: " + str(base_skill.bonus_points) + "%)")
 		return false
 #endregion

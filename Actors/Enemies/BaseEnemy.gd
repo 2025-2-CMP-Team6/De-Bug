@@ -1,7 +1,7 @@
 # BaseEnemy.gd
 class_name BaseEnemy extends CharacterBody2D
 
-#region 속성
+#region Properties
 @export var max_health: float = 100.0
 var current_health: float
 @export var gravity: float = ProjectSettings.get_setting("physics/2d/default_gravity")
@@ -12,38 +12,38 @@ var current_health: float
 var boss_ui_instance = null
 const DEFAULT_BOSS_UI_PATH = "res://Actors/Enemies/Boss/boss_hp_bar.tscn"
 
-# 사망 시그널
+# Death signal
 signal enemy_died
 #endregion
 
-#region 노드 참조
+#region Node References
 @onready var sprite = $Sprite2D
 @onready var hurtbox = $Hurtbox
 @onready var i_frames_timer = $IFramesTimer
 #endregion
 
-#region 상태 변수
+#region State Variables
 var is_invincible: bool = false
 #endregion
 
-#region 초기화
+#region Initialization
 func _ready():
 	current_health = max_health
 	
-	# Hurtbox 연결
+	# Connect Hurtbox
 	if hurtbox != null:
-		# 시그널 중복 연결 방지
+		# Prevent duplicate signal connections
 		for conn in hurtbox.area_entered.get_connections():
 			hurtbox.area_entered.disconnect(conn.callable)
 		hurtbox.area_entered.connect(_on_hurtbox_area_entered)
 	
-	# 무적 시간 타이머 연결
+	# Connect invincibility timer
 	if i_frames_timer != null:
 		for conn in i_frames_timer.timeout.get_connections():
 			i_frames_timer.timeout.disconnect(conn.callable)
 		i_frames_timer.timeout.connect(_on_i_frames_timeout)
 	
-	# 쉐이더 초기화
+	# Initialize shader
 	if sprite:
 		if sprite.material:
 			sprite.material = sprite.material.duplicate()
@@ -53,7 +53,7 @@ func _ready():
 			if ResourceLoader.exists(DEFAULT_BOSS_UI_PATH):
 				boss_ui_scene = load(DEFAULT_BOSS_UI_PATH)
 			else:
-				print("오류: Boss UI 파일을 찾을 수 없습니다! 경로를 확인하세요: ", DEFAULT_BOSS_UI_PATH)
+				print("Error: Boss UI file not found! Check the path: ", DEFAULT_BOSS_UI_PATH)
 	if is_boss and boss_ui_scene:
 		boss_ui_instance = boss_ui_scene.instantiate()
 		add_child(boss_ui_instance)
@@ -62,14 +62,14 @@ func _ready():
 			boss_ui_instance.initialize(self.name, max_health, current_health)
 #endregion
 
-#region 물리 처리
+#region Physics Process
 
 func _physics_process(delta: float):
-	# 중력
+	# Gravity
 	if not is_on_floor():
 		velocity.y += gravity * delta
 	
-	# 무적 상태 점멸 효과
+	# Invincibility flash effect
 	if is_invincible:
 		var is_flash_on = (int(Time.get_ticks_msec() / 100) % 2) == 0
 		if sprite:
@@ -78,22 +78,22 @@ func _physics_process(delta: float):
 		if sprite:
 			EffectManager.set_hit_flash_amount(sprite, 0.0)
 
-	# 이동
+	# Movement
 	_process_movement(delta)
 	move_and_slide()
 
-# 자식 클래스로 오버라이드
+# Override in child class
 func _process_movement(_delta: float):
 	pass
 #endregion
 
-#region 피격 및 사망
+#region Hit and Death
 func take_damage(amount: float):
 	if is_invincible or current_health <= 0:
 		return
 
 	current_health -= amount
-	print(self.name + " 피격! 남은 체력: ", current_health)
+	print(self.name + " hit! Remaining health: ", current_health)
 	EffectManager.play_hit_effect(global_position, effsize)
 	is_invincible = true
 	if i_frames_timer != null:

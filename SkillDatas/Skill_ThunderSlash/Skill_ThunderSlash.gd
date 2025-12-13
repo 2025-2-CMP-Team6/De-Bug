@@ -1,10 +1,10 @@
 extends BaseSkill
 
-#region 스킬 설정
+#region Skill Settings
 @export_group("ThunderSlash Settings")
-@export var slash_count: int = 3           # 연속 공격 횟수
-@export var slash_interval: float = 0.3    # 공격 속
-@export var search_radius: float = 400.0   # 다음 적 찾는 범위
+@export var slash_count: int = 3           # Number of consecutive attacks
+@export var slash_interval: float = 0.3    # Attack speed
+@export var search_radius: float = 400.0   # Range to search for the next enemy
 
 @export_group("Movement Settings")
 @export var teleport_distance: float = 60.0
@@ -13,7 +13,7 @@ extends BaseSkill
 @export var slash_visual_texture: Texture
 
 @export_group("Audio Settings")
-@export var slash_sound: AudioStream # 효과음
+@export var slash_sound: AudioStream # SFX
 #endregion
 
 var is_slashing_sequence: bool = false
@@ -25,7 +25,7 @@ func _init():
 	gravity_multiplier = 0.0
 
 # -----------------------------------------------------------
-# 1. 실행 (Execute)
+# 1. Execute
 # -----------------------------------------------------------
 func execute(owner: CharacterBody2D, target: Node2D = null):
 	if is_slashing_sequence: return
@@ -39,24 +39,24 @@ func execute(owner: CharacterBody2D, target: Node2D = null):
 	var current_target = target
 	
 	for i in range(slash_count):
-		# 타겟 생존 확인
+		# Check if the target is still alive/valid
 		if not _is_valid_target(current_target):
 			current_target = _find_nearest_enemy(owner)
 			if current_target == null: break
 		
 		_play_sound()
 		
-		# 베기 실행
+		# Perform slash
 		_perform_slash(owner, current_target)
 		
-		# 대기 (0.3초)
+		# Wait (0.3 seconds)
 		await get_tree().create_timer(slash_interval).timeout
 	
 	is_slashing_sequence = false
 	_on_skill_finished()
 
 # -----------------------------------------------------------
-# 2. 베기 동작
+# 2. Slash behavior
 # -----------------------------------------------------------
 func _perform_slash(owner: CharacterBody2D, target: Node2D):
 	if not _is_valid_target(target): return
@@ -66,33 +66,33 @@ func _perform_slash(owner: CharacterBody2D, target: Node2D):
 
 	owner.global_position = end_pos
 	
-	# 방향 전환
+	# Flip direction
 	var look_dir = target.global_position.x - owner.global_position.x
 	if look_dir > 0: owner.scale.x = abs(owner.scale.x)
 	else: owner.scale.x = -abs(owner.scale.x)
 
-	# 데미지 & 이펙트
+	# Damage & effects
 	_apply_damage(start_pos, end_pos, owner)
 	EffectManager.play_screen_shake(8.0, 0.1)
 	EffectManager.play_multi_flash(Color(1, 1, 0.8), 0.05, 1)
 
 # -----------------------------------------------------------
-# 3. 유틸리티 함수들 (소리 재생 추가됨)
+# 3. Utility functions (sound playback added)
 # -----------------------------------------------------------
 
-# 소리 재생 함수 (일회용 스피커 생성)
+# Sound playback function (creates a one-off speaker)
 func _play_sound():
 	if slash_sound == null: return
 	
 	var asp = AudioStreamPlayer.new()
 	asp.stream = slash_sound
-	asp.volume_db = -5.0 # 소리 조절
-	asp.pitch_scale = randf_range(0.9, 1.1) # 음높이 랜덤
+	asp.volume_db = -5.0 # Volume control
+	asp.pitch_scale = randf_range(0.9, 1.1) # Randomize pitch
 	
 	get_tree().current_scene.add_child(asp)
 	asp.play()
 	
-	# 소리가 끝나면 스피커 삭제
+	# Delete the speaker when the sound ends
 	asp.finished.connect(asp.queue_free)
 
 func _is_valid_target(target) -> bool:

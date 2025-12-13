@@ -1,6 +1,6 @@
 class_name MidBossHover extends BaseEnemy
 
-#region 상태 정의 (새로 추가됨)
+#region State Definition (Newly Added)
 enum MeteoState {
 	NORMAL,
 	TO_START_POS,
@@ -9,7 +9,7 @@ enum MeteoState {
 var current_state: MeteoState = MeteoState.NORMAL
 #endregion
 
-#region 설정값
+#region Configuration
 @export_group("Movement")
 @export var fly_speed: float = 400.0
 @export var acceleration: float = 5.0
@@ -44,7 +44,7 @@ const BULLET_SCENE = preload("res://Actors/Enemies/bullet.tscn")
 @export var bombing_range: float = 1000.0
 #endregion
 
-#region 내부 변수
+#region Internal Variables
 var player: Node2D = null
 var creating: bool = false
 
@@ -55,13 +55,13 @@ var orbitals = []
 var orbital_active_timer: float = 0.0
 var current_orbit_angle: float = 0.0
 
-# 폭격용 변수
+# Bombing variables
 var bomb_drop_timer: float = 0.0
 var bombing_y: float = 0.0
 var is_firing_orbitals: bool = false
 #endregion
 
-#region 노드 참조
+#region Node References
 @onready var animation = $Visuals/AnimatedSprite2D
 @onready var pattern = $PatternTimer
 #endregion
@@ -101,7 +101,7 @@ func _process_movement(delta):
 		MeteoState.BOMBING_RUN:
 			_process_bombing_run(delta)
 
-#region 이동 로직
+#region Movement Logic
 func _apply_erratic_movement(delta):
 	move_change_timer -= delta
 	
@@ -110,7 +110,7 @@ func _apply_erratic_movement(delta):
 	
 	velocity = velocity.lerp(target_velocity, acceleration * delta)
 	
-	# 방향 전환
+	# Direction change
 	if animation:
 		animation.flip_h = (player.global_position.x < global_position.x)
 
@@ -137,7 +137,7 @@ func _pick_new_direction():
 	target_velocity = base_velocity + jitter
 #endregion
 
-#region 전투 패턴 분기
+#region Combat Pattern Branch
 func _start_pattern_timer():
 	pattern.wait_time = randf_range(2.0, 4.0)
 	pattern.start()
@@ -175,7 +175,7 @@ func shoot_spread_attack():
 # summon pattern
 func summon_minions():
 	if not minion_scene:
-		print("경고: Minion Scene 비어있음")
+		print("Warning: Minion Scene is empty")
 		return
 	creating = true
 	await get_tree().create_timer(0.5).timeout
@@ -227,7 +227,7 @@ func _process_orbitals(delta):
 		else:
 			fire_target_vector = Vector2.UP
 
-	# 역순으로 순회하여 리스트 삭제 시 인덱스 오류 방지 및 안정성 확보
+	# Iterate in reverse order to prevent index errors when deleting from list and ensure stability
 	for i in range(orbitals.size() - 1, -1, -1):
 		var data = orbitals[i]
 		var bullet = data["node"]
@@ -247,7 +247,7 @@ func _process_orbitals(delta):
 				var dir = (player.global_position - bullet.global_position).normalized()
 				bullet.direction = dir
 				bullet.speed = orbital_shoot_speed * orbital_speed
-				orbitals.remove_at(i) # 발사된 탄막은 리스트에서 제거
+				orbitals.remove_at(i) # Remove fired bullet from list
 	
 	if not is_firing_orbitals:
 		orbital_active_timer -= delta
@@ -264,7 +264,7 @@ func launch_orbitals():
 
 #region bombing pattern
 func start_bombing_pattern():
-	print("중간 보스: 공중 폭격 준비!")
+	print("Mid Boss: Preparing aerial bombing!")
 	bombing_start_x = player.global_position.x - bombing_range
 	bombing_end_x = player.global_position.x + bombing_range
 	bombing_y = player.global_position.y - 1200.0
@@ -276,7 +276,7 @@ func _process_to_start_pos():
 	var dir = Vector2((bombing_start_x - global_position.x), (bombing_y - global_position.y)).normalized()
 	velocity = dir * (fly_speed * 2.0)
 	if global_position.distance_to(Vector2(bombing_start_x, bombing_y)) < 20.0:
-		print("중간 보스: 폭격 개시!")
+		print("Mid Boss: Starting bombing!")
 		current_state = MeteoState.BOMBING_RUN
 		bomb_drop_timer = 0.0
 		velocity = Vector2.ZERO
@@ -290,7 +290,7 @@ func _process_bombing_run(delta):
 		bomb_drop_timer = randf_range(bomb_interval_min, bomb_interval_max)
 	
 	if global_position.x >= bombing_end_x:
-		print("중간 보스: 폭격 종료, 복귀")
+		print("Mid Boss: Bombing finished, returning")
 		current_state = MeteoState.NORMAL
 		_start_pattern_timer()
 

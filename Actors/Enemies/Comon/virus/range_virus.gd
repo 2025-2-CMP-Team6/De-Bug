@@ -1,12 +1,12 @@
 extends BaseEnemy
 
-#region 설정 변수
+#region Config Variables
 @export var move_speed: float = 50.0
-@export var attack_range: float = 800.0 # 사거리
+@export var attack_range: float = 800.0 # Range
 @export var current_bullet_speed: float = 400.0
 @export var attack_cooldown: float = 3.0
 
-# 상태 변수
+# State variables
 var is_attacking: bool = false
 var on_cooldown: bool = false
 var patrol_direction: int = 1
@@ -14,10 +14,10 @@ var patrol_timer: float = 0.0
 var player: Node = null
 #endregion
 
-#region 노드 참조 (스크린샷 경로 기준)
+#region Node References
 @onready var main_sprite = $Visuals/AnimatedSprite2D
 @onready var wave_effect = $ShockwaveHolder/AttakVisual
-# 총알 발사 관련
+# Bullet firing
 const BULLET_SCENE = preload("res://Actors/Enemies/bullet.tscn")
 
 #endregion
@@ -38,13 +38,13 @@ func _process_movement(delta):
 		velocity.x = move_toward(velocity.x, 0, 200 * delta)
 		return
 
-	# 쿨타임 중일 때는 멈춤 또는 회
+	# Stop (or wander) during cooldown
 	if on_cooldown:
 		velocity.x = move_toward(velocity.x, 0, 100 * delta)
 		main_sprite.play("idle")
 		return
 
-	# 플레이어 찾기
+	# Find the player
 	player = get_tree().get_first_node_in_group("player")
 	
 	if player:
@@ -74,20 +74,20 @@ func chase_player(p):
 func patrol_behavior(delta):
 	patrol_timer -= delta
 	
-	# 0.5 ~ 1.0초마다 행동을 바꿈 뽈뽈거리기
+	# Change behavior every 0.5 ~ 1.0 seconds (shuffle around)
 	if patrol_timer <= 0:
 		patrol_timer = randf_range(0.5, 1.0)
 		var random_choice = randi() % 5
 		
-		# 0, 1 나오면 멈춤 (40% 확률)
+		# Stop if 0 or 1 (40% chance)
 		if random_choice <= 1:
 			patrol_direction = 0
-		# 2: 오른쪽, 3: 왼쪽
+		# 2: right, 3: left
 		elif random_choice == 2:
 			patrol_direction = 1
 		elif random_choice == 3:
 			patrol_direction = -1
-		# 4: 반대 방향으로 턴
+		# 4: turn to the opposite direction
 		else:
 			patrol_direction = - patrol_direction
 			
@@ -105,12 +105,12 @@ func start_attack_sequence():
 	velocity = Vector2.ZERO
 	main_sprite.play("shockwave")
 
-# 프레임 감지 함수
+# Frame detection function
 func _on_main_sprite_frame_changed():
 	if main_sprite.animation == "shockwave" and main_sprite.frame == 4:
 		fire_wave_effect()
 
-# 파동 발사
+# Fire the wave
 func fire_wave_effect():
 	wave_effect.visible = true
 	wave_effect.frame = 0

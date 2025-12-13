@@ -1,36 +1,36 @@
 class_name Wisp extends BaseEnemy
 
-#region 설정값 (박쥐 + 사격 설정)
+#region Settings (Bat + Shooting Settings)
 @export_group("Movement")
 @export var fly_speed: float = 450.0
 @export var acceleration: float = 4.0
-@export var erratic_intensity: float = 5 # 움직임의 불규칙한 정도
+@export var erratic_intensity: float = 5 # How erratic/irregular the movement is
 
 @export_group("Combat")
-@export var preferred_range: float = 500.0 # 유지하려는 거리
+@export var preferred_range: float = 500.0 # Distance to maintain
 @export var shoot_interval: float = 2.0
 @export var bullet_speed: float = 600.0
 
 const BULLET_SCENE = preload("res://Actors/Enemies/bullet.tscn")
 #endregion
 
-#region 내부 변수
+#region Internal Variables
 var player: Node2D = null
 var shoot_timer: float = 0.0
 
-# ★ 박쥐의 핵심 이동 변수들
+# ★ Core movement variables for the bat
 var target_velocity: Vector2 = Vector2.ZERO
 var move_change_timer: float = 0.0
 #endregion
 
-#region 노드 참조
+#region Node References
 @onready var animation = $Visuals/AnimatedSprite2D
 #endregion
 
 func _ready():
 	super._ready()
 	animation.play("idle")
-	gravity = 0.0 # 비행형
+	gravity = 0.0 # Flying type
 	
 	var players = get_tree().get_nodes_in_group("player")
 	if players.size() > 0:
@@ -47,7 +47,7 @@ func _process_movement(delta):
 	
 	_handle_shooting(delta)
 
-#region 이동 로직
+#region Movement Logic
 
 func _apply_erratic_movement(delta: float):
 	move_change_timer -= delta
@@ -82,7 +82,7 @@ func _pick_new_direction():
 
 #endregion
 
-#region 사격 로직
+#region Shooting Logic
 func _handle_shooting(delta):
 	shoot_timer -= delta
 	if shoot_timer <= 0:

@@ -1,7 +1,7 @@
 # RangedEnemy.gd 
 extends BaseEnemy
 
-#region 총알 발사 관련
+#region Bullet Firing
 const BULLET_SCENE = preload("res://Actors/Enemies/bullet.tscn")
 @onready var fire_timer = $FireTimer
 @onready var muzzle = $Muzzle
@@ -10,13 +10,13 @@ const BULLET_SCENE = preload("res://Actors/Enemies/bullet.tscn")
 func _ready():
 	super._ready()
 	
-	# 총알 발사 타이머
+	# Bullet firing timer
 	if fire_timer != null:
 		for conn in fire_timer.timeout.get_connections():
 			fire_timer.timeout.disconnect(conn.callable)
 		fire_timer.timeout.connect(shoot)
 
-# 공격 패턴
+# Attack pattern
 func shoot():
 	if current_health <= 0: return
 	

@@ -1,7 +1,7 @@
 # skills/blink_slash/Skill_BlinkSlash.gd
 extends BaseSkill
 
-#region 스킬 고유 속성
+#region Skill-Specific Properties
 @export var teleport_distance: float = 60.0
 @export var safety_margin: float = 50.0
 @export var hitbox_width: float = 50.0
@@ -11,20 +11,20 @@ extends BaseSkill
 var slide_direction: Vector2 = Vector2.ZERO
 
 # -----------------------------------------------------------------
-# ★ (새로 추가) _init 함수
+# (Newly added) _init function
 # -----------------------------------------------------------------
 func _init():
-	# 1. 이 스킬은 타겟이 필수입니다.
+	# 1. This skill requires a target.
 	requires_target = true
 	
-	# 2. 이 스킬은 '시간제'로 종료됩니다. (미끄러짐 삭제)
+	# 2. This skill ends by time. (Sliding removed)
 	ends_on_condition = false
 	
-	# 3. (오류 수정) 중력 배율을 1.0 (100%)로 설정합니다.
+	# 3. (Bug fix) Set gravity multiplier to 1.0 (100%).
 	gravity_multiplier = 1.0
 # -----------------------------------------------------------------
 
-#region 스킬 로직
+#region Skill Logic
 func execute(owner: CharacterBody2D, target: Node2D = null):
 	super.execute(owner, target)
 	
@@ -55,7 +55,7 @@ func execute(owner: CharacterBody2D, target: Node2D = null):
 
 	owner.global_position = target_position
 
-	# Physics Interpolation 리셋 (텔레포트 후 물리 쿼리가 올바른 위치를 사용하도록)
+	# Reset Physics Interpolation (so physics queries use the correct position after teleport)
 	if owner.has_method("reset_physics_interpolation"):
 		owner.reset_physics_interpolation()
 
@@ -75,59 +75,59 @@ func apply_slash_damage(start_pos: Vector2, end_pos: Vector2, owner: CharacterBo
 	query.shape = shape
 	query.transform = xform
 
-	# ★ 수정 1: Area2D(히트박스)도 감지하도록 변경
+	# Fix 1: Changed to detect Area2D (hitboxes) as well
 	query.collide_with_areas = true
 	query.collide_with_bodies = true
 
-	# ★ 수정: collision_mask 설정 (레이어 3 = Enemy)
-	query.collision_mask = 0xFFFFFFFF  # 모든 레이어 감지
+	# Fix: Set collision_mask (Layer 3 = Enemy)
+	query.collision_mask = 0xFFFFFFFF  # Detect all layers
 
-	query.exclude = [owner.get_rid()] # 플레이어 자신은 제외
+	query.exclude = [owner.get_rid()] # Exclude the player itself
 	
 	_debug_draw_hitbox(shape, xform, owner)
 
 	var results = space_state.intersect_shape(query)
 
-	print("=== BlinkSlash 디버그 ===")
-	print("감지된 객체 수: ", results.size())
+	print("=== BlinkSlash Debug ===")
+	print("Detected object count: ", results.size())
 
 	var did_hit_enemy = false
-	var hit_enemies = [] # 중복 타격 방지용 목록
+	var hit_enemies = [] # List to prevent duplicate hits
 
 	for res in results:
-		print("  - 감지된 객체: ", res.collider.name, " (타입: ", res.collider.get_class(), ")")
+		print("  - Detected object: ", res.collider.name, " (Type: ", res.collider.get_class(), ")")
 		var collider = res.collider
 		var enemy_node = null
 		
-		# ★ 수정 2: 부딪힌 게 적 본체인지, 적의 히트박스인지 확인
-		print("    - enemies 그룹 소속? ", collider.is_in_group("enemies"))
+		# Fix 2: Check whether the collision was with the enemy body or the enemy hitbox
+		print("    - Belongs to 'enemies' group? ", collider.is_in_group("enemies"))
 		if collider.is_in_group("enemies"):
-			# 적 본체(Body)와 충돌한 경우
+			# Collided with enemy body
 			enemy_node = collider
-			print("    -> 적 본체로 인식")
+			print("    -> Recognized as enemy body")
 
 		elif collider is Area2D and collider.get_parent().is_in_group("enemies"):
-			# 적의 히트박스(Area)와 충돌한 경우 -> 부모를 적 본체로 설정
+			# Collided with enemy hitbox (Area) -> treat parent as the enemy body
 			enemy_node = collider.get_parent()
-			print("    -> 적의 히트박스로 인식, 부모: ", enemy_node.name)
+			print("    -> Recognized as enemy hitbox, parent: ", enemy_node.name)
 
-		# ★ 수정 3: 적을 찾았고, 아직 때리지 않았다면 데미지 적용
+		# ★ Fix 3: If an enemy was found and hasn't been hit yet, apply damage
 		if enemy_node != null and not enemy_node in hit_enemies:
-			print("    -> 적 발견! take_damage 메서드 있음? ", enemy_node.has_method("take_damage"))
+			print("    -> Enemy found! Has take_damage method? ", enemy_node.has_method("take_damage"))
 			if enemy_node.has_method("take_damage"):
 				enemy_node.take_damage(damage)
-				print("    ✓ 벽력일섬 히트: " + enemy_node.name + " (데미지: " + str(damage) + ")")
-				hit_enemies.append(enemy_node) # 타격 목록에 추가
+				print("    ✓ BlinkSlash hit: " + enemy_node.name + " (Damage: " + str(damage) + ")")
+				hit_enemies.append(enemy_node) # Add to hit list
 				did_hit_enemy = true
 			else:
-				print("    ✗ take_damage 메서드 없음!")
+				print("    ✗ No take_damage method!")
 
-	# 이펙트
+	# Effects
 	if did_hit_enemy:
 		EffectManager.play_screen_shake(12.0, 0.15)
 		EffectManager.play_multi_flash(Color.WHITE, 0.05, 3)
 		
-# 히트박스 시각화
+# Hitbox visualization
 func _debug_draw_hitbox(shape: Shape2D, xform: Transform2D, owner: Node):
 	var debug_sprite = Sprite2D.new()
 	

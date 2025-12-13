@@ -1,14 +1,14 @@
 # Skill_Melee.gd
 extends BaseSkill
 
-#region 노드 참조
+#region Node References
 @onready var hitbox = $Hitbox
 @onready var hitbox_shape = $Hitbox/CollisionShape2D
 #endregion
 
-#region 초기화
+#region Initialization
 func _init():
-	# ★ 'ignore_gravity' 대신 이 변수를 사용해야 합니다.
+	# ★ You must use this variable instead of 'ignore_gravity'.
 	gravity_multiplier = 0.2
 
 func _ready():
@@ -19,7 +19,7 @@ func _ready():
 	hitbox.body_entered.connect(_on_hitbox_body_entered)
 #endregion
 
-#region 스킬 로직
+#region Skill Logic
 func execute(owner: CharacterBody2D, target: Node2D = null):
 	super.execute(owner, target)
 	if hitbox_shape:
