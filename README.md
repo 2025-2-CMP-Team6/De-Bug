@@ -106,10 +106,10 @@
 ### Stage Progression Flow
 
 ```
-┌──────────┐    ┌──────────┐    ┌──────────┐    ┌──────────┐    ┌──────────────┐
-│ Stage 1  │ ─→ │ Stage 2  │ ─→ │ Stage 3  │ ─→ │ Stage 4  │ ─→ │  Boss Stage  │
-│Pixel City│    │Data Jungle│   │ Cemetery │    │ Citadel  │    │ Corrupt Core │
-└──────────┘    └──────────┘    └──────────┘    └──────────┘    └──────────────┘
+┌──────────┐    ┌───────────┐    ┌──────────┐    ┌──────────┐    ┌──────────────┐
+│ Stage 1  │ ─→ │ Stage 2   │ ─→ │ Stage 3  │ ─→ │ Stage 4  │ ─→ │  Boss Stage  │
+│Pixel City│    │Data Jungle│    │ Cemetery │    │ Citadel  │    │ Corrupt Core │
+└──────────┘    └───────────┘    └──────────┘    └──────────┘    └──────────────┘
 ```
 
 ### Stage Details
