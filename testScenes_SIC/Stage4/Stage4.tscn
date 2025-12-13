@@ -1,9 +1,201 @@
-[gd_scene format=3 uid="uid://bowtn8lw4uimt"]
+[gd_scene load_steps=7 format=3 uid="uid://bowtn8lw4uimt"]
+
+[ext_resource type="Texture2D" uid="uid://ep6ahel71vai" path="res://testScenes_SIC/Stage4/Assets/ENVIRONMENT/backgrounds.png" id="1_jr3b3"]
+[ext_resource type="Script" uid="uid://do4hv03l3nqn3" path="res://testScenes_SIC/Stage4/Stage4.gd" id="1_sorpw"]
+[ext_resource type="PackedScene" uid="uid://en1mqsrf58ka" path="res://Actors/Player/player.tscn" id="2_oyo18"]
+[ext_resource type="Texture2D" uid="uid://cbnlcix3uyljp" path="res://testScenes_SIC/Stage4/Assets/ENVIRONMENT/column.png" id="2_sorpw"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_sorpw"]
+size = Vector2(15356, 109)
+
+[sub_resource type="ImageTexture" id="ImageTexture_sorpw"]
 
 [node name="Stage4" type="Node2D"]
+script = ExtResource("1_sorpw")
 
-[node name="Background" type="Node2D" parent="."]
+[node name="Background" type="ParallaxBackground" parent="."]
 
-[node name="Parallax2D" type="Parallax2D" parent="Background"]
+[node name="ColorRect" type="ColorRect" parent="Background"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.15294118, 0.14901961, 0.21960784, 1)
 
-[node name="Sprite2D" type="Sprite2D" parent="Background/Parallax2D"]
+[node name="Candlelight" type="ParallaxLayer" parent="Background"]
+position = Vector2(656, 0)
+motion_scale = Vector2(0.1, 0)
+
+[node name="Sprite2D" type="Sprite2D" parent="Background/Candlelight"]
+position = Vector2(-10, 0)
+scale = Vector2(6, 6)
+texture = ExtResource("1_jr3b3")
+centered = false
+region_enabled = true
+region_rect = Rect2(560.0303, 0, 63.969727, 192)
+
+[node name="Candlelight2" type="ParallaxLayer" parent="Background"]
+position = Vector2(1106, 0)
+motion_scale = Vector2(0.1, 0)
+
+[node name="Sprite2D" type="Sprite2D" parent="Background/Candlelight2"]
+position = Vector2(-10, 0)
+scale = Vector2(6, 6)
+texture = ExtResource("1_jr3b3")
+centered = false
+region_enabled = true
+region_rect = Rect2(560.0303, 0, 63.969727, 192)
+
+[node name="Candlelight3" type="ParallaxLayer" parent="Background"]
+position = Vector2(2032, 0)
+motion_scale = Vector2(0.1, 0)
+
+[node name="Sprite2D" type="Sprite2D" parent="Background/Candlelight3"]
+position = Vector2(-10, 0)
+scale = Vector2(6, 6)
+texture = ExtResource("1_jr3b3")
+centered = false
+region_enabled = true
+region_rect = Rect2(560.0303, 0, 63.969727, 192)
+
+[node name="Candlelight4" type="ParallaxLayer" parent="Background"]
+position = Vector2(2482, 0)
+motion_scale = Vector2(0.1, 0)
+
+[node name="Sprite2D" type="Sprite2D" parent="Background/Candlelight4"]
+position = Vector2(-10, 0)
+scale = Vector2(6, 6)
+texture = ExtResource("1_jr3b3")
+centered = false
+region_enabled = true
+region_rect = Rect2(560.0303, 0, 63.969727, 192)
+
+[node name="Candlelight5" type="ParallaxLayer" parent="Background"]
+position = Vector2(3408, 0)
+motion_scale = Vector2(0.1, 0)
+
+[node name="Sprite2D" type="Sprite2D" parent="Background/Candlelight5"]
+position = Vector2(-10, 0)
+scale = Vector2(6, 6)
+texture = ExtResource("1_jr3b3")
+centered = false
+region_enabled = true
+region_rect = Rect2(560.0303, 0, 63.969727, 192)
+
+[node name="Candlelight6" type="ParallaxLayer" parent="Background"]
+position = Vector2(3858, 0)
+motion_scale = Vector2(0.1, 0)
+
+[node name="Sprite2D" type="Sprite2D" parent="Background/Candlelight6"]
+position = Vector2(-10, 0)
+scale = Vector2(6, 6)
+texture = ExtResource("1_jr3b3")
+centered = false
+region_enabled = true
+region_rect = Rect2(560.0303, 0, 63.969727, 192)
+
+[node name="Column" type="ParallaxLayer" parent="Background"]
+motion_scale = Vector2(0.3, 0)
+
+[node name="Sprite2D" type="Sprite2D" parent="Background/Column"]
+scale = Vector2(6, 6)
+texture = ExtResource("2_sorpw")
+centered = false
+
+[node name="Column1" type="ParallaxLayer" parent="Background"]
+position = Vector2(1376, 0)
+motion_scale = Vector2(0.3, 0)
+
+[node name="Sprite2D" type="Sprite2D" parent="Background/Column1"]
+scale = Vector2(6, 6)
+texture = ExtResource("2_sorpw")
+centered = false
+
+[node name="Column2" type="ParallaxLayer" parent="Background"]
+position = Vector2(2752, 0)
+motion_scale = Vector2(0.3, 0)
+
+[node name="Sprite2D" type="Sprite2D" parent="Background/Column2"]
+scale = Vector2(6, 6)
+texture = ExtResource("2_sorpw")
+centered = false
+
+[node name="Column3" type="ParallaxLayer" parent="Background"]
+position = Vector2(4128, 0)
+motion_scale = Vector2(0.3, 0)
+
+[node name="Sprite2D" type="Sprite2D" parent="Background/Column3"]
+scale = Vector2(6, 6)
+texture = ExtResource("2_sorpw")
+centered = false
+
+[node name="Column4" type="ParallaxLayer" parent="Background"]
+position = Vector2(5504, 0)
+motion_scale = Vector2(0.3, 0)
+
+[node name="Sprite2D" type="Sprite2D" parent="Background/Column4"]
+scale = Vector2(6, 6)
+texture = ExtResource("2_sorpw")
+centered = false
+
+[node name="Column5" type="ParallaxLayer" parent="Background"]
+position = Vector2(6880, 0)
+motion_scale = Vector2(0.3, 0)
+
+[node name="Sprite2D" type="Sprite2D" parent="Background/Column5"]
+scale = Vector2(6, 6)
+texture = ExtResource("2_sorpw")
+centered = false
+
+[node name="Column6" type="ParallaxLayer" parent="Background"]
+position = Vector2(8256, 0)
+motion_scale = Vector2(0.3, 0)
+
+[node name="Sprite2D" type="Sprite2D" parent="Background/Column6"]
+scale = Vector2(6, 6)
+texture = ExtResource("2_sorpw")
+centered = false
+
+[node name="Column7" type="ParallaxLayer" parent="Background"]
+position = Vector2(9632, 0)
+motion_scale = Vector2(0.3, 0)
+
+[node name="Sprite2D" type="Sprite2D" parent="Background/Column7"]
+scale = Vector2(6, 6)
+texture = ExtResource("2_sorpw")
+centered = false
+
+[node name="Column8" type="ParallaxLayer" parent="Background"]
+position = Vector2(11008, 0)
+motion_scale = Vector2(0.3, 0)
+
+[node name="Sprite2D" type="Sprite2D" parent="Background/Column8"]
+scale = Vector2(6, 6)
+texture = ExtResource("2_sorpw")
+centered = false
+
+[node name="Column9" type="ParallaxLayer" parent="Background"]
+position = Vector2(12383, 0)
+motion_scale = Vector2(0.3, 0)
+
+[node name="Sprite2D" type="Sprite2D" parent="Background/Column9"]
+scale = Vector2(6, 6)
+texture = ExtResource("2_sorpw")
+centered = false
+
+[node name="Player" parent="." instance=ExtResource("2_oyo18")]
+position = Vector2(249.99988, 1177.0001)
+metadata/_edit_lock_ = true
+
+[node name="test" type="StaticBody2D" parent="."]
+position = Vector2(39, 2687)
+collision_layer = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="test"]
+position = Vector2(6283, -1299)
+shape = SubResource("RectangleShape2D_sorpw")
+
+[node name="CameraMapLimit" type="Sprite2D" parent="." groups=["CameraMapLimit"]]
+scale = Vector2(13552.001, 1315)
+texture = SubResource("ImageTexture_sorpw")
