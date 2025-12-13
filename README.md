@@ -1,90 +1,95 @@
-# De-Bug
+# 🎮 De-Bug
 
 **A 2D Action Platformer Game**
 
 *2025-2 Creative Media Programming - Team 6 Final Godot Project*
 
----
-
-## Table of Contents
-
-1. [Game Overview](#game-overview)
-2. [Project Architecture](#project-architecture)
-3. [Directory Structure](#directory-structure)
-4. [Core Systems](#core-systems)
-5. [Scenes Documentation](#scenes-documentation)
-6. [Scripts Documentation](#scripts-documentation)
-7. [User Manual](#user-manual)
-8. [Borrowed Contents](#borrowed-contents)
-9. [AI Tools Declaration](#ai-tools-declaration)
+[![GitHub](https://img.shields.io/badge/GitHub-Repository-blue?logo=github)](https://github.com/2025-2-CMP-Team6/De-Bug)
 
 ---
 
-## Game Overview
+## 📑 Table of Contents
+
+- [Game Overview](#-game-overview)
+- [Project Architecture](#-project-architecture)
+- [Stage Flow & Features](#-stage-flow--features)
+- [Directory Structure](#-directory-structure)
+- [Core Systems](#-core-systems)
+- [Scripts Documentation](#-scripts-documentation)
+- [User Manual](#-user-manual)
+- [Borrowed Contents](#-borrowed-contents)
+- [AI Tools Declaration](#-ai-tools-declaration)
+- [Technical Specifications](#-technical-specifications)
+
+---
+
+## 🎯 Game Overview
 
 **De-Bug** is a 2D action platformer game where players progress through stages by collecting various "Skill Fragments." The core mechanics revolve around:
 
-- **Skill Collection**: Gather skill fragments from cleared stages
-- **Skill Enhancement**: Upgrade skills using collected fragments
-- **Skill Synthesis**: Combine fragments to create new skills
-- **Strategic Slot Management**: Manage a limited 3-skill slot system to adapt to different combat situations
+| Feature | Description |
+|---------|-------------|
+| ⚔️ **Skill Collection** | Gather skill fragments from cleared stages to expand your arsenal |
+| ⬆️ **Skill Enhancement** | Upgrade skills using collected fragments with probability-based success |
+| 🔮 **Skill Synthesis** | Combine fragments to create new, random skills |
+| 🎰 **Strategic Slot Management** | Manage a limited 3-skill slot system to adapt to different combat situations |
 
 ### Game Structure (Chapter 1)
 
 | Stage | Name | Description |
 |-------|------|-------------|
-| Stage 1 | Pixel City | Tutorial stage - Learn basic controls and mechanics |
-| Stage 2 | Data Jungle | Forest-themed environment with new enemy types |
-| Stage 3 | Forgotten Memory Cemetery | Graveyard setting with traps and hazards |
-| Stage 4 | Citadel of the Core | Final approach to the boss |
-| Boss Stage | Corrupt Core | Final boss encounter |
+| 1 | **Pixel City** | Tutorial Stage - Learn basic controls and mechanics |
+| 2 | **Data Jungle** | Forest-themed environment with new enemy types |
+| 3 | **Forgotten Memory Cemetery** | Graveyard setting with traps and aerial enemies |
+| 4 | **Citadel of the Core** | Final approach with spike traps and flying enemies |
+| 👾 | **Corrupt Core** | Boss Stage - Final boss encounter with multiple attack patterns |
 
 ---
 
-## Project Architecture
+## 🏗️ Project Architecture
 
 ### High-Level Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                         AUTOLOAD (Singletons)                   │
-├─────────────────┬─────────────────┬─────────────────┬───────────┤
-│  GameManager    │ InventoryManager│  EffectManager  │ Scene     │
-│  (State Machine)│ (Skills/Items)  │  (VFX/SFX)      │ Transition│
-└────────┬────────┴────────┬────────┴────────┬────────┴───────────┘
-         │                 │                 │
-         ▼                 ▼                 ▼
-┌─────────────────────────────────────────────────────────────────┐
-│               WORLD (Stage 1 ~ 4 / Boss Stage)                  │
-│        - Stage management, Portal system, Enemy tracking        │
-└─────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           AUTOLOAD (Singletons)                             │
+├──────────────────┬──────────────────┬──────────────────┬────────────────────┤
+│   GameManager    │ InventoryManager │   EffectManager  │   SceneTransition  │
+│  (State Machine) │  (Skills/Items)  │    (VFX/SFX)     │   (Fade Effects)   │
+└────────┬─────────┴────────┬─────────┴────────┬─────────┴────────────────────┘
+         │                  │                  │
+         ▼                  ▼                  ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                     WORLD (Stage 1 ~ 4 / Boss Stage)                        │
+│              - Stage management, Portal system, Enemy tracking              │
+└─────────────────────────────────────────────────────────────────────────────┘
          │
          ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                              ACTORS                             │
-├─────────────────────────────┬───────────────────────────────────┤
-│         PLAYER              │              ENEMIES              │
-│  - Movement & Input         │  - BaseEnemy (Abstract)           │
-│  - Skill Casting            │  - Common Enemies (Virus types)   │
-│  - Health & Stamina         │  - Middle Bosses                  │
-│  - Equipment Slots          │  - Final Boss (CorruptCOre)       │
-└─────────────────────────────┴───────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                                  ACTORS                                     │
+├────────────────────────────────────┬────────────────────────────────────────┤
+│              PLAYER                │                ENEMIES                 │
+│  - Movement & Input                │  - BaseEnemy (Abstract)                │
+│  - Skill Casting                   │  - Common Enemies (Virus types)        │
+│  - Health & Stamina                │  - Middle Bosses                       │
+│  - Equipment Slots                 │  - Final Boss (Corrupt Core)           │
+└────────────────────────────────────┴────────────────────────────────────────┘
          │
          ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                          SKILL SYSTEM                           │
-├─────────────────┬─────────────────┬─────────────────────────────┤
-│   BaseSkill     │  SkillInstance  │     Individual Skills       │
-│   (Abstract)    │  (Data Class)   │  (FireBall, Heal, Slash...) │
-└─────────────────┴─────────────────┴─────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                              SKILL SYSTEM                                   │
+├───────────────────────┬───────────────────────┬─────────────────────────────┤
+│       BaseSkill       │     SkillInstance     │      Individual Skills      │
+│       (Abstract)      │     (Data Class)      │  (FireBall, Heal, Slash...) │
+└───────────────────────┴───────────────────────┴─────────────────────────────┘
          │
          ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                           UI SYSTEM                             │
-├─────────────────┬─────────────────┬─────────────────────────────┤
-│    SkillUI      │   SkillGetUI    │      HUD Components         │
-│ (Equip/Upgrade) │ (Reward Screen) │  (Health, Stamina, Skills)  │
-└─────────────────┴─────────────────┴─────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                               UI SYSTEM                                     │
+├───────────────────────┬───────────────────────┬─────────────────────────────┤
+│        SkillUI        │      SkillGetUI       │       HUD Components        │
+│    (Equip/Upgrade)    │    (Reward Screen)    │  (Health, Stamina, Skills)  │
+└───────────────────────┴───────────────────────┴─────────────────────────────┘
 ```
 
 ### Design Patterns Used
@@ -96,7 +101,111 @@
 
 ---
 
-## Directory Structure
+## 🗺️ Stage Flow & Features
+
+### Stage Progression Flow
+
+```
+┌──────────┐    ┌──────────┐    ┌──────────┐    ┌──────────┐    ┌──────────────┐
+│ Stage 1  │ ─→ │ Stage 2  │ ─→ │ Stage 3  │ ─→ │ Stage 4  │ ─→ │  Boss Stage  │
+│Pixel City│    │Data Jungle│   │ Cemetery │    │ Citadel  │    │ Corrupt Core │
+└──────────┘    └──────────┘    └──────────┘    └──────────┘    └──────────────┘
+```
+
+### Stage Details
+
+#### Stage 1: Pixel City (Tutorial)
+
+**Script:** `Stage1.gd` extends World
+
+| Feature | Description |
+|---------|-------------|
+| 📚 Tutorial System | DashTutorial, SkillTutorial, MiddleBossTutorial triggers with dialogue |
+| 👾 Enemies | Virus (basic), TutorialBoss (mini-boss) |
+| 🎬 Camera Effects | Intro zoom effect, portal zoom cutscene |
+| 💾 Checkpoint System | Respawn at last defeated enemy position |
+| 🌧️ Visual Effects | Rain shader, parallax city background |
+| 🔓 Unlock Features | Skill window unlocked after TutorialBoss defeat |
+
+**Transitions to:** Stage 2 (Data Jungle) via portal
+
+---
+
+#### Stage 2: Data Jungle
+
+**Script:** `Stage2.gd` extends World
+
+| Feature | Description |
+|---------|-------------|
+| 👾 Enemies | Virus, RangeVirus (ranged attacks), JungleBoss |
+| 🌿 Environment | 6-layer parallax jungle background |
+| ⚠️ Hazards | Fall prevention zones, monster movement limits |
+| 🎵 Audio | Jungle-themed BGM |
+
+**Transitions to:** Stage 3 (Forgotten Memory Cemetery) via portal
+
+---
+
+#### Stage 3: Forgotten Memory Cemetery
+
+**Script:** `Stage3.gd` extends World
+
+| Feature | Description |
+|---------|-------------|
+| 👾 Enemies | FlyEnemy (aerial), HoverEnemy (stationary), FlyBoss (mid-boss) |
+| 💀 Traps | BoobyTrap.gd - environmental hazards |
+| 🌙 Environment | Mountains, graveyard decorations, dark atmosphere |
+| 🎵 Audio | Scary cinematic background music |
+
+**Transitions to:** Stage 4 (Citadel of the Core) via portal
+
+---
+
+#### Stage 4: Citadel of the Core
+
+**Script:** `Stage4.gd` extends World
+
+| Feature | Description |
+|---------|-------------|
+| 👾 Enemies | FlyEnemy, HoverEnemy (increased difficulty) |
+| ⚡ Traps | 16-bit spike traps, environmental hazards |
+| 🏰 Environment | Gothic columns, castle-themed tileset |
+| 🎵 Audio | Church organ music for ominous atmosphere |
+
+**Transitions to:** Boss Stage (Corrupt Core) via portal
+
+---
+
+#### Boss Stage: Corrupt Core
+
+**Script:** `stage_boss.gd` extends World
+
+| Component | File | Description |
+|-----------|------|-------------|
+| 👹 **Boss Entity** | `BossVirus.tscn` | Main boss character (HP: 300, Effect Size: 5x) |
+| 🔥 **Fire Pattern** | `BossFire.tscn` | Fire-based projectile attacks |
+| ⚡ **Laser Pattern** | `BossLaser.tscn` | Two edge-mounted lasers for sweeping attacks |
+| ☄️ **Meteor Pattern** | `BossMeteor.tscn` | Falling meteor hazards with area damage |
+| 🛡️ **Player Buff** | - | Max lives increased to 15 for boss fight |
+| 🎵 **Audio** | - | Intense boss fight BGM |
+
+> **Architecture Note:** The boss stage uses a unique architecture where attack patterns are instantiated as separate scene components (`map_lasers`) managed by the stage script rather than the boss AI. This allows for complex choreographed attack sequences and independent pattern timing via `StageTimer`.
+
+---
+
+### Common Stage Features
+
+| Feature | Description | Implementation |
+|---------|-------------|----------------|
+| Portal System | Stage transition after defeating all enemies | `portal_enabled` flag + `SceneTransition.fade_to_scene()` |
+| Enemy Tracking | Monitors remaining enemies, activates portal when cleared | `enemy_died` signal connection in World.gd |
+| Reward System | Skill selection after stage clear | `SkillGetUI.open_reward_screen()` |
+| Fall Prevention | Respawn player if falling off map | `FallPrevention` Area2D nodes |
+| Camera Limits | Restrict camera to stage boundaries | `CameraMapLimit` sprite group |
+
+---
+
+## 📁 Directory Structure
 
 ```
 De-Bug/
@@ -112,12 +221,11 @@ De-Bug/
 │   │   ├── MiddleBoss/             # Mid-stage boss enemies
 │   │   │   ├── TutorialBoss/       # Stage 1 mini-boss
 │   │   │   └── JungleBoss/         # Stage 2 mini-boss
-│   │   └── Boss/                   # Final boss
-│   │       ├── fly_boss.gd         # Main boss controller
-│   │       ├── boss_fire.gd        # Fire attack pattern
-│   │       ├── boss_laser.gd       # Laser attack pattern
-│   │       ├── boss_meteor.gd      # Meteor attack pattern
-│   │       ├── boss_virus.gd       # Summon attack pattern
+│   │   └── Boss/                   # Final boss (Corrupt Core)
+│   │       ├── BossVirus.tscn      # Main boss entity
+│   │       ├── BossFire.tscn       # Fire attack pattern
+│   │       ├── BossLaser.tscn      # Laser attack pattern
+│   │       ├── BossMeteor.tscn     # Meteor attack pattern
 │   │       └── boss_hp_bar.gd      # Boss HP UI
 │   └── Player/                     # Player character
 │       ├── player.gd               # Main player controller
@@ -144,46 +252,25 @@ De-Bug/
 │   ├── EquipSlot.gd                # Equipment slot handler
 │   └── InventoryDropArea.gd        # Drag-drop inventory area
 │
-├── world/                          # World and stage management
-│   ├── world.gd/tscn               # Base world class
-│   ├── StartScreen/                # Title screen
-│   │   ├── start_screen.gd/tscn
-│   │   └── startScreenBg.gd
-│   └── Option/                     # Options menu
-│       └── option.gd/tscn
-│
 ├── testScenes_SIC/                 # Stage implementations
 │   ├── Stage1/Stage1.gd            # Tutorial stage (Pixel City)
 │   ├── Stage2/Stage2.gd            # Data Jungle
-│   ├── Stage3/Stage3.gd/tscn       # Forgotten Memory Cemetery
-│   ├── Stage4/Stage4.gd/tscn       # Citadel of the Core
-│   ├── StageBoss/stage_boss.gd     # Boss stage
-│   ├── dialogue/                   # Dialogue files
-│   ├── map_camera.gd               # Camera controller
-│   ├── player_anim.gd              # Player animation helper
-│   └── portal_anim.gd              # Portal animation
+│   ├── Stage3/Stage3.gd            # Forgotten Memory Cemetery
+│   ├── Stage4/Stage4.gd            # Citadel of the Core
+│   ├── StageBoss/stage_boss.gd     # Boss stage (Corrupt Core)
+│   └── dialogue/                   # Dialogue files
+│
+├── world/                          # World and stage management
+│   ├── world.gd/tscn               # Base world class
+│   ├── StartScreen/                # Title screen
+│   └── Option/                     # Options menu
 │
 ├── effects/                        # Visual effects
-│   ├── HitEffect.gd/tscn           # Hit particle effect
-│   └── hit_flash.gdshader          # Flash shader for damage
-│
 ├── autoload/                       # Autoload scripts
-│   └── SceneTransition.gd/tscn     # Scene transition effects
-│
 ├── addons/                         # Third-party plugins
-│   ├── audio_manager/              # Audio management plugin
-│   └── dialogue_manager/           # Dialogue system plugin
-│
 ├── graphics/                       # Visual assets
-│   ├── Actors/                     # Character sprites
-│   └── resource/                   # Stage-specific resources
-│
 ├── Sounds/                         # Audio assets
-│   ├── bgm/                        # Background music
-│   └── effects/                    # Sound effects
-│
 ├── Block/                          # Environment blocks
-│   └── wall.tscn                   # Wall/platform tiles
 │
 ├── GameManager.gd                  # Global game state manager
 ├── InventoryManager.gd             # Skill inventory system
@@ -195,118 +282,67 @@ De-Bug/
 
 ---
 
-## Core Systems
+## ⚙️ Core Systems
 
 ### 1. GameManager (Autoload)
 
-**File**: `GameManager.gd`
+**File:** `GameManager.gd`
 
 Manages the global game state using a state machine pattern.
 
-**States**:
-- `IDLE`: Player is stationary
-- `MOVE`: Player is moving
-- `DASH`: Player is dashing (invincible)
-- `SKILL_CASTING`: Player is using a skill
+| State | Description |
+|-------|-------------|
+| `IDLE` | Player is stationary |
+| `MOVE` | Player is moving |
+| `DASH` | Player is dashing (invincible) |
+| `SKILL_CASTING` | Player is using a skill |
 
-**Features**:
-- Cheat mode toggle (debug builds only)
-- Free camera mode for development
-- Global state access from any script
+---
 
 ### 2. InventoryManager (Autoload)
 
-**File**: `InventoryManager.gd`
+**File:** `InventoryManager.gd`
 
 Handles all skill-related data management.
 
-**Features**:
-- Skill database loading from directory
-- Player inventory management
-- Equipment slot tracking (3 slots)
-- Skill upgrade system with probability-based success
-- Skill synthesis (combining skills)
+**Key Methods:**
+- `add_skill_to_inventory()` - Add skill to player inventory
+- `remove_skill_from_inventory()` - Remove skill from inventory
+- `attempt_upgrade()` - Try to upgrade a skill with another
+- `get_random_skill_path()` - Get random skill for rewards
 
-**Key Methods**:
-- `add_skill_to_inventory()`: Add skill to player inventory
-- `remove_skill_from_inventory()`: Remove skill from inventory
-- `attempt_upgrade()`: Try to upgrade a skill with another
-- `get_random_skill_path()`: Get random skill for rewards
+---
 
 ### 3. EffectManager (Autoload)
 
-**File**: `EffectManager.gd`
+**File:** `EffectManager.gd`
 
 Centralizes all visual and audio effects.
 
-**Features**:
-- Screen shake effects
-- Screen flash effects (single and multi-flash)
-- Hit particle spawning
-- Shader-based hit flash on sprites
+| Effect | Description |
+|--------|-------------|
+| Screen Shake | Camera shake effects for impact feedback |
+| Screen Flash | Single and multi-flash effects |
+| Hit Particles | Particle effects on damage |
+| Shader Effects | Hit flash using shaders |
+
+---
 
 ### 4. SceneTransition (Autoload)
 
-**File**: `autoload/SceneTransition.gd`
+**File:** `autoload/SceneTransition.gd`
 
 Handles smooth scene transitions with fade effects.
 
-**Methods**:
-- `fade_to_scene()`: Transition with fade out/in
-- `fade_out()` / `fade_in()`: Individual fade controls
-
 ---
 
-## Scenes Documentation
+## 📜 Scripts Documentation
 
-### Player Scene (`Actors/Player/player.tscn`)
+### Player System - player.gd
 
-The main playable character with:
-- CharacterBody2D for physics
-- AnimatedSprite2D for animations
-- Camera2D with stage limits
-- Collision shapes for hitbox
-- Timer nodes for dash cooldown, i-frames
-- Skill slot containers (3 slots)
+Main player controller handling movement, skills, and combat.
 
-### Enemy Scenes
-
-**Common Enemies**:
-- `virus.tscn`: Ground-based melee enemy
-- `FlyEnemy.tscn`: Flying enemy with patrol patterns
-- `HoverEnemy.tscn`: Stationary hovering enemy
-- `RangeVirus.tscn`: Ranged attack enemy
-
-**Middle Bosses**:
-- `TutorialBoss.tscn`: Stage 1 mini-boss
-- `JungleBoss.tscn`: Stage 2 mini-boss
-- `FlyBoss.tscn`: Final boss with multiple attack patterns
-
-**Final Boss(Corrupt Core)**:
-- `BossMeteor.tscn`, `BossLaser.tscn`, `BossFire.tscn`: Boss pattern components
-
-### UI Scenes
-
-- `SkillUI.tscn`: Equipment, upgrade, and synthesis tabs
-- `SkillGetUI.tscn`: Post-stage reward selection
-- `SkillHudIcon.tscn`: Real-time skill cooldown display
-
----
-
-## Scripts Documentation
-
-### Player System
-
-#### player.gd
-Main player controller handling:
-- Movement (WASD + Arrow keys)
-- Jumping (double jump supported)
-- Dashing (with stamina cost)
-- Skill casting (3 skill slots)
-- Health/lives management
-- Invincibility frames
-
-**Key Properties**:
+**Key Properties:**
 ```gdscript
 @export var max_speed: float = 400.0
 @export var jump_velocity: float = -600.0
@@ -316,9 +352,10 @@ Main player controller handling:
 @export var max_stamina: float = 100.0
 ```
 
-### Enemy System
+---
 
-#### BaseEnemy.gd
+### Enemy System - BaseEnemy.gd
+
 Abstract base class for all enemies providing:
 - Health management
 - Damage handling with i-frames
@@ -326,45 +363,38 @@ Abstract base class for all enemies providing:
 - Boss HP bar support
 - Hit flash shader integration
 
-**Attack Patterns**:
-1. Spread shot (3-way bullets)
-2. Minion summoning
-3. Orbital bullet pattern
-4. Bombing run with meteors
+---
 
-### Skill System
+### Final Boss - Corrupt Core
 
-#### BaseSkill.gd
-Abstract base for all skills:
+**Location:** `testScenes_SIC/StageBoss/`
+
+The final boss is implemented as a composite system with separate attack pattern components:
+
+| Component | File | Description |
+|-----------|------|-------------|
+| **Boss Entity** | `BossVirus.tscn` | Main boss character (HP: 300, Effect Size: 5x) |
+| **Fire Pattern** | `BossFire.tscn` | Fire-based projectile attacks |
+| **Laser Pattern** | `BossLaser.tscn` | Two edge-mounted lasers for sweeping attacks |
+| **Meteor Pattern** | `BossMeteor.tscn` | Falling meteor hazards with area damage |
+| **Stage Controller** | `stage_boss.gd` | Coordinates patterns via StageTimer |
+
+> **Architecture Note:** The boss stage uses a unique architecture where attack patterns are instantiated as separate scene components (`map_lasers`) managed by the stage script rather than the boss AI. This allows for complex choreographed attack sequences and independent pattern timing.
+
+---
+
+### Skill System - BaseSkill.gd
+
+Abstract base for all skills with:
 - Skill properties (name, description, icon)
 - Cooldown management
 - Stamina cost
 - Sound effect support
 - Level-based upgrade system
 
-#### SkillInstance.gd
-Resource class storing:
-- Skill path reference
-- Current level
-- Upgrade bonus accumulation
-
-### UI System
-
-#### SkillUI.gd
-Three-tab interface:
-1. **Equipment Tab**: Drag-drop skill equipping
-2. **Upgrade Tab**: Skill enhancement (same skill + same skill)
-3. **Synthesis Tab**: Combine two skills for random new skill
-
-#### SkillGetUI.gd
-Reward screen after stage completion:
-- Displays 3 random skill choices
-- Animated selection effects
-- Skip option available
-
 ---
 
-## User Manual
+## 📖 User Manual
 
 ### Controls
 
@@ -375,20 +405,25 @@ Reward screen after stage completion:
 | Jump | `W` or `↑` |
 | Double Jump | Press jump again while airborne |
 | Dash | `Shift` |
-| Skill Slot 1 | `Left Mouse Click` or `Z` |
+| Skill Slot 1 | `LMB` or `Z` |
 | Skill Slot 2 | `Q` or `X` |
 | Skill Slot 3 | `E` or `C` |
 | Open Skill Menu | `K` |
-| Pause/Options | `ESC` |
+
+---
 
 ### Gameplay Tips
 
-1. **Stamina Management**: Dashing and skills consume stamina. Wait for regeneration.
-2. **Skill Slots**: Match skills to slots based on their type (Type I, II, III).
-3. **Upgrade Strategy**: Failed upgrades give bonus probability for next attempt.
-4. **Double Jump**: Essential for reaching higher platforms and dodging.
+- **Stamina Management:** Dashing and skills consume stamina. Wait for regeneration.
+- **Skill Slots:** Match skills to slots based on their type (Type I, II, III).
+- **Upgrade Strategy:** Failed upgrades give bonus probability for next attempt.
+- **Double Jump:** Essential for reaching higher platforms and dodging.
+
+---
 
 ### Cheat Commands (Debug Mode Only)
+
+> ⚠️ **Warning:** These commands only work in debug builds!
 
 | Key | Function |
 |-----|----------|
@@ -396,6 +431,8 @@ Reward screen after stage completion:
 | `F2` | Toggle free camera (pause game, drag to move camera) |
 | `K` | Open skill equip/upgrade/synthesis menu |
 | `G` | Open reward selection screen |
+
+---
 
 ### Skill Types
 
@@ -407,7 +444,7 @@ Reward screen after stage completion:
 
 ---
 
-## Borrowed Contents
+## 📦 Borrowed Contents
 
 ### Graphics & Visual Assets
 
@@ -435,7 +472,7 @@ Reward screen after stage completion:
 
 ---
 
-## AI Tools Declaration
+## 🤖 AI Tools Declaration
 
 ### AI Tool Usage in This Project
 
@@ -451,32 +488,31 @@ When suitable design assets were not available from existing resources, **genera
 #### 2. Code Development
 
 AI tools were used for:
-- **Debugging assistance**: Identifying and resolving code issues
-- **Code optimization suggestions**: Improving performance and readability
-- **Documentation generation**: Creating code comments and documentation
+- **Debugging assistance:** Identifying and resolving code issues
+- **Code optimization suggestions:** Improving performance and readability
+- **Documentation generation:** Creating code comments and documentation
 
 #### 3. Scope of AI Usage
 
-- AI-generated assets were used only when no suitable alternatives were found on asset platforms
-- All AI-generated content was reviewed and modified by team members to fit the project
-- Core game logic and design decisions were made by the development team
-- AI was primarily used as a supplementary tool, not as the primary development method
+> ⚠️ **Important Notes:**
+> - AI-generated assets were used **only when no suitable alternatives** were found on asset platforms
+> - All AI-generated content was **reviewed and modified** by team members to fit the project
+> - Core game logic and design decisions were **made by the development team**
+> - AI was primarily used as a **supplementary tool**, not as the primary development method
 
 ---
 
-## Technical Specifications
+## 📋 Technical Specifications
 
-- **Engine**: Godot 4.5
-- **Resolution**: 2560 x 1440 (16:9)
-- **Rendering**: Mobile renderer with pixel-perfect settings
-- **Physics**: Custom gravity (2500.0), physics interpolation enabled
+| Specification | Value |
+|---------------|-------|
+| Engine | Godot 4.5 |
+| Resolution | 2560 x 1440 (16:9) |
+| Rendering | Mobile renderer with pixel-perfect settings |
+| Physics | Custom gravity (2500.0), physics interpolation enabled |
 
 ---
-
-## Credits
 
 **Team 6 - Creative Media Programming 2025-2**
-
----
 
 *This documentation was created as part of the final project requirements.*
