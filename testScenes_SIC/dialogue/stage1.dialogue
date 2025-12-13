@@ -10,12 +10,12 @@
 => END
 
 ~ tutorial_dash
-???: To reach the next platform, I'll need to dash while jumping!
-???: Let me try pressing SHIFT while in the air.
+???: To reach the next platform, I'll need to dash while jumping or double-jump!
+???: Let me try pressing SHIFT while in the air to DASH.
+???: Or maybe I can press [W] twice to Double Jump across. 
 => END
 
 ~ tutorial_skill
-???: It's too high to jump up there!
 ???: Those must be Glitches.
 ???: Monsters born from corrupted code.
 ???: See? Taking damage from a Glitch reduces your health by one block.
