@@ -1,7 +1,8 @@
-[gd_scene load_steps=27 format=4 uid="uid://bowtn8lw4uimt"]
+[gd_scene load_steps=28 format=4 uid="uid://bowtn8lw4uimt"]
 
 [ext_resource type="Texture2D" uid="uid://ep6ahel71vai" path="res://testScenes_SIC/Stage4/Assets/ENVIRONMENT/backgrounds.png" id="1_jr3b3"]
 [ext_resource type="Script" uid="uid://do4hv03l3nqn3" path="res://testScenes_SIC/Stage4/Stage4.gd" id="1_sorpw"]
+[ext_resource type="AudioStream" uid="uid://dbya8mi86q56e" path="res://testScenes_SIC/Stage4/church-organ-music-372222.mp3" id="2_00xn5"]
 [ext_resource type="PackedScene" uid="uid://en1mqsrf58ka" path="res://Actors/Player/player.tscn" id="2_oyo18"]
 [ext_resource type="Texture2D" uid="uid://cbnlcix3uyljp" path="res://testScenes_SIC/Stage4/Assets/ENVIRONMENT/column.png" id="2_sorpw"]
 [ext_resource type="Texture2D" uid="uid://dtl6r6seambo7" path="res://testScenes_SIC/Stage4/Assets/ENVIRONMENT/tileset.png" id="5_61sab"]
@@ -371,6 +372,7 @@ script = ExtResource("1_sorpw")
 player = NodePath("Player")
 skill_get_ui = NodePath("SkillGetUI")
 skill_ui = NodePath("SkillUI")
+stage_bgm = ExtResource("2_00xn5")
 
 [node name="Background" type="ParallaxBackground" parent="."]
 
@@ -629,5 +631,35 @@ position = Vector2(10489, 643)
 
 [node name="HoverEnemy6" parent="." instance=ExtResource("12_ijavk")]
 position = Vector2(9900, 596)
+
+[node name="FlyEnemy6" parent="." instance=ExtResource("8_57cng")]
+position = Vector2(1732, 690)
+
+[node name="FlyEnemy7" parent="." instance=ExtResource("8_57cng")]
+position = Vector2(2450, 670)
+
+[node name="HoverEnemy7" parent="." instance=ExtResource("12_ijavk")]
+position = Vector2(2115, 366)
+
+[node name="HoverEnemy8" parent="." instance=ExtResource("12_ijavk")]
+position = Vector2(2726, 300)
+
+[node name="HoverEnemy9" parent="." instance=ExtResource("12_ijavk")]
+position = Vector2(7849, 849)
+
+[node name="HoverEnemy10" parent="." instance=ExtResource("12_ijavk")]
+position = Vector2(9662, 152)
+
+[node name="HoverEnemy11" parent="." instance=ExtResource("12_ijavk")]
+position = Vector2(10324, 186)
+
+[node name="HoverEnemy12" parent="." instance=ExtResource("12_ijavk")]
+position = Vector2(11011, 190)
+
+[node name="HoverEnemy13" parent="." instance=ExtResource("12_ijavk")]
+position = Vector2(12831, 607)
+
+[node name="FlyEnemy8" parent="." instance=ExtResource("8_57cng")]
+position = Vector2(12786, 166)
 
 [connection signal="body_entered" from="portal" to="." method="_on_portal_body_entered"]

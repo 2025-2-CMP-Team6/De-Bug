@@ -1,8 +1,9 @@
-[gd_scene load_steps=34 format=4 uid="uid://d3gnlfh1n8f8j"]
+[gd_scene load_steps=35 format=4 uid="uid://d3gnlfh1n8f8j"]
 
 [ext_resource type="Script" uid="uid://cbas35sfacvvi" path="res://testScenes_SIC/Stage3/Stage3.gd" id="1_cej1a"]
 [ext_resource type="Texture2D" uid="uid://bp3afg2epb7jc" path="res://testScenes_SIC/Stage3/Assets/Environment/background.png" id="1_rvv5c"]
 [ext_resource type="Texture2D" uid="uid://bo77fjadcab3q" path="res://testScenes_SIC/Stage3/Assets/Environment/mountains.png" id="2_oitkq"]
+[ext_resource type="AudioStream" uid="uid://cn4rfc7g0lbm8" path="res://testScenes_SIC/Stage3/scary-cinematic-background-443333.mp3" id="2_thkmq"]
 [ext_resource type="Texture2D" uid="uid://dg4a7dwtnou72" path="res://testScenes_SIC/Stage3/Assets/Environment/graveyard.png" id="3_nmnnk"]
 [ext_resource type="Texture2D" uid="uid://drirhortw73xm" path="res://testScenes_SIC/Stage3/Assets/Environment/tileset.png" id="4_oitkq"]
 [ext_resource type="PackedScene" uid="uid://en1mqsrf58ka" path="res://Actors/Player/player.tscn" id="5_nmnnk"]
@@ -701,6 +702,7 @@ script = ExtResource("1_cej1a")
 player = NodePath("Player")
 skill_get_ui = NodePath("SkillGetUI")
 skill_ui = NodePath("SkillUI")
+stage_bgm = ExtResource("2_thkmq")
 
 [node name="Background" type="ParallaxBackground" parent="."]
 
