@@ -60,8 +60,9 @@ horizontal_alignment = 1
 
 [node name="text" type="Label" parent="."]
 layout_mode = 0
+offset_left = 16.0
 offset_top = 334.0
-offset_right = 400.0
+offset_right = 384.0
 offset_bottom = 512.0
 text = "skill discription"
 horizontal_alignment = 1

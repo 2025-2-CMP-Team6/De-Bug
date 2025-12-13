@@ -21,11 +21,8 @@ var patrol_timer: float = 0.0
 func _ready():
 	super._ready()
 	
-	# 1. 시작 시 파동 숨기기 및 판정 끄기
 	wave_effect.visible = false
 	attack_area.monitoring = false
-	
-	# 2. 시그널 연결 
 	
 	# 파동 애니메이션이 끝났을 때
 	if not wave_effect.animation_finished.is_connected(_on_wave_finished):
@@ -75,7 +72,6 @@ func _process_movement(delta):
 	if velocity.x != 0:
 		main_sprite.flip_h = (velocity.x < 0)
 
-# --- 행동 패턴 함수들 ---
 
 func chase_player(player):
 	var direction = (player.global_position - global_position).normalized()
@@ -109,7 +105,6 @@ func patrol_behavior(delta):
 	else:
 		main_sprite.play("walk")
 
-# --- 공격 시퀀스  ---
 
 func start_attack_sequence():
 	is_attacking = true

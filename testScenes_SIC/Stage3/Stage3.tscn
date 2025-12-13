@@ -1,4 +1,4 @@
-[gd_scene load_steps=33 format=4 uid="uid://d3gnlfh1n8f8j"]
+[gd_scene load_steps=34 format=4 uid="uid://d3gnlfh1n8f8j"]
 
 [ext_resource type="Script" uid="uid://cbas35sfacvvi" path="res://testScenes_SIC/Stage3/Stage3.gd" id="1_cej1a"]
 [ext_resource type="Texture2D" uid="uid://bp3afg2epb7jc" path="res://testScenes_SIC/Stage3/Assets/Environment/background.png" id="1_rvv5c"]
@@ -14,6 +14,7 @@
 [ext_resource type="PackedScene" uid="uid://dgv1ef1ng7ngs" path="res://UI/SkillGetUI.tscn" id="12_hwnot"]
 [ext_resource type="PackedScene" uid="uid://b53od7vli2rh5" path="res://Actors/Enemies/Boss/FlyBoss.tscn" id="13_hwnot"]
 [ext_resource type="Script" uid="uid://bxxchik2dyxhq" path="res://testScenes_SIC/Stage3/BoobyTrap.gd" id="14_ey0dt"]
+[ext_resource type="PackedScene" uid="uid://dpo0uibgqtdie" path="res://Actors/Enemies/Comon/virus/HoverEnemy.tscn" id="15_k1t4n"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_nmnnk"]
 texture = ExtResource("4_oitkq")
@@ -840,6 +841,18 @@ script = ExtResource("14_ey0dt")
 position = Vector2(-2, 0)
 shape = SubResource("RectangleShape2D_thkmq")
 
+[node name="HoverEnemy" parent="BoobyTrap3" instance=ExtResource("15_k1t4n")]
+position = Vector2(-1859, 120)
+
+[node name="HoverEnemy2" parent="BoobyTrap3" instance=ExtResource("15_k1t4n")]
+position = Vector2(-4603, 160)
+
+[node name="HoverEnemy3" parent="BoobyTrap3" instance=ExtResource("15_k1t4n")]
+position = Vector2(1221, -344)
+
+[node name="HoverEnemy4" parent="BoobyTrap3" instance=ExtResource("15_k1t4n")]
+position = Vector2(3749, -712)
+
 [node name="BoobyTrap5" type="Area2D" parent="."]
 position = Vector2(6617, 2762)
 collision_layer = 2
@@ -920,6 +933,9 @@ script = ExtResource("14_ey0dt")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="BoobyTrap13"]
 position = Vector2(803, 5)
 shape = SubResource("RectangleShape2D_l5ddo")
+
+[node name="HoverEnemy" parent="." instance=ExtResource("15_k1t4n")]
+position = Vector2(5872, 2592)
 
 [connection signal="body_entered" from="portal" to="." method="_on_portal_body_entered"]
 [connection signal="body_entered" from="BoobyTrap" to="BoobyTrap" method="_on_body_entered"]
