@@ -55,8 +55,8 @@
          │                 │                 │
          ▼                 ▼                 ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│                           WORLD (Base Stage)                    │
-│  - Stage management, Portal system, Enemy tracking              │
+│               WORLD (Stage 1 ~ 4 / Boss Stage)                  │
+│        - Stage management, Portal system, Enemy tracking        │
 └─────────────────────────────────────────────────────────────────┘
          │
          ▼
@@ -67,7 +67,7 @@
 │  - Movement & Input         │  - BaseEnemy (Abstract)           │
 │  - Skill Casting            │  - Common Enemies (Virus types)   │
 │  - Health & Stamina         │  - Middle Bosses                  │
-│  - Equipment Slots          │  - Final Boss (FlyBoss)           │
+│  - Equipment Slots          │  - Final Boss (CorruptCOre)       │
 └─────────────────────────────┴───────────────────────────────────┘
          │
          ▼
@@ -277,10 +277,13 @@ The main playable character with:
 - `HoverEnemy.tscn`: Stationary hovering enemy
 - `RangeVirus.tscn`: Ranged attack enemy
 
-**Bosses**:
+**Middle Bosses**:
 - `TutorialBoss.tscn`: Stage 1 mini-boss
 - `JungleBoss.tscn`: Stage 2 mini-boss
 - `FlyBoss.tscn`: Final boss with multiple attack patterns
+
+**Final Boss(Corrupt Core)**:
+- `BossMeteor.tscn`, `BossLaser.tscn`, `BossFire.tscn`: Boss pattern components
 
 ### UI Scenes
 
@@ -322,12 +325,6 @@ Abstract base class for all enemies providing:
 - Death signal emission
 - Boss HP bar support
 - Hit flash shader integration
-
-#### fly_boss.gd (Final Boss)
-Complex boss AI with state machine:
-- **NORMAL**: Erratic movement, maintains distance
-- **TO_START_POS**: Moving to bombing run start
-- **BOMBING_RUN**: Aerial meteor attack
 
 **Attack Patterns**:
 1. Spread shot (3-way bullets)
