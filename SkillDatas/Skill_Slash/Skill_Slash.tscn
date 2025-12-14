@@ -1,8 +1,15 @@
-[gd_scene load_steps=5 format=3 uid="uid://b068ejneligop"]
+[gd_scene load_steps=7 format=3 uid="uid://b068ejneligop"]
 
 [ext_resource type="Script" uid="uid://cwcpyslhk0dfb" path="res://SkillDatas/Skill_Slash/Skill_Slash.gd" id="1_vyha1"]
 [ext_resource type="Texture2D" uid="uid://b6nwqn4obo1wt" path="res://SkillDatas/Skill_Slash/fc732.png" id="2_seapc"]
 [ext_resource type="Texture2D" uid="uid://bq86qdbosfr7h" path="res://graphics/grid.jpg" id="3_p3u07"]
+[ext_resource type="Script" uid="uid://dkl7vd0jkmplk" path="res://SkillUpgradeData.gd" id="3_seapc"]
+
+[sub_resource type="Resource" id="Resource_p3u07"]
+script = ExtResource("3_seapc")
+stat_name = &"damage"
+stat_values_by_level = Array[float]([12.0, 14.0, 18.0, 22.0, 25.0])
+metadata/_custom_type_script = "uid://dkl7vd0jkmplk"
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_k1jqs"]
 size = Vector2(125.77463, 151.19986)
@@ -14,7 +21,7 @@ skill_name = "Slash"
 skill_description = "Performs a basic melee attack against the enemy in front."
 skill_icon = ExtResource("2_seapc")
 type = 2
-damage = 5.0
+upgrades = Array[ExtResource("3_seapc")]([SubResource("Resource_p3u07")])
 
 [node name="Hitbox" type="Area2D" parent="." groups=["player_attack"]]
 monitoring = false

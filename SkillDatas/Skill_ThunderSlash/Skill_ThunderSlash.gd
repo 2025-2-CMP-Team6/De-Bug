@@ -8,8 +8,8 @@ extends BaseSkill
 
 @export_group("Movement Settings")
 @export var teleport_distance: float = 60.0
-@export var safety_margin: float = 16.0
-@export var hitbox_width: float = 50.0
+@export var safety_margin: float = 50.0
+@export var hitbox_width: float = 60.0
 @export var slash_visual_texture: Texture
 
 @export_group("Audio Settings")
@@ -156,8 +156,5 @@ func _draw_debug(shape, xform, owner):
 	owner.get_parent().add_child(spr)
 	get_tree().create_timer(0.15).timeout.connect(spr.queue_free)
 
-func _on_skill_finished():
-	if is_instance_valid(owner):
-		owner.scale.x = abs(owner.scale.x)
-	
+func _on_skill_finished():	
 	is_active = false

@@ -8,7 +8,7 @@
 [sub_resource type="Resource" id="Resource_hol8l"]
 script = ExtResource("5_hfhjg")
 stat_name = &"cooldown"
-stat_values_by_level = Array[float]([10.0, 9.0, 8.0, 8.0, 7.0])
+stat_values_by_level = Array[float]([8.0, 8.0, 7.0, 7.0, 6.0])
 metadata/_custom_type_script = "uid://dkl7vd0jkmplk"
 
 [node name="Skill_ThunderSlash" type="Node2D"]
@@ -22,5 +22,6 @@ skill_icon = ExtResource("3_hol8l")
 stamina_cost = 20.0
 cooldown = 10.0
 requires_target = true
+damage = 12.0
 max_cast_range = 700.0
 upgrades = Array[ExtResource("5_hfhjg")]([SubResource("Resource_hol8l")])

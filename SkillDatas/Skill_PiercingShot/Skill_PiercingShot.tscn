@@ -8,7 +8,7 @@
 [sub_resource type="Resource" id="Resource_2sktd"]
 script = ExtResource("3_2sktd")
 stat_name = &"damage"
-stat_values_by_level = Array[float]([10.0, 11.0, 12.0, 13.0, 15.0])
+stat_values_by_level = Array[float]([12.0, 14.0, 16.0, 16.0, 18.0])
 metadata/_custom_type_script = "uid://dkl7vd0jkmplk"
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_iw7bs"]
