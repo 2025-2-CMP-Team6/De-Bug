@@ -1,4 +1,4 @@
-[gd_scene load_steps=35 format=4 uid="uid://d3gnlfh1n8f8j"]
+[gd_scene load_steps=36 format=4 uid="uid://d3gnlfh1n8f8j"]
 
 [ext_resource type="Script" uid="uid://cbas35sfacvvi" path="res://testScenes_SIC/Stage3/Stage3.gd" id="1_cej1a"]
 [ext_resource type="Texture2D" uid="uid://bp3afg2epb7jc" path="res://testScenes_SIC/Stage3/Assets/Environment/background.png" id="1_rvv5c"]
@@ -8,6 +8,7 @@
 [ext_resource type="Texture2D" uid="uid://drirhortw73xm" path="res://testScenes_SIC/Stage3/Assets/Environment/tileset.png" id="4_oitkq"]
 [ext_resource type="PackedScene" uid="uid://en1mqsrf58ka" path="res://Actors/Player/player.tscn" id="5_nmnnk"]
 [ext_resource type="Texture2D" uid="uid://dqe3il4sqyalg" path="res://testScenes_SIC/Stage3/Assets/Environment/objects.png" id="6_qc3on"]
+[ext_resource type="PackedScene" uid="uid://10p01la5f8rw" path="res://Actors/Enemies/TreasureChest.tscn" id="6_sc4t4"]
 [ext_resource type="Texture2D" uid="uid://csfttyi8ghxd3" path="res://Portal-Sheet.png" id="8_o0gci"]
 [ext_resource type="Script" uid="uid://cqw1qj4qrccjq" path="res://testScenes_SIC/portal_anim.gd" id="9_t7ddc"]
 [ext_resource type="PackedScene" uid="uid://bb44trwnidu06" path="res://Actors/Enemies/Comon/virus/FlyEnemy.tscn" id="10_t7ddc"]
@@ -699,7 +700,6 @@ size = Vector2(64, 20)
 
 [node name="Stage3" type="Node2D" node_paths=PackedStringArray("player", "skill_get_ui", "skill_ui")]
 script = ExtResource("1_cej1a")
-is_test_mode = true
 player = NodePath("Player")
 skill_get_ui = NodePath("SkillGetUI")
 skill_ui = NodePath("SkillUI")
@@ -734,6 +734,15 @@ position = Vector2(-4, 1286)
 scale = Vector2(15, 15)
 texture = ExtResource("3_nmnnk")
 centered = false
+
+[node name="TreasureChest" parent="." instance=ExtResource("6_sc4t4")]
+position = Vector2(4812, 2912)
+
+[node name="TreasureChest2" parent="." instance=ExtResource("6_sc4t4")]
+position = Vector2(10014, 2142)
+
+[node name="TreasureChest3" parent="." instance=ExtResource("6_sc4t4")]
+position = Vector2(2742, 2929)
 
 [node name="Platform" type="TileMapLayer" parent="."]
 position = Vector2(56, 14)

@@ -1,4 +1,4 @@
-[gd_scene load_steps=29 format=4 uid="uid://bowtn8lw4uimt"]
+[gd_scene load_steps=30 format=4 uid="uid://bowtn8lw4uimt"]
 
 [ext_resource type="Texture2D" uid="uid://ep6ahel71vai" path="res://testScenes_SIC/Stage4/Assets/ENVIRONMENT/backgrounds.png" id="1_jr3b3"]
 [ext_resource type="Script" uid="uid://do4hv03l3nqn3" path="res://testScenes_SIC/Stage4/Stage4.gd" id="1_sorpw"]
@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://en1mqsrf58ka" path="res://Actors/Player/player.tscn" id="2_oyo18"]
 [ext_resource type="Texture2D" uid="uid://cbnlcix3uyljp" path="res://testScenes_SIC/Stage4/Assets/ENVIRONMENT/column.png" id="2_sorpw"]
 [ext_resource type="Texture2D" uid="uid://dtl6r6seambo7" path="res://testScenes_SIC/Stage4/Assets/ENVIRONMENT/tileset.png" id="5_61sab"]
+[ext_resource type="PackedScene" uid="uid://10p01la5f8rw" path="res://Actors/Enemies/TreasureChest.tscn" id="5_a25t5"]
 [ext_resource type="Texture2D" uid="uid://1xmwtvscl65b" path="res://testScenes_SIC/Stage4/16-bit-spike-Sheet.png" id="5_wgo3s"]
 [ext_resource type="Texture2D" uid="uid://csfttyi8ghxd3" path="res://Portal-Sheet.png" id="6_0mhyx"]
 [ext_resource type="Script" uid="uid://cqw1qj4qrccjq" path="res://testScenes_SIC/portal_anim.gd" id="7_lykr5"]
@@ -570,6 +571,15 @@ shape = SubResource("RectangleShape2D_00xn5")
 position = Vector2(-419.99997, 0)
 scale = Vector2(13971.999, 1295)
 texture = SubResource("ImageTexture_sorpw")
+
+[node name="TreasureChest" parent="." instance=ExtResource("5_a25t5")]
+position = Vector2(9111, 1150)
+
+[node name="TreasureChest2" parent="." instance=ExtResource("5_a25t5")]
+position = Vector2(13075, 928)
+
+[node name="TreasureChest3" parent="." instance=ExtResource("5_a25t5")]
+position = Vector2(959, 1149)
 
 [node name="Deco" type="TileMapLayer" parent="."]
 scale = Vector2(2, 2)

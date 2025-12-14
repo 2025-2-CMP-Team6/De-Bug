@@ -16,7 +16,6 @@ position = Vector2(8, 0)
 script = ExtResource("1_slli8")
 map_pattern_timer = NodePath("StageTimer")
 map_lasers = [NodePath("BossLaser"), NodePath("BossLaser2")]
-is_test_mode = true
 player = NodePath("Player")
 skill_get_ui = NodePath("SkillGetUI")
 skill_ui = NodePath("SkillUI")
