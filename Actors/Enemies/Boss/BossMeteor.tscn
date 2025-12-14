@@ -1,6 +1,7 @@
-[gd_scene load_steps=15 format=3 uid="uid://c1t1vldg17p1j"]
+[gd_scene load_steps=16 format=3 uid="uid://c1t1vldg17p1j"]
 
 [ext_resource type="Script" uid="uid://cvcid3tgl85db" path="res://Actors/Enemies/Boss/boss_meteor.gd" id="1_w1lg8"]
+[ext_resource type="AudioStream" uid="uid://chux8i13v0kc5" path="res://Sounds/effects/sfx_fire_meteor.mp3" id="2_4rp3n"]
 [ext_resource type="Texture2D" uid="uid://bwf4bpn28sj77" path="res://graphics/icon.svg" id="2_s6w6t"]
 [ext_resource type="Texture2D" uid="uid://cxwh32nd0wpb2" path="res://Actors/Enemies/Boss/16_sunburn_spritesheet.png" id="2_x35ct"]
 [ext_resource type="Script" uid="uid://cxv4dde4keuli" path="res://Actors/Enemies/Boss/BossMeteor.gd" id="3_4rp3n"]
@@ -72,12 +73,14 @@ animations = [{
 [sub_resource type="CircleShape2D" id="CircleShape2D_gluic"]
 radius = 25.694357
 
-[node name="BossMeteor" type="Area2D" groups=["enemy_attacks"]]
+[node name="BossMeteor" type="Area2D" node_paths=PackedStringArray("sfx_player") groups=["enemy_attacks"]]
 z_index = 1
 scale = Vector2(5, 5)
 collision_layer = 4
 collision_mask = 3
 script = ExtResource("1_w1lg8")
+sfx_player = NodePath("AudioStreamPlayer")
+sfx_meteor = ExtResource("2_4rp3n")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 scale = Vector2(0.99999994, 0.99999994)
@@ -99,5 +102,8 @@ shape = SubResource("CircleShape2D_gluic")
 wait_time = 0.5
 one_shot = true
 autostart = true
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+bus = &"SFX"
 
 [connection signal="body_entered" from="." to="." method="_on_body_entered"]

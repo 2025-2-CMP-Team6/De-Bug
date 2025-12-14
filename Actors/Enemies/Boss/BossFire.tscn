@@ -1,6 +1,7 @@
-[gd_scene load_steps=8 format=3 uid="uid://tdponf4h4jyg"]
+[gd_scene load_steps=9 format=3 uid="uid://tdponf4h4jyg"]
 
 [ext_resource type="Script" uid="uid://b5yc8o6g2l5ab" path="res://Actors/Enemies/Boss/boss_fire.gd" id="1_8c8bo"]
+[ext_resource type="AudioStream" uid="uid://fh8d3vu3fygv" path="res://Sounds/effects/sfx_firewall.mp3" id="2_0s7l3"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_2jtio"]
 size = Vector2(256, 996)
@@ -54,6 +55,12 @@ wait_time = 10.0
 autostart = true
 
 [node name="ReadyTimer" type="Timer" parent="."]
+
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("2_0s7l3")
+volume_db = 10.0
+autoplay = true
+max_distance = 4000.0
 
 [connection signal="body_entered" from="." to="." method="_on_body_entered"]
 [connection signal="timeout" from="LifeTimer" to="." method="_on_life_timer_timeout"]

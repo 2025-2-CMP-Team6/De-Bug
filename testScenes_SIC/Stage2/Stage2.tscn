@@ -1009,7 +1009,7 @@ position = Vector2(1, 2)
 shape = SubResource("CapsuleShape2D_7vc0t")
 
 [node name="Player" parent="." instance=ExtResource("7_js4qc")]
-position = Vector2(1477.0001, 1463)
+position = Vector2(10395.001, 4179.9995)
 scale = Vector2(0.998, 0.99)
 
 [node name="Ground" type="StaticBody2D" parent="."]

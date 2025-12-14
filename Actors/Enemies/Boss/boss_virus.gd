@@ -9,6 +9,13 @@ extends BaseEnemy
 #region Node References
 @export var pattern_timer: Timer
 @export var teleport_timer: Timer
+@export var sfx_player: AudioStreamPlayer
+#endregion
+
+#region Sound Assets
+@export var sfx_tp: AudioStream      # 텔레포트 소리
+@export var sfx_spiral: AudioStream  # 나선 탄막 발사 소리
+@export var sfx_shoot: AudioStream   # 조준 사격 소리
 #endregion
 
 #region Projectiles
@@ -59,6 +66,13 @@ func spawn_random_pattern():
 
 
 func boss_tp():
+	
+	if sfx_player and sfx_tp:
+		sfx_player.stream = sfx_tp
+		sfx_player.volume_db = 8.0
+		sfx_player.pitch_scale = 1.0
+		sfx_player.play()
+		
 	position.x = -5000
 	teleport_timer.wait_time = 1.0
 	teleport_timer.start()
@@ -72,7 +86,15 @@ func _on_teleport_timer_timeout():
 func boss_spiral_shot():
 	var num_shots = 5
 	var interval = 0.3
+	
 	for i in range(num_shots):
+		
+		if sfx_player and sfx_spiral:
+			sfx_player.stream = sfx_spiral
+			sfx_player.volume_db = 0.0
+			sfx_player.pitch_scale = randf_range(0.9, 1.1)
+			sfx_player.play()
+			
 		var num_bullets = 8
 		var angle_step = TAU / num_bullets
 		var angle_offset = (TAU / num_bullets) * i * 0.2
@@ -96,6 +118,13 @@ func boss_shot():
 		return
 	var interval = 0.3
 	for i in range(8):
+		
+		if sfx_player and sfx_shoot:
+			sfx_player.stream = sfx_shoot
+			sfx_player.volume_db = 0.0
+			sfx_player.pitch_scale = randf_range(0.9, 1.1)
+			sfx_player.play()
+			
 		var bullet = BULLET_SCENE.instantiate()
 		bullet.direction = (player.global_position - global_position).normalized()
 		bullet.speed = 600.0

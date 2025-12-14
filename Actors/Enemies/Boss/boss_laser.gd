@@ -15,7 +15,11 @@ extends Node2D
 @onready var line_2d = $Line2D
 @onready var hitbox = $Hitbox
 @onready var collision_shape = $Hitbox/CollisionShape2D
+@export var sfx_player: AudioStreamPlayer
 #endregion
+
+@export var sfx_laser: AudioStream
+@export var sfx_lasercharge: AudioStream
 
 var is_tracking: bool = false
 var target_player: Node2D = null
@@ -41,6 +45,12 @@ func start_laser_pattern():
 	is_tracking = true
 	line_2d.visible = true
 	
+	if sfx_player and sfx_lasercharge:
+		sfx_player.stream = sfx_lasercharge
+		sfx_player.volume_db = -10.0
+		sfx_player.pitch_scale = 1.0
+		sfx_player.play()
+	
 	await get_tree().create_timer(warning_time).timeout
 
 	is_tracking = false
@@ -51,6 +61,13 @@ func start_laser_pattern():
 
 func fire():
 	print("Map laser: fire!")
+	
+	if sfx_player and sfx_laser:
+		sfx_player.stream = sfx_laser
+		sfx_player.volume_db = -3.0
+		sfx_player.pitch_scale = 1.0
+		sfx_player.play()
+		
 	hitbox.monitoring = true
 	_update_beam_visual(300.0, Color(1, 0, 0, 0.8))
 	await get_tree().create_timer(fire_duration).timeout

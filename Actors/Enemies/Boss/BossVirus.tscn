@@ -1,8 +1,11 @@
-[gd_scene load_steps=6 format=3 uid="uid://deraqiym6ih4h"]
+[gd_scene load_steps=9 format=3 uid="uid://deraqiym6ih4h"]
 
 [ext_resource type="Texture2D" uid="uid://c0wgft5avfblx" path="res://graphics/Actors/Boss.png" id="1_rsbw7"]
 [ext_resource type="Script" uid="uid://cvkqrhuny154i" path="res://Actors/Enemies/Boss/boss_virus.gd" id="1_x4ak8"]
 [ext_resource type="Texture2D" uid="uid://b6iy1ivj363h7" path="res://graphics/Actors/bullet_fire.png" id="2_lfqv2"]
+[ext_resource type="AudioStream" uid="uid://d1rujkqi0egj2" path="res://Sounds/effects/sfx_teleprot.mp3" id="2_rp2cb"]
+[ext_resource type="AudioStream" uid="uid://djveilixsugcs" path="res://Sounds/effects/laser-gun-81720.mp3" id="3_4lrbb"]
+[ext_resource type="AudioStream" uid="uid://bsl4th3p4pet4" path="res://Sounds/effects/sci-fi-weapon-shoot-firing-pulse-tm-01-233821.mp3" id="4_38crb"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_1o7iu"]
 radius = 41.562893
@@ -10,12 +13,16 @@ radius = 41.562893
 [sub_resource type="CircleShape2D" id="CircleShape2D_lfqv2"]
 radius = 31.921587
 
-[node name="BossVirus" type="CharacterBody2D" node_paths=PackedStringArray("pattern_timer", "teleport_timer") groups=["enemies"]]
+[node name="BossVirus" type="CharacterBody2D" node_paths=PackedStringArray("pattern_timer", "teleport_timer", "sfx_player") groups=["enemies"]]
 collision_layer = 4
 collision_mask = 3
 script = ExtResource("1_x4ak8")
 pattern_timer = NodePath("PatternTimer")
 teleport_timer = NodePath("TeleportTimer")
+sfx_player = NodePath("AudioStreamPlayer")
+sfx_tp = ExtResource("2_rp2cb")
+sfx_spiral = ExtResource("3_4lrbb")
+sfx_shoot = ExtResource("4_38crb")
 effsize = 10.0
 is_boss = true
 projectile_texture = ExtResource("2_lfqv2")
@@ -49,3 +56,5 @@ shape = SubResource("CircleShape2D_lfqv2")
 
 [node name="TeleportTimer" type="Timer" parent="."]
 one_shot = true
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]

@@ -1,4 +1,4 @@
-[gd_scene load_steps=28 format=4 uid="uid://bowtn8lw4uimt"]
+[gd_scene load_steps=29 format=4 uid="uid://bowtn8lw4uimt"]
 
 [ext_resource type="Texture2D" uid="uid://ep6ahel71vai" path="res://testScenes_SIC/Stage4/Assets/ENVIRONMENT/backgrounds.png" id="1_jr3b3"]
 [ext_resource type="Script" uid="uid://do4hv03l3nqn3" path="res://testScenes_SIC/Stage4/Stage4.gd" id="1_sorpw"]
@@ -16,6 +16,9 @@
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_sorpw"]
 size = Vector2(1244, 113.5)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_00xn5"]
+size = Vector2(883.9999, 3508.75)
 
 [sub_resource type="ImageTexture" id="ImageTexture_sorpw"]
 
@@ -557,6 +560,11 @@ shape = SubResource("RectangleShape2D_sorpw")
 position = Vector2(13572, -2069)
 rotation = -1.5707964
 shape = SubResource("RectangleShape2D_sorpw")
+
+[node name="wall" type="CollisionShape2D" parent="MapLimit"]
+position = Vector2(5863.625, -2333)
+rotation = -1.5707964
+shape = SubResource("RectangleShape2D_00xn5")
 
 [node name="CameraMapLimit" type="Sprite2D" parent="." groups=["CameraMapLimit"]]
 position = Vector2(-419.99997, 0)

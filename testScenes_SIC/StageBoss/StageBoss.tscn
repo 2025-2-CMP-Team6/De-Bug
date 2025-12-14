@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://hwws6pa3vxua"]
+[gd_scene load_steps=11 format=3 uid="uid://hwws6pa3vxua"]
 
 [ext_resource type="PackedScene" uid="uid://deraqiym6ih4h" path="res://Actors/Enemies/Boss/BossVirus.tscn" id="1_3uvoy"]
 [ext_resource type="PackedScene" uid="uid://en1mqsrf58ka" path="res://Actors/Player/player.tscn" id="1_7prfy"]
@@ -9,6 +9,7 @@
 [ext_resource type="PackedScene" uid="uid://dgv1ef1ng7ngs" path="res://UI/SkillGetUI.tscn" id="3_slli8"]
 [ext_resource type="PackedScene" uid="uid://c0sv0dk5utfr3" path="res://Block/wall.tscn" id="5_se8im"]
 [ext_resource type="Texture2D" uid="uid://dcvp6ynx0e1up" path="res://graphics/BossBg.png" id="6_3uvoy"]
+[ext_resource type="AudioStream" uid="uid://djveilixsugcs" path="res://Sounds/effects/laser-gun-81720.mp3" id="9_xubha"]
 
 [node name="StageBoss" type="Node2D" node_paths=PackedStringArray("map_pattern_timer", "map_lasers", "player", "skill_get_ui", "skill_ui")]
 position = Vector2(8, 0)
@@ -74,6 +75,7 @@ texture = ExtResource("6_3uvoy")
 
 [node name="Boss" parent="." instance=ExtResource("1_3uvoy")]
 position = Vector2(-8, 472)
+sfx_shoot = ExtResource("9_xubha")
 max_health = 300.0
 effsize = 5.0
 

@@ -1,13 +1,18 @@
-[gd_scene load_steps=3 format=3 uid="uid://btljkv3nlruwl"]
+[gd_scene load_steps=5 format=3 uid="uid://btljkv3nlruwl"]
 
 [ext_resource type="Script" uid="uid://cr0kufm170dc4" path="res://Actors/Enemies/Boss/boss_laser.gd" id="1_eumap"]
+[ext_resource type="AudioStream" uid="uid://bsl4th3p4pet4" path="res://Sounds/effects/sci-fi-weapon-shoot-firing-pulse-tm-01-233821.mp3" id="2_hjhxy"]
+[ext_resource type="AudioStream" uid="uid://dxq0u68jqyw48" path="res://Sounds/effects/sfx_laser_charge.mp3" id="3_uvf0o"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_hjhxy"]
 size = Vector2(128, 128)
 
-[node name="BossLaser" type="Node2D"]
+[node name="BossLaser" type="Node2D" node_paths=PackedStringArray("sfx_player")]
 z_index = 10
 script = ExtResource("1_eumap")
+sfx_player = NodePath("AudioStreamPlayer")
+sfx_laser = ExtResource("2_hjhxy")
+sfx_lasercharge = ExtResource("3_uvf0o")
 
 [node name="Hitbox" type="Area2D" parent="."]
 
@@ -28,5 +33,7 @@ points = PackedVector2Array(0, 0, 0, 0)
 width = 30.0
 begin_cap_mode = 1
 end_cap_mode = 1
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
 
 [connection signal="body_entered" from="Hitbox" to="." method="_on_hitbox_body_entered"]
