@@ -19,9 +19,6 @@
 [ext_resource type="PackedScene" uid="uid://dai8mvtukr1k" path="res://Actors/Enemies/Comon/virus/RangeVirus.tscn" id="16_c7gl0"]
 [ext_resource type="PackedScene" uid="uid://c7e52tyh64gk" path="res://Actors/Enemies/MiddleBoss/JungleBoss/JungleBoss.tscn" id="17_uwilw"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_js4qc"]
-size = Vector2(11917.875, 298.5)
-
 [sub_resource type="AtlasTexture" id="AtlasTexture_h4ln0"]
 atlas = ExtResource("8_e1cl4")
 region = Rect2(256, 0, 64, 64)
@@ -68,6 +65,9 @@ animations = [{
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_7vc0t"]
 radius = 24.0
 height = 94.0
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_js4qc"]
+size = Vector2(11917.875, 298.5)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_vjhlr"]
 size = Vector2(11842.25, 950.5)
@@ -994,8 +994,22 @@ scale = Vector2(30, 30)
 texture = ExtResource("6_7vc0t")
 centered = false
 
+[node name="portal" type="Area2D" parent="."]
+position = Vector2(910, 1121)
+collision_layer = 2
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="portal"]
+position = Vector2(-0.99993896, 0.99993896)
+scale = Vector2(2.749998, 2.749998)
+sprite_frames = SubResource("SpriteFrames_pivpb")
+script = ExtResource("9_vjhlr")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="portal"]
+position = Vector2(1, 2)
+shape = SubResource("CapsuleShape2D_7vc0t")
+
 [node name="Player" parent="." instance=ExtResource("7_js4qc")]
-position = Vector2(10085, 4170)
+position = Vector2(1477.0001, 1463)
 scale = Vector2(0.998, 0.99)
 
 [node name="Ground" type="StaticBody2D" parent="."]
@@ -1020,20 +1034,6 @@ shape = SubResource("RectangleShape2D_js4qc")
 [node name="Top" type="CollisionShape2D" parent="Ground"]
 position = Vector2(5628, -2766)
 shape = SubResource("RectangleShape2D_js4qc")
-
-[node name="portal" type="Area2D" parent="."]
-position = Vector2(910, 1121)
-collision_layer = 2
-
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="portal"]
-position = Vector2(-0.99993896, 0.99993896)
-scale = Vector2(2.749998, 2.749998)
-sprite_frames = SubResource("SpriteFrames_pivpb")
-script = ExtResource("9_vjhlr")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="portal"]
-position = Vector2(1, 2)
-shape = SubResource("CapsuleShape2D_7vc0t")
 
 [node name="FallPrevention" type="Area2D" parent="."]
 position = Vector2(92, 5670)
@@ -1089,7 +1089,7 @@ position = Vector2(3702, 2262)
 max_health = 30.0
 
 [node name="JungleBoss" parent="." instance=ExtResource("17_uwilw")]
-position = Vector2(875, 1413)
+position = Vector2(876.00006, 1393)
 
 [node name="CameraMapLimit" type="Sprite2D" parent="." groups=["CameraMapLimit"]]
 scale = Vector2(11521, 5281)

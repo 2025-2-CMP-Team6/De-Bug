@@ -51,6 +51,7 @@ var floor_checker: RayCast2D
 @onready var main_sprite = $AnimatedSprite2D
 @onready var sprite_ = $AnimatedSprite2D # Override sprite referenced in BaseEnemy
 @onready var attack_area = get_node_or_null("AttackArea")
+@onready var collision_shape = $CollisionShape2D
 #endregion
 
 func _ready():
@@ -132,12 +133,21 @@ func _process_movement(delta):
 	if main_sprite and velocity.x != 0:
 		main_sprite.flip_h = (velocity.x > 0)
 
-		# Adjust AttackArea position to match sprite direction (consider scale 2)
+		# Adjust AttackArea position to match sprite direction
+		# Calculation: left center = 12 + (-11.333) = 0.667, right center should be -0.667
+		# right_x = -0.667 - (-11.333) = 10.666
 		if attack_area:
 			if main_sprite.flip_h: # Facing right (flipped)
-				attack_area.position.x = -12
+				attack_area.position.x = 10.666
 			else: # Facing left (default)
 				attack_area.position.x = 12
+
+		# Adjust main CollisionShape2D to match sprite direction
+		if collision_shape:
+			if main_sprite.flip_h: # Facing right (flipped)
+				collision_shape.position.x = -16.5
+			else: # Facing left (default)
+				collision_shape.position.x = 16.5
 
 #region Per-state handler functions
 
@@ -310,12 +320,19 @@ func change_state(new_state: State, player = null):
 				var dir_to_player = target_player.global_position.x - global_position.x
 				main_sprite.flip_h = (dir_to_player > 0)
 
-			# Set AttackArea position based on current facing direction (consider scale 2)
+			# Set AttackArea position based on current facing direction
 			if attack_area and main_sprite:
 				if main_sprite.flip_h: # Right (flipped)
-					attack_area.position.x = -12
+					attack_area.position.x = 10.666
 				else: # Left (default)
 					attack_area.position.x = 12
+
+			# Set main CollisionShape2D position based on current facing direction
+			if collision_shape and main_sprite:
+				if main_sprite.flip_h: # Right (flipped)
+					collision_shape.position.x = -16.5
+				else: # Left (default)
+					collision_shape.position.x = 16.5
 
 		State.ATTACK_PURPLE:
 			state_timer = attack_duration
@@ -324,12 +341,19 @@ func change_state(new_state: State, player = null):
 			if main_sprite:
 				main_sprite.play("attackPurple")
 
-			# Set AttackArea position based on current facing direction (consider scale 2)
+			# Set AttackArea position based on current facing direction
 			if attack_area and main_sprite:
 				if main_sprite.flip_h: # Right (flipped)
-					attack_area.position.x = -12
+					attack_area.position.x = 10.666
 				else: # Left (default)
 					attack_area.position.x = 12
+
+			# Set main CollisionShape2D position based on current facing direction
+			if collision_shape and main_sprite:
+				if main_sprite.flip_h: # Right (flipped)
+					collision_shape.position.x = -16.5
+				else: # Left (default)
+					collision_shape.position.x = 16.5
 
 		State.COOLDOWN:
 			state_timer = attack_cooldown

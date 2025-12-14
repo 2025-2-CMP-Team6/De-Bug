@@ -188,10 +188,11 @@ animations = [{
 }]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_uafnh"]
-radius = 30.0
-height = 100.0
+radius = 22.666668
+height = 92.66667
 
 [node name="JungleBoss" type="CharacterBody2D" groups=["enemies"]]
+position = Vector2(-49, -3)
 scale = Vector2(3, 3)
 collision_layer = 20
 collision_mask = 7
@@ -224,6 +225,7 @@ collision_layer = 0
 monitorable = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="AttackArea"]
+position = Vector2(-11.333334, 13.333334)
 rotation = -1.5707964
 shape = SubResource("CapsuleShape2D_uafnh")
 

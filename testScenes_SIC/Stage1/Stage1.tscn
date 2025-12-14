@@ -902,10 +902,6 @@ scale = Vector2(15, 15)
 texture = ExtResource("10_ypiqe")
 centered = false
 
-[node name="Player" parent="." instance=ExtResource("2_yyxtu")]
-position = Vector2(319.99854, 5056)
-hit_sound = null
-
 [node name="portal" type="Area2D" parent="."]
 position = Vector2(8736, 1718)
 collision_layer = 2
@@ -921,6 +917,10 @@ script = ExtResource("5_g1wns")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="portal"]
 position = Vector2(1, 2)
 shape = SubResource("CapsuleShape2D_wvjil")
+
+[node name="Player" parent="." instance=ExtResource("2_yyxtu")]
+position = Vector2(319.99854, 5056)
+hit_sound = null
 
 [node name="RainEffect" type="CanvasLayer" parent="."]
 visible = false
