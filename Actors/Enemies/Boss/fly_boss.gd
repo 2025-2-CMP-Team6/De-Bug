@@ -1,12 +1,13 @@
 class_name MidBossHover extends BaseEnemy
 
-#region State Definition (Newly Added)
+#region State Definition
 enum MeteoState {
 	NORMAL,
 	TO_START_POS,
 	BOMBING_RUN
 }
 var current_state: MeteoState = MeteoState.NORMAL
+var detected_player: bool = false
 #endregion
 
 #region Configuration
@@ -88,6 +89,14 @@ func _process_movement(delta):
 		velocity = velocity.lerp(Vector2.ZERO, 2.0 * delta)
 		return
 
+	if not detected_player:
+		if global_position.distance_to(player.global_position) <= 500.0:
+			detected_player = true
+			_start_pattern_timer()
+		else:
+			_apply_erratic_movement(delta)
+			return
+
 	_process_orbitals(delta)
 
 	match current_state:
@@ -144,8 +153,9 @@ func _start_pattern_timer():
 
 func _handle_combat():
 	if current_state != MeteoState.NORMAL: return
+	if not detected_player: return
 
-	var pattern_choice = randi_range(5, 6)
+	var pattern_choice = randi_range(1, 8)
 	print("Pattern Selected: ", pattern_choice)
 	
 	match pattern_choice:

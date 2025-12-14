@@ -10,11 +10,15 @@
 [ext_resource type="PackedScene" uid="uid://c0sv0dk5utfr3" path="res://Block/wall.tscn" id="5_se8im"]
 [ext_resource type="Texture2D" uid="uid://dcvp6ynx0e1up" path="res://graphics/BossBg.png" id="6_3uvoy"]
 
-[node name="StageBoss" type="Node2D" node_paths=PackedStringArray("map_pattern_timer", "map_lasers")]
+[node name="StageBoss" type="Node2D" node_paths=PackedStringArray("map_pattern_timer", "map_lasers", "player", "skill_get_ui", "skill_ui")]
 position = Vector2(8, 0)
 script = ExtResource("1_slli8")
 map_pattern_timer = NodePath("StageTimer")
 map_lasers = [NodePath("BossLaser"), NodePath("BossLaser2")]
+is_test_mode = true
+player = NodePath("Player")
+skill_get_ui = NodePath("SkillGetUI")
+skill_ui = NodePath("SkillUI")
 stage_bgm = ExtResource("2_se8im")
 
 [node name="Player" parent="." node_paths=PackedStringArray("skill_ui", "skill_get_ui") instance=ExtResource("1_7prfy")]

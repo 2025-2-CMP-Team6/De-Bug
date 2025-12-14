@@ -375,7 +375,7 @@ class SkillTooltipButton extends Button:
 	var skill_icon: Texture = null
 	
 	func _make_custom_tooltip(_for_text):
-		var scene = load("res://UI/SkillSelect.tscn")
+		var scene = load("res://UI/SkillTooltip.tscn")
 		if not scene: return null
 		
 		var tooltip = scene.instantiate()

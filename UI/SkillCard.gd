@@ -92,7 +92,7 @@ func setup_card_ui():
 
 #region Tooltip
 func _make_custom_tooltip(_for_text):
-	var scene = load("res://UI/SkillSelect.tscn")
+	var scene = load("res://UI/SkillTooltip.tscn")
 	if not scene:
 		return null
 		

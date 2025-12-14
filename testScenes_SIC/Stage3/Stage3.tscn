@@ -699,6 +699,7 @@ size = Vector2(64, 20)
 
 [node name="Stage3" type="Node2D" node_paths=PackedStringArray("player", "skill_get_ui", "skill_ui")]
 script = ExtResource("1_cej1a")
+is_test_mode = true
 player = NodePath("Player")
 skill_get_ui = NodePath("SkillGetUI")
 skill_ui = NodePath("SkillUI")

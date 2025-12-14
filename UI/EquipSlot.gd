@@ -156,7 +156,7 @@ func _make_custom_tooltip(_for_text):
 	if _tooltip_name == "":
 		return null
 
-	var scene = load("res://UI/SkillSelect.tscn")
+	var scene = load("res://UI/SkillTooltip.tscn")
 	if not scene:
 		return null
 		

@@ -1,9 +1,8 @@
-[gd_scene load_steps=8 format=3 uid="uid://bur16abmo4xqw"]
+[gd_scene load_steps=8 format=3 uid="uid://da471fn54grlq"]
 
-[ext_resource type="Texture2D" uid="uid://bwf4bpn28sj77" path="res://graphics/icon.svg" id="1_kbr0l"]
+[ext_resource type="Texture2D" uid="uid://bwf4bpn28sj77" path="res://graphics/icon.svg" id="1_ihhyw"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_kbr0l"]
-bg_color = Color(0, 0, 0, 0.323)
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_kbr0l"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_l7vvw"]
 font_size = 24
@@ -21,7 +20,7 @@ font_size = 48
 [sub_resource type="LabelSettings" id="LabelSettings_jft4k"]
 font_size = 24
 
-[node name="SkillSelect" type="Panel"]
+[node name="SkillTooltip" type="Panel"]
 custom_minimum_size = Vector2(360, 500)
 anchors_preset = 8
 anchor_left = 0.5
@@ -37,11 +36,11 @@ grow_vertical = 2
 pivot_offset = Vector2(200, 270)
 size_flags_horizontal = 4
 size_flags_vertical = 4
-theme_override_styles/panel = SubResource("StyleBoxFlat_kbr0l")
+theme_override_styles/panel = SubResource("StyleBoxEmpty_kbr0l")
 
 [node name="icon" type="Sprite2D" parent="."]
 position = Vector2(196, 128)
-texture = ExtResource("1_kbr0l")
+texture = ExtResource("1_ihhyw")
 
 [node name="name" type="Label" parent="."]
 layout_mode = 0
