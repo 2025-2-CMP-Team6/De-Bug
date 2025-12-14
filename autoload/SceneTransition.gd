@@ -1,4 +1,4 @@
-
+# owner : Shin I Cheol
 extends CanvasLayer
 
 @onready var color_rect = $ColorRect

@@ -1,3 +1,4 @@
+# owner : Shin I Cheol
 extends Node2D
 
 @onready var video_player = $VideoStreamPlayer

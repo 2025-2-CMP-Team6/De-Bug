@@ -1,3 +1,4 @@
+# owner : Shin I Cheol
 extends AnimatedSprite2D
 
 var player: CharacterBody2D = null

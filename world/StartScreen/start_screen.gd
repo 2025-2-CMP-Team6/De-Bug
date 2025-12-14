@@ -1,3 +1,4 @@
+# owner : Shin I Cheol
 extends Control
 
 # Variables to assign stage-specific music in the inspector

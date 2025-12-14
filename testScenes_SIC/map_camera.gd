@@ -1,3 +1,4 @@
+# owner : Shin I Cheol
 extends Camera2D
 
 func _ready():

@@ -1,3 +1,4 @@
+# owner : Shin I Cheol
 extends World
 
 # Load Dialogue resource

@@ -1,3 +1,4 @@
+# owner : Shin I Cheol
 extends World
 
 var spawn_position: Vector2 = Vector2(10095.0, 4196.0) # Player start position

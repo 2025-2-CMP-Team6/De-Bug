@@ -1,3 +1,4 @@
+# owner : Shin I Cheol
 extends World
 
 @export var ending_transition_sound: AudioStream

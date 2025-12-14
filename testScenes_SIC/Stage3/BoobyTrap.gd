@@ -1,4 +1,5 @@
 # BoobyTrap.gd
+# owner : Shin I Cheol
 extends Area2D
 
 @export var damage_cooldown: float = 1.0  # Cooldown for dealing damage (seconds)

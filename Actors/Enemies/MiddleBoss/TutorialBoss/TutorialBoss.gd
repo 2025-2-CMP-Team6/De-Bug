@@ -1,4 +1,5 @@
 # TutorialBoss.gd
+# owner : Shin I Cheol
 extends BaseEnemy
 
 #region Config Variables
