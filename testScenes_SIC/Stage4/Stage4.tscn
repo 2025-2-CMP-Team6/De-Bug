@@ -1,4 +1,4 @@
-[gd_scene load_steps=30 format=4 uid="uid://bowtn8lw4uimt"]
+[gd_scene load_steps=33 format=4 uid="uid://bowtn8lw4uimt"]
 
 [ext_resource type="Texture2D" uid="uid://ep6ahel71vai" path="res://testScenes_SIC/Stage4/Assets/ENVIRONMENT/backgrounds.png" id="1_jr3b3"]
 [ext_resource type="Script" uid="uid://do4hv03l3nqn3" path="res://testScenes_SIC/Stage4/Stage4.gd" id="1_sorpw"]
@@ -6,7 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://en1mqsrf58ka" path="res://Actors/Player/player.tscn" id="2_oyo18"]
 [ext_resource type="Texture2D" uid="uid://cbnlcix3uyljp" path="res://testScenes_SIC/Stage4/Assets/ENVIRONMENT/column.png" id="2_sorpw"]
 [ext_resource type="Texture2D" uid="uid://dtl6r6seambo7" path="res://testScenes_SIC/Stage4/Assets/ENVIRONMENT/tileset.png" id="5_61sab"]
-[ext_resource type="PackedScene" uid="uid://10p01la5f8rw" path="res://Actors/Enemies/TreasureChest.tscn" id="5_a25t5"]
+[ext_resource type="PackedScene" uid="uid://bny34evcumobq" path="res://Actors/Enemies/TreasureChest.tscn" id="5_a25t5"]
 [ext_resource type="Texture2D" uid="uid://1xmwtvscl65b" path="res://testScenes_SIC/Stage4/16-bit-spike-Sheet.png" id="5_wgo3s"]
 [ext_resource type="Texture2D" uid="uid://csfttyi8ghxd3" path="res://Portal-Sheet.png" id="6_0mhyx"]
 [ext_resource type="Script" uid="uid://cqw1qj4qrccjq" path="res://testScenes_SIC/portal_anim.gd" id="7_lykr5"]
@@ -371,6 +371,15 @@ animations = [{
 radius = 24.0
 height = 94.0
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_a25t5"]
+size = Vector2(462, 3135.0313)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ormpx"]
+size = Vector2(462, 14692.234)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_nw03f"]
+size = Vector2(462, 14698.316)
+
 [node name="Stage4" type="Node2D" node_paths=PackedStringArray("player", "skill_get_ui", "skill_ui")]
 script = ExtResource("1_sorpw")
 player = NodePath("Player")
@@ -679,5 +688,29 @@ position = Vector2(12831, 607)
 
 [node name="FlyEnemy8" parent="." instance=ExtResource("8_57cng")]
 position = Vector2(12786, 166)
+
+[node name="MapLimit2" type="StaticBody2D" parent="."]
+position = Vector2(-325, 2012)
+collision_layer = 2
+collision_mask = 5
+
+[node name="Left" type="CollisionShape2D" parent="MapLimit2"]
+position = Vector2(-476, -2118)
+shape = SubResource("RectangleShape2D_a25t5")
+
+[node name="Left2" type="CollisionShape2D" parent="MapLimit2"]
+position = Vector2(6652.854, -297.24622)
+rotation = 1.5697739
+shape = SubResource("RectangleShape2D_ormpx")
+
+[node name="Left3" type="CollisionShape2D" parent="MapLimit2"]
+position = Vector2(6663.653, -2292.4822)
+rotation = 1.5667607
+scale = Vector2(0.9999999, 0.9999999)
+shape = SubResource("RectangleShape2D_nw03f")
+
+[node name="Right" type="CollisionShape2D" parent="MapLimit2"]
+position = Vector2(14135, -1652)
+shape = SubResource("RectangleShape2D_a25t5")
 
 [connection signal="body_entered" from="portal" to="." method="_on_portal_body_entered"]

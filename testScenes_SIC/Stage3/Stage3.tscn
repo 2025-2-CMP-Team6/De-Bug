@@ -1,4 +1,4 @@
-[gd_scene load_steps=36 format=4 uid="uid://d3gnlfh1n8f8j"]
+[gd_scene load_steps=38 format=4 uid="uid://d3gnlfh1n8f8j"]
 
 [ext_resource type="Script" uid="uid://cbas35sfacvvi" path="res://testScenes_SIC/Stage3/Stage3.gd" id="1_cej1a"]
 [ext_resource type="Texture2D" uid="uid://bp3afg2epb7jc" path="res://testScenes_SIC/Stage3/Assets/Environment/background.png" id="1_rvv5c"]
@@ -634,6 +634,12 @@ sources/0 = SubResource("TileSetAtlasSource_qc3on")
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_cej1a"]
 size = Vector2(462, 3135.0313)
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_v1aa4"]
+size = Vector2(462, 12254.524)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_eofmx"]
+size = Vector2(462, 12476.992)
+
 [sub_resource type="ImageTexture" id="ImageTexture_qc3on"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_h4ln0"]
@@ -764,6 +770,17 @@ collision_mask = 5
 [node name="Left" type="CollisionShape2D" parent="MapLimit"]
 position = Vector2(-787, -1837.0313)
 shape = SubResource("RectangleShape2D_cej1a")
+
+[node name="Left2" type="CollisionShape2D" parent="MapLimit"]
+position = Vector2(5303.744, -28.661865)
+rotation = 1.5697739
+shape = SubResource("RectangleShape2D_v1aa4")
+
+[node name="Left3" type="CollisionShape2D" parent="MapLimit"]
+position = Vector2(5228, -2829.9998)
+rotation = 1.5667607
+scale = Vector2(0.99999994, 0.99999994)
+shape = SubResource("RectangleShape2D_eofmx")
 
 [node name="Right" type="CollisionShape2D" parent="MapLimit"]
 position = Vector2(11196, -1837.5156)
