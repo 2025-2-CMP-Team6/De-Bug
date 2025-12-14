@@ -39,6 +39,14 @@ func _setup_stage_music():
 	bgm_plus.loop = true # Loop setting
 	bgm_plus.volume_db = bgm_volume_db
 	bgm_plus.audio_name = _bgm_key # Name used later for stopping/control
+	
+	# [추가됨] BGM이 "Music" 버스를 사용하도록 설정
+	# (AudioManagerPlus 스크립트에 bus 변수가 있어야 합니다)
+	if "bus" in bgm_plus:
+		bgm_plus.bus = "Music"
+	else:
+		# 혹시 변수가 없다면 set으로 강제 할당 시도
+		bgm_plus.set("bus", "Music")
 
 	# Register in manager and play
 	_audio_manager.add_plus(_bgm_key, bgm_plus)
