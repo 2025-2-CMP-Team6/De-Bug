@@ -1,4 +1,5 @@
 # BaseSkill.gd
+# owner: 김동현
 extends Node
 class_name BaseSkill
 
@@ -27,10 +28,10 @@ class_name BaseSkill
 #endregion
 
 # Error/failure sound
-@export var error_sound: AudioStream 
-@export var error_volume_db: float = 0.0 
+@export var error_sound: AudioStream
+@export var error_volume_db: float = 0.0
 @export var error_pitch_scale: float = 1.0
-@export var error_random_pitch: bool = false 
+@export var error_random_pitch: bool = false
 #endregion
 
 var cooldown_timer: Timer
@@ -66,7 +67,7 @@ func _setup_sound():
 		if "bus" in sound_config:
 			sound_config.bus = "SFX"
 		else:
-			sound_config.set("bus", "SFX") 
+			sound_config.set("bus", "SFX")
 			
 		_audio_manager.add_plus("skill_cast", sound_config)
 
@@ -76,7 +77,7 @@ func _setup_sound():
 		error_config.stream = error_sound
 		error_config.volume_db = error_volume_db
 		error_config.pitch_scale = error_pitch_scale
-		error_config.audio_name = "skill_error" 
+		error_config.audio_name = "skill_error"
 		_audio_manager.add_plus("skill_error", error_config)
 		
 # Playback function
@@ -138,7 +139,6 @@ func get_cooldown_time_left() -> float:
 
 # Skill upgrade
 func apply_upgrades(level: int):
-	
 	var index = level - 1
 	
 	if index < 0:

@@ -1,4 +1,5 @@
 # EquipSlot.gd
+# owner: 김동현
 extends PanelContainer
 
 #region Variables and Signals

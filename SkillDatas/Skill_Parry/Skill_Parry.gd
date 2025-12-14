@@ -1,4 +1,5 @@
 # Skill_Parry.gd
+# owner: 김동현
 extends BaseSkill
 
 #region 노드 참조

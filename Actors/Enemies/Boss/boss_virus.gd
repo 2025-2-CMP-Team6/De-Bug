@@ -1,4 +1,5 @@
 # boss_virus.gd
+# owner: 김동현
 extends BaseEnemy
 
 #region Boss-Specific Settings
@@ -13,9 +14,9 @@ extends BaseEnemy
 #endregion
 
 #region Sound Assets
-@export var sfx_tp: AudioStream      # 텔레포트 소리
-@export var sfx_spiral: AudioStream  # 나선 탄막 발사 소리
-@export var sfx_shoot: AudioStream   # 조준 사격 소리
+@export var sfx_tp: AudioStream # 텔레포트 소리
+@export var sfx_spiral: AudioStream # 나선 탄막 발사 소리
+@export var sfx_shoot: AudioStream # 조준 사격 소리
 #endregion
 
 #region Projectiles
@@ -66,7 +67,6 @@ func spawn_random_pattern():
 
 
 func boss_tp():
-	
 	if sfx_player and sfx_tp:
 		sfx_player.stream = sfx_tp
 		sfx_player.volume_db = 8.0
@@ -88,7 +88,6 @@ func boss_spiral_shot():
 	var interval = 0.3
 	
 	for i in range(num_shots):
-		
 		if sfx_player and sfx_spiral:
 			sfx_player.stream = sfx_spiral
 			sfx_player.volume_db = 0.0
@@ -120,7 +119,6 @@ func boss_shot():
 		return
 	var interval = 0.3
 	for i in range(8):
-		
 		if sfx_player and sfx_shoot:
 			sfx_player.stream = sfx_shoot
 			sfx_player.volume_db = 0.0

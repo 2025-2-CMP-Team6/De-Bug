@@ -1,4 +1,5 @@
-# res://InventoryManager.gd
+# InventoryManager.gd
+# owner: 김동현
 extends Node
 
 #region Variables

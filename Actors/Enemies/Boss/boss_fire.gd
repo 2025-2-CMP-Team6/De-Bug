@@ -1,4 +1,5 @@
-#boss_fire.gd
+# boss_fire.gd
+# owner: 김동현
 extends Area2D
 var ready_to_damage: bool = false
 

@@ -1,4 +1,6 @@
-class_name Wisp extends BaseEnemy
+# hover_enemy.gd
+# owner: 김동현
+extends BaseEnemy
 
 #region Settings (Bat + Shooting Settings)
 @export_group("Movement")

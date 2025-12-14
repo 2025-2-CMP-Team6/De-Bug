@@ -1,4 +1,5 @@
 # SkillHudIcon.gd
+# owner: 김동현
 extends Control
 
 #region Node References

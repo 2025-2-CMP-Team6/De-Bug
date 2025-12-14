@@ -154,6 +154,20 @@ func _unhandled_input(event):
 	if event.is_action_pressed("ui_text_completion_accept") or (event is InputEventKey and event.pressed and event.keycode == KEY_K):
 		toggle_skill_ui()
 		return
+		
+	#respawn ( press 'R' )
+	if event is InputEventKey and event.pressed and event.keycode == KEY_R:
+		print(">>> [World] R키 눌림: 리스폰 시도")
+		# 자식 스크립트(Stage1 등)에 있는 respawn_player 함수 호출
+		if has_method("respawn_player"):
+			# player 변수가 World에 연결되어 있다고 가정
+			var target_player = player if player != null else get_node_or_null("Player")
+			if target_player:
+				call("respawn_player", target_player)
+
+		else:
+			print("오류: 현재 스테이지에 'respawn_player' 함수가 없습니다.")
+		return	
 
 	# Cheat mode features
 	if !GameManager.is_cheat:

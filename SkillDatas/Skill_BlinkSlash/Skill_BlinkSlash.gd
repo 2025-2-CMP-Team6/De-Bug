@@ -1,4 +1,5 @@
-# skills/blink_slash/Skill_BlinkSlash.gd
+# Skill_BlinkSlash.gd
+# owner: 김동현
 extends BaseSkill
 
 #region Skill-Specific Properties
@@ -80,7 +81,7 @@ func apply_slash_damage(start_pos: Vector2, end_pos: Vector2, owner: CharacterBo
 	query.collide_with_bodies = true
 
 	# Fix: Set collision_mask (Layer 3 = Enemy)
-	query.collision_mask = 0xFFFFFFFF  # Detect all layers
+	query.collision_mask = 0xFFFFFFFF # Detect all layers
 
 	query.exclude = [owner.get_rid()] # Exclude the player itself
 	

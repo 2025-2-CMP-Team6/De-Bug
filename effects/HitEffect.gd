@@ -1,3 +1,5 @@
+# HitEffect.gd
+# owner: 김동현
 extends GPUParticles2D
 
 func _ready():

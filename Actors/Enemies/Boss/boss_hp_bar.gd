@@ -1,4 +1,5 @@
 # boss_hp_bar.gd
+# owner: 김동현
 extends CanvasLayer
 
 @onready var health_bar = $Control/VBoxContainer/ProgressBar

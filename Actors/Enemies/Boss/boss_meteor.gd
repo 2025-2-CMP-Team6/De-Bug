@@ -1,8 +1,9 @@
 # bullet.gd
+# owner: 김동현
 extends Area2D
 
 @export var sfx_player: AudioStreamPlayer
-@export var sfx_meteor: AudioStream  
+@export var sfx_meteor: AudioStream
 var velocity: Vector2 = Vector2.ZERO
 var gravity_acceleration: float = ProjectSettings.get_setting("physics/2d/default_gravity")
 var is_falling = false

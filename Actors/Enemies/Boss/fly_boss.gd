@@ -1,3 +1,5 @@
+# fly_boss.gd
+# owner: 김동현
 class_name MidBossHover extends BaseEnemy
 
 #region State Definition

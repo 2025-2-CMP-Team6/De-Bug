@@ -1,4 +1,5 @@
 # player.gd
+# owner: 김동현
 extends CharacterBody2D
 
 const BaseSkill = preload("res://SkillDatas/BaseSkill.gd")
@@ -235,7 +236,7 @@ func handle_inputs():
 			
 			if sfx_player and dash_sound:
 				sfx_player.stream = dash_sound
-				sfx_player.volume_db = 0.0    # <--- 점프때 줄인 소리를 다시 원상복구 (필요하면 여기도 줄이세요)
+				sfx_player.volume_db = 0.0 # <--- 점프때 줄인 소리를 다시 원상복구 (필요하면 여기도 줄이세요)
 				sfx_player.pitch_scale = randf_range(0.95, 1.05) # 대쉬는 피치 변화를 살짝만 줌
 				sfx_player.play()
 			# -------------------------

@@ -1,3 +1,7 @@
+#Skill_ThunderSlash.gd
+#owner: Choi eunyoung
+
+
 extends BaseSkill
 
 #region Skill Settings

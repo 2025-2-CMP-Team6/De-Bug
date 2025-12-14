@@ -1,4 +1,5 @@
-# res://SkillInstance.gd
+# SkillInstance.gd
+# owner: 김동현
 extends Resource
 class_name SkillInstance
 

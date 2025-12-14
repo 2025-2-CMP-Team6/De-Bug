@@ -1,4 +1,5 @@
-# res://SkillUpgradeData.gd
+# SkillUpgradeData.gd
+# owner: 김동현
 extends Resource
 class_name SkillUpgradeData
 
