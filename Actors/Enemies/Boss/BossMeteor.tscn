@@ -70,7 +70,7 @@ animations = [{
 }]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_gluic"]
-radius = 20.0
+radius = 25.694357
 
 [node name="BossMeteor" type="Area2D" groups=["enemy_attacks"]]
 z_index = 1

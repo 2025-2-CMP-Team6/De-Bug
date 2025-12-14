@@ -1097,7 +1097,7 @@ texture = SubResource("ImageTexture_uwilw")
 
 [node name="MonsterFallPrevention" type="StaticBody2D" parent="."]
 position = Vector2(8531, 3445)
-collision_layer = 2
+collision_layer = 0
 collision_mask = 4
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="MonsterFallPrevention"]
