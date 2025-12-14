@@ -449,9 +449,11 @@ func lose_life():
 		return
 		
 	if sfx_player and hit_sound:
+		print("hit sound 재생")
 		sfx_player.stream = hit_sound
 		# Randomly adjusting pitch between 0.9 ~ 1.1
 		# makes the sound less monotonous and more natural by varying it each time.
+		sfx_player.volume_db = 0.0
 		sfx_player.pitch_scale = randf_range(0.9, 1.1)
 		sfx_player.play()
 		

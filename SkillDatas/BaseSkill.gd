@@ -138,9 +138,17 @@ func get_cooldown_time_left() -> float:
 
 # Skill upgrade
 func apply_upgrades(level: int):
+	
+	var index = level - 1
+	
+	if index < 0:
+		return
+		
 	for data in upgrades:
 		if data.stat_name in self:
-			if level < data.stat_values_by_level.size():
+			if index < data.stat_values_by_level.size():
 				# Overwrite value
-				self.set(data.stat_name, data.stat_values_by_level[level])
-				print("Skill upgrade applied: ", data.stat_name, " -> ", data.stat_values_by_level[level])
+				self.set(data.stat_name, data.stat_values_by_level[index])
+				print("Skill upgrade applied: ", data.stat_name, " -> ", data.stat_values_by_level[index])
+			else:
+				print("Upgrade data missing for Level ", level, " (Index ", index, ")")

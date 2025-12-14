@@ -40,6 +40,11 @@ func _setup_stage_music():
 	bgm_plus.volume_db = bgm_volume_db
 	bgm_plus.audio_name = _bgm_key # Name used later for stopping/control
 
+	if "bus" in bgm_plus:
+		bgm_plus.bus = "Music"
+	else:
+		bgm_plus.set("bus", "Music")
+
 	# Register in manager and play
 	_audio_manager.add_plus(_bgm_key, bgm_plus)
 	_audio_manager.play_plus(_bgm_key)
@@ -49,11 +54,32 @@ func _ready():
 	if is_test_mode:
 		print("=== [⚠️ TEST MODE ACTIVATED] ===")
 		
+		
 		# A. Grant all skills
 		var all_skills = InventoryManager.skill_database
 		print("--- 1. Grant all skills to inventory ---")
 		for skill_path in all_skills:
 			InventoryManager.add_skill_to_inventory(skill_path)
+			
+			# [수정됨] GreatHeal 스킬만 30개 추가 (강화 제물용)
+		var target_skill_path = ""
+		
+		# 1. 데이터베이스에서 GreatHeal 스킬 경로 찾기
+		for skill_path in all_skills:
+			# 경로에 "GreatHeal"이라는 단어가 포함되어 있는지 확인
+			if "GreatHeal" in skill_path or "great_heal" in skill_path: 
+				target_skill_path = skill_path
+				break
+		
+		# 2. 찾았으면 30개 지급
+		if target_skill_path != "":
+			print("Found target skill: ", target_skill_path)
+			print("Adding 30 copies to inventory...")
+			for i in range(30):
+				# add_skill_to_inventory는 기본적으로 1레벨로 들어갑니다.
+				InventoryManager.add_skill_to_inventory(target_skill_path)
+		else:
+			push_error("!!! Error: 'GreatHeal' 스킬을 찾을 수 없습니다. 파일명이나 DB를 확인하세요.")
 			
 		# B. Force-unlock the skill window
 		skill_ui_unlocked = true
@@ -121,6 +147,14 @@ func _unhandled_input(event):
 	if event.is_action_pressed("get_skill_test"):
 		open_reward_selection()
 		return
+	
+	# 테스트 모드일 때 H키 누르면 플레이어 체력 감소
+	if is_test_mode and event is InputEventKey and event.pressed and not event.echo:
+		if event.keycode == KEY_H:
+			if is_instance_valid(player):
+				print("Test Mode: Hurt Player (H pressed)")
+				player.lose_life()
+			return
 
 	# Skill window test
 	if Input.is_action_just_pressed("ui_inventory"):

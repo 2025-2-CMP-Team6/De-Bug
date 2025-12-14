@@ -1767,7 +1767,7 @@ cache/0/21/0/glyphs/28/size = Vector2(14, 18)
 cache/0/21/0/glyphs/28/uv_rect = Rect2(195, 85, 14, 18)
 cache/0/21/0/glyphs/28/texture_idx = 0
 
-[sub_resource type="SyntaxHighlighter" id="SyntaxHighlighter_o24bl"]
+[sub_resource type="SyntaxHighlighter" id="SyntaxHighlighter_faxki"]
 script = ExtResource("7_necsa")
 
 [node name="MainView" type="Control"]
@@ -2067,7 +2067,7 @@ text = "~ start
 ???: Now, shall we start 'debugging' the errors in this game?
 "
 scroll_smooth = true
-syntax_highlighter = SubResource("SyntaxHighlighter_o24bl")
+syntax_highlighter = SubResource("SyntaxHighlighter_faxki")
 
 [node name="ErrorsPanel" parent="Margin/Content/CodePanel" instance=ExtResource("7_5cvl4")]
 unique_name_in_owner = true

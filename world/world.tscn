@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://dodw35vp4duix"]
+[gd_scene load_steps=7 format=3 uid="uid://dodw35vp4duix"]
 
 [ext_resource type="PackedScene" uid="uid://en1mqsrf58ka" path="res://Actors/Player/player.tscn" id="1_4717r"]
 [ext_resource type="Script" uid="uid://co8st7l6w22j6" path="res://world/world.gd" id="1_fn3g3"]
@@ -6,7 +6,6 @@
 [ext_resource type="Texture2D" uid="uid://bq86qdbosfr7h" path="res://graphics/grid.jpg" id="3_mmdvd"]
 [ext_resource type="PackedScene" uid="uid://dgv1ef1ng7ngs" path="res://UI/SkillGetUI.tscn" id="4_sc4t8"]
 [ext_resource type="PackedScene" uid="uid://c0sv0dk5utfr3" path="res://Block/wall.tscn" id="5_mmdvd"]
-[ext_resource type="PackedScene" uid="uid://10p01la5f8rw" path="res://Actors/Enemies/TreasureChest.tscn" id="10_fyhu2"]
 
 [node name="World" type="Node2D" node_paths=PackedStringArray("player", "skill_get_ui", "skill_ui")]
 script = ExtResource("1_fn3g3")
@@ -43,5 +42,15 @@ z_index = -1
 position = Vector2(1648, 352)
 scale = Vector2(71.16, 1)
 
-[node name="TreasureChest" parent="." instance=ExtResource("10_fyhu2")]
+[node name="TreasureChest" parent="."]
+_import_path = NodePath("")
+unique_name_in_owner = false
+process_mode = 0
+process_priority = 0
+process_physics_priority = 0
+process_thread_group = 0
+physics_interpolation_mode = 0
+auto_translate_mode = 0
+editor_description = ""
 position = Vector2(320, 272)
+script = null

@@ -10,7 +10,7 @@ var is_falling = false
 func _ready():
 	if sfx_player and sfx_meteor:
 		sfx_player.stream = sfx_meteor
-		sfx_player.volume_db = 7.0
+		sfx_player.volume_db = 4.0
 		sfx_player.pitch_scale = 1.0
 		sfx_player.play()
 		
