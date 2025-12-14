@@ -1,8 +1,9 @@
-[gd_scene load_steps=38 format=4 uid="uid://d2kexrpmwtbw0"]
+[gd_scene load_steps=39 format=4 uid="uid://d2kexrpmwtbw0"]
 
 [ext_resource type="Script" uid="uid://3wb8r3l1jd6n" path="res://testScenes_SIC/Stage1/Stage1.gd" id="1_stage_script"]
 [ext_resource type="AudioStream" uid="uid://d0gurxkh8locc" path="res://Sounds/bgm/8bit_song.wav" id="2_irmgc"]
 [ext_resource type="PackedScene" uid="uid://en1mqsrf58ka" path="res://Actors/Player/player.tscn" id="2_yyxtu"]
+[ext_resource type="AudioStream" uid="uid://bj5olp3qad3ra" path="res://Sounds/effects/classic-game-action-negative-22-224585.mp3" id="3_18u52"]
 [ext_resource type="Texture2D" uid="uid://pj420wxf8h2y" path="res://graphics/resource/Stage1/background.png" id="3_x7txy"]
 [ext_resource type="Texture2D" uid="uid://csfttyi8ghxd3" path="res://Portal-Sheet.png" id="4_g1wns"]
 [ext_resource type="Texture2D" uid="uid://82mnbkckxo68" path="res://graphics/resource/Stage1/city4plan.png" id="4_opubu"]
@@ -831,11 +832,11 @@ size = Vector2(30, 28)
 
 [node name="Stage1" type="Node2D" node_paths=PackedStringArray("player", "skill_get_ui", "skill_ui")]
 script = ExtResource("1_stage_script")
-is_test_mode = true
 player = NodePath("Player")
 skill_get_ui = NodePath("SkillGetUI")
 skill_ui = NodePath("SkillUI")
 stage_bgm = ExtResource("2_irmgc")
+fall_sfx = ExtResource("3_18u52")
 
 [node name="Background" type="Node2D" parent="."]
 

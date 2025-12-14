@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://hwvrl37b2dlk"]
+[gd_scene load_steps=15 format=3 uid="uid://hwvrl37b2dlk"]
 
 [ext_resource type="Script" uid="uid://chrq3r3tre42w" path="res://UI/SkillUI.gd" id="1_6m8pb"]
 [ext_resource type="Script" uid="uid://bghevohiykay4" path="res://UI/InventoryDropArea.gd" id="2_5m5hr"]
@@ -9,6 +9,7 @@
 [ext_resource type="AudioStream" uid="uid://btlcxhooluldr" path="res://Sounds/effects/sfx_upgrade_succes.mp3" id="4_jnqye"]
 [ext_resource type="AudioStream" uid="uid://1b7h0ykjhtfd" path="res://Sounds/effects/sfx_upgrade_fail.mp3" id="5_nmpp3"]
 [ext_resource type="AudioStream" uid="uid://0j3gr6tqxw57" path="res://Sounds/effects/sfx_syn.mp3" id="6_j83gt"]
+[ext_resource type="AudioStream" uid="uid://3idubdq8mati" path="res://Sounds/effects/confirm-tap-394001.mp3" id="7_h525w"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6m8pb"]
 content_margin_left = 8.0
@@ -54,6 +55,7 @@ sound_unequip = ExtResource("3_h525w")
 sound_success = ExtResource("4_jnqye")
 sound_fail = ExtResource("5_nmpp3")
 sound_synthesis = ExtResource("6_j83gt")
+sound_open = ExtResource("7_h525w")
 
 [node name="Panel" type="Panel" parent="."]
 offset_left = 654.0
@@ -215,3 +217,5 @@ size_flags_vertical = 8
 
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
 bus = &"SFX"
+
+[connection signal="visibility_changed" from="." to="." method="_on_visibility_changed"]

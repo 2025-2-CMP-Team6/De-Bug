@@ -19,6 +19,7 @@ var skill_ui_unlocked: bool = false # Whether the skill window can be used
 @export_category("Stage Settings")
 @export var stage_bgm: AudioStream # Put the mp3 file here
 @export var bgm_volume_db: float = -10.0 # Default volume setting
+@export var fall_sfx: AudioStream
 
 # Audio manager variables
 var _audio_manager: AudioManager
@@ -48,6 +49,18 @@ func _setup_stage_music():
 	# Register in manager and play
 	_audio_manager.add_plus(_bgm_key, bgm_plus)
 	_audio_manager.play_plus(_bgm_key)
+	
+func play_fall_sound():
+	if fall_sfx == null:
+		return
+
+	var sfx_player = AudioStreamPlayer.new()
+	sfx_player.stream = fall_sfx
+	sfx_player.bus = "SFX" 
+	add_child(sfx_player)
+	sfx_player.play()
+
+	sfx_player.finished.connect(sfx_player.queue_free)
 
 func _ready():
 	# Give test skills only when the checkbox is enabled

@@ -114,6 +114,7 @@ func _on_portal_body_entered(body):
 func _on_fall_prevention_body_entered(body: Node2D):
 	if body.is_in_group("player"):
 		respawn_player(body)
+		play_fall_sound()
 
 func respawn_player(player: Node2D):
 	if player:

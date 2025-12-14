@@ -1,11 +1,13 @@
-[gd_scene load_steps=7 format=3 uid="uid://dodw35vp4duix"]
+[gd_scene load_steps=9 format=3 uid="uid://dodw35vp4duix"]
 
 [ext_resource type="PackedScene" uid="uid://en1mqsrf58ka" path="res://Actors/Player/player.tscn" id="1_4717r"]
 [ext_resource type="Script" uid="uid://co8st7l6w22j6" path="res://world/world.gd" id="1_fn3g3"]
+[ext_resource type="AudioStream" uid="uid://bj5olp3qad3ra" path="res://Sounds/effects/classic-game-action-negative-22-224585.mp3" id="2_sc4t8"]
 [ext_resource type="PackedScene" uid="uid://hwvrl37b2dlk" path="res://UI/SkillUI.tscn" id="3_h5o24"]
 [ext_resource type="Texture2D" uid="uid://bq86qdbosfr7h" path="res://graphics/grid.jpg" id="3_mmdvd"]
 [ext_resource type="PackedScene" uid="uid://dgv1ef1ng7ngs" path="res://UI/SkillGetUI.tscn" id="4_sc4t8"]
 [ext_resource type="PackedScene" uid="uid://c0sv0dk5utfr3" path="res://Block/wall.tscn" id="5_mmdvd"]
+[ext_resource type="PackedScene" uid="uid://c7e52tyh64gk" path="res://Actors/Enemies/MiddleBoss/JungleBoss/JungleBoss.tscn" id="8_ai45w"]
 
 [node name="World" type="Node2D" node_paths=PackedStringArray("player", "skill_get_ui", "skill_ui")]
 script = ExtResource("1_fn3g3")
@@ -13,6 +15,7 @@ is_test_mode = true
 player = NodePath("Player")
 skill_get_ui = NodePath("SkillGetUI")
 skill_ui = NodePath("SkillUI")
+fall_sfx = ExtResource("2_sc4t8")
 
 [node name="Player" parent="." node_paths=PackedStringArray("skill_ui", "skill_get_ui") instance=ExtResource("1_4717r")]
 z_index = 1
@@ -41,3 +44,6 @@ region_rect = Rect2(0, 0, 4000, 4000)
 z_index = -1
 position = Vector2(1648, 352)
 scale = Vector2(71.16, 1)
+
+[node name="JungleBoss" parent="." instance=ExtResource("8_ai45w")]
+position = Vector2(2656, 132)

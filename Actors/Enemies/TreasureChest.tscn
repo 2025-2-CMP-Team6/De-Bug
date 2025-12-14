@@ -1,6 +1,6 @@
-[gd_scene load_steps=14 format=3 uid="uid://10p01la5f8rw"]
+[gd_scene load_steps=14 format=3 uid="uid://bny34evcumobq"]
 
-[ext_resource type="Script" uid="uid://d0gkglyaqsm5c" path="res://Actors/Enemies/treasure_chest.gd" id="1_priwn"]
+[ext_resource type="Script" path="res://Actors/Enemies/treasure_chest.gd" id="1_priwn"]
 [ext_resource type="Texture2D" uid="uid://7cjajcu6tyu" path="res://graphics/Actors/BoxSheet.png" id="2_fogxj"]
 [ext_resource type="AudioStream" uid="uid://ceoumm72wqmjw" path="res://Sounds/effects/chest_opening.mp3" id="2_priwn"]
 
@@ -108,7 +108,7 @@ collision_layer = 4
 collision_mask = 3
 script = ExtResource("1_priwn")
 open_sound = ExtResource("2_priwn")
-max_health = 30.0
+max_health = 5.0
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_0qnfi")

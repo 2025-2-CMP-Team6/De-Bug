@@ -157,4 +157,7 @@ func _draw_debug(shape, xform, owner):
 	get_tree().create_timer(0.15).timeout.connect(spr.queue_free)
 
 func _on_skill_finished():
+	if is_instance_valid(owner):
+		owner.scale.x = abs(owner.scale.x)
+	
 	is_active = false

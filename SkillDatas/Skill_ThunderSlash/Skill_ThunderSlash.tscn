@@ -1,7 +1,6 @@
-[gd_scene load_steps=7 format=3 uid="uid://dufskxw4nyuor"]
+[gd_scene load_steps=6 format=3 uid="uid://dufskxw4nyuor"]
 
 [ext_resource type="Script" uid="uid://dcvtg52yd46f4" path="res://SkillDatas/Skill_ThunderSlash/Skill_ThunderSlash.gd" id="1_3ppo0"]
-[ext_resource type="Texture2D" uid="uid://bwf4bpn28sj77" path="res://graphics/icon.svg" id="2_hfhjg"]
 [ext_resource type="Texture2D" uid="uid://bgux6h4qxf5s1" path="res://SkillDatas/Skill_ThunderSlash/fc1134.png" id="3_hol8l"]
 [ext_resource type="AudioStream" uid="uid://et3nufnlyv8w" path="res://Sounds/effects/sfx_knife-slice.mp3" id="4_vital"]
 [ext_resource type="Script" uid="uid://dkl7vd0jkmplk" path="res://SkillUpgradeData.gd" id="5_hfhjg"]
@@ -16,7 +15,6 @@ metadata/_custom_type_script = "uid://dkl7vd0jkmplk"
 scale = Vector2(0.98290265, 0.9541606)
 script = ExtResource("1_3ppo0")
 teleport_distance = 200.0
-slash_visual_texture = ExtResource("2_hfhjg")
 slash_sound = ExtResource("4_vital")
 skill_name = "Thunder Slash"
 skill_description = "Casts Blink Slash 3 times in rapid succession to strike multiple enemies."

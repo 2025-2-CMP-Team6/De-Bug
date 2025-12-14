@@ -33,6 +33,7 @@ const SkillCard = preload("res://UI/SkillCard.gd")
 @export var sound_success: AudioStream    
 @export var sound_fail: AudioStream       
 @export var sound_synthesis: AudioStream  
+@export var sound_open: AudioStream 
 #endregion
 
 var player_node_ref: CharacterBody2D
@@ -43,6 +44,7 @@ var current_synthesis_skill1: SkillInstance = null
 var current_synthesis_skill2: SkillInstance = null
 
 func _ready():
+	visibility_changed.connect(_on_visibility_changed)
 	if is_instance_valid(tab_container):
 		tab_container.add_theme_font_size_override("font_size", 24)
 	if is_instance_valid(upgrade_base_slot):
@@ -71,7 +73,9 @@ func _ready():
 		synthesis_slot2.skill_dropped_on_slot.connect(_on_synthesis_slot2_dropped)
 	if is_instance_valid(synthesis_button):
 		synthesis_button.pressed.connect(_on_synthesis_button_pressed)
-
+	
+	
+	
 #region [Sound] Helper Function
 func play_sfx(stream: AudioStream):
 	if sfx_player and stream:
@@ -288,3 +292,8 @@ func _on_synthesis_button_pressed():
 	
 	get_tree().create_timer(0.01).timeout.connect(refresh_ui.bind(player_node_ref))
 #endregion
+
+
+func _on_visibility_changed():
+	if visible:
+		play_sfx(sound_open)

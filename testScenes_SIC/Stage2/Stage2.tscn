@@ -1,9 +1,10 @@
-[gd_scene load_steps=34 format=4 uid="uid://bkau6hrhass7g"]
+[gd_scene load_steps=35 format=4 uid="uid://bkau6hrhass7g"]
 
 [ext_resource type="Texture2D" uid="uid://d2m7w3keylowg" path="res://graphics/resource/Stage2/Jungel Layer 0.png" id="1_js4qc"]
 [ext_resource type="Script" uid="uid://t0rk8kka8da0" path="res://testScenes_SIC/Stage2/Stage2.gd" id="1_vjhlr"]
 [ext_resource type="AudioStream" uid="uid://c3u2u43ydy30w" path="res://testScenes_SIC/Stage2/jungle-6432.mp3" id="2_3f7rw"]
 [ext_resource type="Texture2D" uid="uid://dgsfi0rnxd6uu" path="res://graphics/resource/Stage2/Jungel Layer 1.png" id="2_khtno"]
+[ext_resource type="AudioStream" uid="uid://bj5olp3qad3ra" path="res://Sounds/effects/classic-game-action-negative-22-224585.mp3" id="3_5yjf0"]
 [ext_resource type="Texture2D" uid="uid://cwe68ho5vxpui" path="res://graphics/resource/Stage2/Jungel Layer 2.png" id="3_e1cl4"]
 [ext_resource type="Texture2D" uid="uid://cw0uhfmb1nmta" path="res://graphics/resource/Stage2/Jungel Layer 3.png" id="4_vjhlr"]
 [ext_resource type="Texture2D" uid="uid://bg0dllinrjvgd" path="res://graphics/resource/Stage2/Jungel Layer 4.png" id="5_pivpb"]
@@ -18,7 +19,7 @@
 [ext_resource type="PackedScene" uid="uid://bdh7rx37q7ghf" path="res://Actors/Enemies/Comon/virus/virus.tscn" id="13_ircvx"]
 [ext_resource type="PackedScene" uid="uid://dai8mvtukr1k" path="res://Actors/Enemies/Comon/virus/RangeVirus.tscn" id="16_c7gl0"]
 [ext_resource type="PackedScene" uid="uid://c7e52tyh64gk" path="res://Actors/Enemies/MiddleBoss/JungleBoss/JungleBoss.tscn" id="17_uwilw"]
-[ext_resource type="PackedScene" uid="uid://10p01la5f8rw" path="res://Actors/Enemies/TreasureChest.tscn" id="19_wb0ct"]
+[ext_resource type="PackedScene" path="res://Actors/Enemies/TreasureChest.tscn" id="19_wb0ct"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_h4ln0"]
 atlas = ExtResource("8_e1cl4")
@@ -940,6 +941,7 @@ player = NodePath("Player")
 skill_get_ui = NodePath("SkillGetUI")
 skill_ui = NodePath("SkillUI")
 stage_bgm = ExtResource("2_3f7rw")
+fall_sfx = ExtResource("3_5yjf0")
 
 [node name="Background" type="Node2D" parent="."]
 
