@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://dodw35vp4duix"]
+[gd_scene load_steps=7 format=3 uid="uid://dodw35vp4duix"]
 
 [ext_resource type="PackedScene" uid="uid://en1mqsrf58ka" path="res://Actors/Player/player.tscn" id="1_4717r"]
 [ext_resource type="Script" uid="uid://co8st7l6w22j6" path="res://world/world.gd" id="1_fn3g3"]
@@ -6,7 +6,6 @@
 [ext_resource type="Texture2D" uid="uid://bq86qdbosfr7h" path="res://graphics/grid.jpg" id="3_mmdvd"]
 [ext_resource type="PackedScene" uid="uid://dgv1ef1ng7ngs" path="res://UI/SkillGetUI.tscn" id="4_sc4t8"]
 [ext_resource type="PackedScene" uid="uid://c0sv0dk5utfr3" path="res://Block/wall.tscn" id="5_mmdvd"]
-[ext_resource type="PackedScene" uid="uid://dai8mvtukr1k" path="res://Actors/Enemies/Comon/virus/RangeVirus.tscn" id="7_sc4t8"]
 
 [node name="World" type="Node2D" node_paths=PackedStringArray("player", "skill_get_ui", "skill_ui")]
 script = ExtResource("1_fn3g3")
@@ -55,6 +54,3 @@ auto_translate_mode = 0
 editor_description = ""
 position = Vector2(320, 272)
 script = null
-
-[node name="RangeVirus" parent="." instance=ExtResource("7_sc4t8")]
-position = Vector2(675, 165)
