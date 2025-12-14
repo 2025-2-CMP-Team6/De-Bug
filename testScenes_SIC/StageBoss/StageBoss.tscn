@@ -25,7 +25,6 @@ stage_bgm = ExtResource("2_se8im")
 [node name="Player" parent="." node_paths=PackedStringArray("skill_ui", "skill_get_ui") instance=ExtResource("1_7prfy")]
 z_index = 1
 position = Vector2(-1815.9999, 664)
-max_lives = 15
 skill_ui = NodePath("../SkillUI")
 skill_get_ui = NodePath("../SkillGetUI")
 

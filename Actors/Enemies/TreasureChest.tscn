@@ -1,0 +1,141 @@
+[gd_scene load_steps=14 format=3 uid="uid://10p01la5f8rw"]
+
+[ext_resource type="Script" uid="uid://d0gkglyaqsm5c" path="res://Actors/Enemies/treasure_chest.gd" id="1_priwn"]
+[ext_resource type="Texture2D" uid="uid://7cjajcu6tyu" path="res://graphics/Actors/BoxSheet.png" id="2_fogxj"]
+[ext_resource type="AudioStream" uid="uid://ceoumm72wqmjw" path="res://Sounds/effects/chest_opening.mp3" id="2_priwn"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_priwn"]
+atlas = ExtResource("2_fogxj")
+region = Rect2(0, 0, 116, 100)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ma1rt"]
+atlas = ExtResource("2_fogxj")
+region = Rect2(116, 0, 116, 100)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_mwx1l"]
+atlas = ExtResource("2_fogxj")
+region = Rect2(0, 0, 116, 100)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_g84tj"]
+atlas = ExtResource("2_fogxj")
+region = Rect2(116, 0, 116, 100)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_h8y5t"]
+atlas = ExtResource("2_fogxj")
+region = Rect2(232, 0, 116, 100)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_rixt7"]
+atlas = ExtResource("2_fogxj")
+region = Rect2(348, 0, 116, 100)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_15qkp"]
+atlas = ExtResource("2_fogxj")
+region = Rect2(464, 0, 116, 100)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_eyrw4"]
+atlas = ExtResource("2_fogxj")
+region = Rect2(580, 0, 116, 100)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_0qnfi"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_priwn")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ma1rt")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_priwn")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ma1rt")
+}, {
+"duration": 5.0,
+"texture": SubResource("AtlasTexture_priwn")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_mwx1l")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_g84tj")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_mwx1l")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_g84tj")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_h8y5t")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_rixt7")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_15qkp")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_eyrw4")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_15qkp")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_eyrw4")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_15qkp")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_eyrw4")
+}],
+"loop": false,
+"name": &"open",
+"speed": 7.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_aomr1"]
+size = Vector2(129, 128)
+
+[node name="TreasureChest" type="CharacterBody2D" groups=["enemies"]]
+collision_layer = 4
+collision_mask = 3
+script = ExtResource("1_priwn")
+open_sound = ExtResource("2_priwn")
+max_health = 30.0
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_0qnfi")
+animation = &"idle"
+frame_progress = 0.38327274
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0.5, 0)
+shape = SubResource("RectangleShape2D_aomr1")
+
+[node name="Muzzle" type="Node2D" parent="."]
+
+[node name="IFramesTimer" type="Timer" parent="."]
+wait_time = 0.5
+one_shot = true
+
+[node name="FireTimer" type="Timer" parent="."]
+wait_time = 2.0
+autostart = true
+
+[node name="Hurtbox" type="Area2D" parent="." groups=["enemies"]]
+scale = Vector2(0.9990633, 1)
+collision_mask = 9
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox" groups=["enemies"]]
+position = Vector2(0.5, 0)
+shape = SubResource("RectangleShape2D_aomr1")
+
+[connection signal="timeout" from="FireTimer" to="." method="shoot"]
+[connection signal="area_entered" from="Hurtbox" to="." method="_on_hurtbox_area_entered"]

@@ -108,6 +108,8 @@ func boss_spiral_shot():
 			get_parent().add_child(bullet)
 		
 		await get_tree().create_timer(interval).timeout
+		if not is_instance_valid(self):
+			return
 	
 	# After the pattern ends, start the next pattern timer
 	pattern_timer.wait_time = randf_range(attack_interval_min, attack_interval_max)
@@ -131,6 +133,8 @@ func boss_shot():
 		bullet.global_position = global_position
 		get_parent().add_child(bullet)
 		await get_tree().create_timer(interval).timeout
+		if not is_instance_valid(self):
+			return
 	
 	pattern_timer.wait_time = randf_range(attack_interval_min, attack_interval_max)
 	pattern_timer.start()

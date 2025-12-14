@@ -75,8 +75,11 @@ func _ready():
 	var enemies = get_tree().get_nodes_in_group("enemies")
 	if enemies.size() > 0:
 		for enemy in enemies:
-			if not enemy.enemy_died.is_connected(_on_enemy_died):
-				enemy.enemy_died.connect(_on_enemy_died)
+			if enemy.has_signal("enemy_died"):
+				if not enemy.enemy_died.is_connected(_on_enemy_died):
+					enemy.enemy_died.connect(_on_enemy_died)
+			else:
+				print("Warning: Node '%s' is in 'enemies' group but lacks 'enemy_died' signal. Type: %s" % [enemy.name, enemy.get_class()])
 	else:
 		print("Warning: There are no enemies in the map with the 'enemies' group.")
 	if is_instance_valid(skill_get_ui):
@@ -88,16 +91,22 @@ func _on_enemy_died():
 		print("All enemies defeated! Opening reward selection screen.")
 		portal_enabled = true
 		print(">>> The portal has been activated! <<<")
-		if is_instance_valid(skill_get_ui):
-			skill_get_ui.open_reward_screen()
-		else:
-			print("Warning: SkillGetUI is not set. Cannot open the reward screen.")
+		open_reward_selection()
 	else:
 		print("An enemy has died. Remaining enemies: " + str(remaining_enemies.size() - 1))
 
 func _on_skill_get_ui_closed():
 	if is_instance_valid(player) and (not is_instance_valid(skill_ui) or not skill_ui.visible):
 		player.set_input_locked(false)
+
+# Function to open the reward selection screen
+func open_reward_selection() -> void:
+	if is_instance_valid(skill_get_ui):
+		skill_get_ui.open_reward_screen()
+		if is_instance_valid(player):
+			player.set_input_locked(true)
+	else:
+		print("Warning: SkillGetUI is not set. Cannot open the reward screen.")
 
 func _unhandled_input(event):
 	# Open/close the skill window with the K key
@@ -110,10 +119,7 @@ func _unhandled_input(event):
 		return
 	# Reward test
 	if event.is_action_pressed("get_skill_test"):
-		if is_instance_valid(skill_get_ui):
-			skill_get_ui.open_reward_screen()
-			if is_instance_valid(player):
-				player.set_input_locked(true)
+		open_reward_selection()
 		return
 
 	# Skill window test
