@@ -1,3 +1,7 @@
+#skill_GreatHeal.gd
+#owner: Choi eunyoung
+
+
 extends BaseSkill
 
 #region Skill Settings

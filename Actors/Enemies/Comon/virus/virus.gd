@@ -1,3 +1,6 @@
+#virus.gd
+#owner: Choi eunyoung
+
 extends BaseEnemy
 
 #region Config Variables

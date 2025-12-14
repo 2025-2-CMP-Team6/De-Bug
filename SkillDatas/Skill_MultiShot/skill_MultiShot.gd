@@ -1,3 +1,7 @@
+#skill_MultiShot.gd
+#owner: Choi eunyoung
+
+
 extends BaseSkill
 
 #region 1. Node References & Settings

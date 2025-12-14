@@ -1,3 +1,7 @@
+#skill_heal.gd
+#owner: Choi eunyoung
+
+
 extends BaseSkill
 
 #region Skill-Specific Settings
