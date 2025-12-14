@@ -920,7 +920,6 @@ shape = SubResource("CapsuleShape2D_wvjil")
 
 [node name="Player" parent="." instance=ExtResource("2_yyxtu")]
 position = Vector2(319.99854, 5056)
-hit_sound = null
 
 [node name="RainEffect" type="CanvasLayer" parent="."]
 visible = false
