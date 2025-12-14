@@ -1,0 +1,19 @@
+[gd_scene load_steps=3 format=3 uid="uid://bbr8af4q28203"]
+
+[ext_resource type="Script" uid="uid://sod87ecq2lwn" path="res://testScenes_SIC/StageEnding/EndingCredit.gd" id="1_o0akv"]
+[ext_resource type="VideoStream" uid="uid://cd82iofa02857" path="res://testScenes_SIC/StageEnding/DeBug_EndingCredit_2.ogv" id="1_xlx52"]
+
+[node name="EndingCredit" type="Node2D"]
+script = ExtResource("1_o0akv")
+
+[node name="VideoStreamPlayer" type="VideoStreamPlayer" parent="."]
+offset_left = -2137.0
+offset_top = -1199.0
+offset_right = 1703.0
+offset_bottom = 961.0
+scale = Vector2(1.11, 1.11)
+stream = ExtResource("1_xlx52")
+autoplay = true
+
+[node name="Camera2D" type="Camera2D" parent="."]
+zoom = Vector2(0.6, 0.6)

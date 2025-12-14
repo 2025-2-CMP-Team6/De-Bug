@@ -44,3 +44,28 @@ func instant_fade_out():
 
 func instant_fade_in():
 	color_rect.modulate.a = 0.0
+
+# White fade transition (for ending scenes)
+func white_fade_to_scene(scene_path: String, duration: float = 1.5):
+	if is_transitioning:
+		return
+
+	is_transitioning = true
+
+	# Change to white color
+	var original_color = color_rect.color
+	color_rect.color = Color.WHITE
+
+	# Fade to white (brighten screen)
+	await fade_out(duration)
+
+	# Change scene
+	get_tree().change_scene_to_file(scene_path)
+
+	# Fade in from white
+	await fade_in(duration)
+
+	# Restore original color (black)
+	color_rect.color = original_color
+
+	is_transitioning = false

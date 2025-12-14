@@ -1,0 +1,147 @@
+[gd_scene load_steps=18 format=3 uid="uid://bi60x8h3fpsvh"]
+
+[ext_resource type="Script" uid="uid://dk3giftdq7u38" path="res://testScenes_SIC/StageEnding/ending_boss.gd" id="1_iyxf0"]
+[ext_resource type="AudioStream" uid="uid://mlqs40dbbueh" path="res://testScenes_SIC/StageEnding/futuristic-transition-390304.mp3" id="2_w5ust"]
+[ext_resource type="PackedScene" uid="uid://en1mqsrf58ka" path="res://Actors/Player/player.tscn" id="3_cd07n"]
+[ext_resource type="PackedScene" uid="uid://hwvrl37b2dlk" path="res://UI/SkillUI.tscn" id="4_4oce8"]
+[ext_resource type="PackedScene" uid="uid://dgv1ef1ng7ngs" path="res://UI/SkillGetUI.tscn" id="5_7n83d"]
+[ext_resource type="PackedScene" uid="uid://c0sv0dk5utfr3" path="res://Block/wall.tscn" id="6_1e7ai"]
+[ext_resource type="Texture2D" uid="uid://7q5yk8pn5ra6" path="res://testScenes_SIC/StageEnding/Crack-PNG-Clipart.png" id="7_l6km1"]
+[ext_resource type="Texture2D" uid="uid://dcvp6ynx0e1up" path="res://graphics/BossBg.png" id="7_qwpqk"]
+[ext_resource type="Texture2D" uid="uid://csfttyi8ghxd3" path="res://Portal-Sheet.png" id="8_j5rjp"]
+[ext_resource type="Script" uid="uid://cqw1qj4qrccjq" path="res://testScenes_SIC/portal_anim.gd" id="9_w5ust"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_h4ln0"]
+atlas = ExtResource("8_j5rjp")
+region = Rect2(256, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_uu262"]
+atlas = ExtResource("8_j5rjp")
+region = Rect2(192, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_yyxtu"]
+atlas = ExtResource("8_j5rjp")
+region = Rect2(128, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_irmgc"]
+atlas = ExtResource("8_j5rjp")
+region = Rect2(64, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4dk8a"]
+atlas = ExtResource("8_j5rjp")
+region = Rect2(0, 0, 64, 64)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_j5rjp"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_h4ln0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_uu262")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_yyxtu")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_irmgc")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4dk8a")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_w5ust"]
+radius = 24.0
+height = 94.0
+
+[node name="Ending_Boss" type="Node2D"]
+position = Vector2(8, 0)
+script = ExtResource("1_iyxf0")
+ending_transition_sound = ExtResource("2_w5ust")
+
+[node name="Player" parent="." node_paths=PackedStringArray("skill_ui", "skill_get_ui") instance=ExtResource("3_cd07n")]
+z_index = 1
+position = Vector2(-1815.9999, 664)
+skill_ui = NodePath("../SkillUI")
+skill_get_ui = NodePath("../SkillGetUI")
+
+[node name="Camera2D" parent="Player" index="7"]
+position = Vector2(400.64075, -177.74898)
+limit_left = -1920
+limit_top = -640
+limit_right = 1920
+limit_bottom = 840
+
+[node name="StaminaBar" parent="Player" index="8"]
+visible = false
+
+[node name="LivesContainer" parent="Player/HUD" index="0"]
+visible = false
+
+[node name="HudContainer" parent="Player/HUD" index="2"]
+visible = false
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
+grow_horizontal = 1
+grow_vertical = 1
+
+[node name="SkillUI" parent="." instance=ExtResource("4_4oce8")]
+visible = false
+
+[node name="SkillGetUI" parent="." instance=ExtResource("5_7n83d")]
+visible = false
+
+[node name="wall" parent="." instance=ExtResource("6_1e7ai")]
+visible = false
+z_index = -1
+position = Vector2(-40, 776)
+scale = Vector2(71.16, 1)
+
+[node name="wall3" parent="." instance=ExtResource("6_1e7ai")]
+visible = false
+z_index = -1
+position = Vector2(-1920, 0)
+rotation = -3.1415915
+scale = Vector2(0.7200031, 23.88)
+
+[node name="wall2" parent="." instance=ExtResource("6_1e7ai")]
+visible = false
+z_index = -1
+position = Vector2(1920, 0)
+rotation = 1.5707964
+scale = Vector2(23.88, 1)
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+scale = Vector2(2.6, 2.6)
+texture = ExtResource("7_qwpqk")
+
+[node name="StageTimer" type="Timer" parent="."]
+wait_time = 3.8139834777324433
+
+[node name="CrackPngClipart" type="Sprite2D" parent="."]
+position = Vector2(-25, 498)
+texture = ExtResource("7_l6km1")
+
+[node name="portal" type="Area2D" parent="."]
+position = Vector2(9.000002, 603)
+scale = Vector2(-2.566036, 4.1465406)
+collision_layer = 2
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="portal"]
+position = Vector2(-0.99993896, 0.99993896)
+scale = Vector2(2.749998, 2.749998)
+sprite_frames = SubResource("SpriteFrames_j5rjp")
+script = ExtResource("9_w5ust")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="portal"]
+position = Vector2(1, 2)
+shape = SubResource("CapsuleShape2D_w5ust")
+
+[connection signal="body_entered" from="portal" to="." method="_on_portal_body_entered"]
+
+[editable path="Player"]

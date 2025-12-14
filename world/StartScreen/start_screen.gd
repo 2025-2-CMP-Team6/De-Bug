@@ -16,7 +16,6 @@ func _ready():
 
 
 func _on_start_button_pressed():
-	# 오디오 매니저가 없으면(BGM 없을 때) 새로 생성
 	if _audio_manager == null:
 		_audio_manager = AudioManager.new()
 		add_child(_audio_manager)
@@ -24,7 +23,7 @@ func _on_start_button_pressed():
 	var sfx_key = "StartSFX"
 	var sfx_plus = AudioManagerPlus.new()
 	sfx_plus.stream = start_button_effect_sound
-	sfx_plus.volume_db = 0.0 # 효과음은 보통 원본 크기 (필요시 조절)
+	sfx_plus.volume_db = 0.0
 	sfx_plus.audio_name = sfx_key
 	sfx_plus.loop = false
 	

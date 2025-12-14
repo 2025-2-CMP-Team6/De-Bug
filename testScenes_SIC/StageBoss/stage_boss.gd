@@ -81,8 +81,23 @@ func trigger_lasers():
 
 func check_fire_exist():
 	var fires = get_tree().get_nodes_in_group("boss_fire")
-	
+
 	if fires.size() > 0:
 		return true
 	else:
 		return false
+
+# Override World's _on_enemy_died to transition to Ending_Boss scene
+func _on_enemy_died():
+	var remaining_enemies = get_tree().get_nodes_in_group("enemies")
+	if remaining_enemies.size() <= 1:
+		print("Boss defeated! Transitioning to Ending_Boss scene...")
+
+		# Stop map pattern timer
+		if map_pattern_timer and map_pattern_timer.is_stopped() == false:
+			map_pattern_timer.stop()
+
+		# Transition to Ending_Boss scene with fade effect
+		SceneTransition.fade_to_scene("res://testScenes_SIC/StageEnding/Ending_Boss.tscn", 1.0)
+	else:
+		print("An enemy has died. Remaining enemies: " + str(remaining_enemies.size() - 1))
