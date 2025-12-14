@@ -62,6 +62,12 @@ func _setup_sound():
 		sound_config.volume_db = sound_volume_db
 		sound_config.pitch_scale = sound_pitch_scale
 		sound_config.audio_name = "skill_cast"
+		
+		if "bus" in sound_config:
+			sound_config.bus = "SFX"
+		else:
+			sound_config.set("bus", "SFX") 
+			
 		_audio_manager.add_plus("skill_cast", sound_config)
 
 	# Register error sound

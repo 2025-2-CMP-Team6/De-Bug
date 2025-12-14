@@ -30,8 +30,15 @@ func _on_master_volume_changed(value: float):
 
 
 func _on_music_volume_changed(value: float):
-	# Set the music audio bus volume (if you have a separate bus)
-	# For now, we'll just save the value
+	# Set the Music audio bus volume
+	var volume_db = linear_to_db(value / 100.0)
+	var bus_index = AudioServer.get_bus_index("Music")
+	
+	# Check if the bus exists to avoid errors
+	if bus_index != -1:
+		AudioServer.set_bus_volume_db(bus_index, volume_db)
+	
+	# Update the display
 	music_value_label.text = str(int(value)) + "%"
 
 	# Save the setting
@@ -39,8 +46,15 @@ func _on_music_volume_changed(value: float):
 
 
 func _on_sfx_volume_changed(value: float):
-	# Set the SFX audio bus volume (if you have a separate bus)
-	# For now, we'll just save the value
+	# Set the SFX audio bus volume
+	var volume_db = linear_to_db(value / 100.0)
+	var bus_index = AudioServer.get_bus_index("SFX")
+	
+	# Check if the bus exists to avoid errors
+	if bus_index != -1:
+		AudioServer.set_bus_volume_db(bus_index, volume_db)
+		
+	# Update the display
 	sfx_value_label.text = str(int(value)) + "%"
 
 	# Save the setting
@@ -77,6 +91,20 @@ func _load_audio_settings():
 		music_slider.value = config.get_value("audio", "music_volume", 80.0)
 		sfx_slider.value = config.get_value("audio", "sfx_volume", 80.0)
 
-		# Apply the master volume
-		var volume_db = linear_to_db(master_slider.value / 100.0)
-		AudioServer.set_bus_volume_db(AudioServer.get_bus_index("Master"), volume_db)
+		# Apply the loaded volume values to the AudioServer immediately
+		
+		# 1. Apply Master volume
+		var master_db = linear_to_db(master_slider.value / 100.0)
+		AudioServer.set_bus_volume_db(AudioServer.get_bus_index("Master"), master_db)
+		
+		# 2. Apply Music volume
+		var music_db = linear_to_db(music_slider.value / 100.0)
+		var music_idx = AudioServer.get_bus_index("Music")
+		if music_idx != -1:
+			AudioServer.set_bus_volume_db(music_idx, music_db)
+			
+		# 3. Apply SFX volume
+		var sfx_db = linear_to_db(sfx_slider.value / 100.0)
+		var sfx_idx = AudioServer.get_bus_index("SFX")
+		if sfx_idx != -1:
+			AudioServer.set_bus_volume_db(sfx_idx, sfx_db)

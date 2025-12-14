@@ -35,5 +35,6 @@ begin_cap_mode = 1
 end_cap_mode = 1
 
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+bus = &"SFX"
 
 [connection signal="body_entered" from="Hitbox" to="." method="_on_hitbox_body_entered"]

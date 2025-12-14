@@ -61,6 +61,7 @@ stream = ExtResource("2_0s7l3")
 volume_db = 10.0
 autoplay = true
 max_distance = 4000.0
+bus = &"SFX"
 
 [connection signal="body_entered" from="." to="." method="_on_body_entered"]
 [connection signal="timeout" from="LifeTimer" to="." method="_on_life_timer_timeout"]
