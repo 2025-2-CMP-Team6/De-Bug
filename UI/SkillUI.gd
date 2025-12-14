@@ -25,6 +25,16 @@ const SkillCard = preload("res://UI/SkillCard.gd")
 @export var synthesis_info_label: Label
 #endregion
 
+#region [Simple Sound Settings]
+@export_group("Sound Settings")
+@export var sfx_player: AudioStreamPlayer
+@export var sound_equip: AudioStream      
+@export var sound_unequip: AudioStream    
+@export var sound_success: AudioStream    
+@export var sound_fail: AudioStream       
+@export var sound_synthesis: AudioStream  
+#endregion
+
 var player_node_ref: CharacterBody2D
 
 var current_upgrade_base: SkillInstance = null
@@ -39,6 +49,7 @@ func _ready():
 		upgrade_base_slot.slot_index = 10
 	if is_instance_valid(upgrade_material_slot):
 		upgrade_material_slot.slot_index = 11
+	
 	# Connect signals
 	if is_instance_valid(equipped_slot_1) and equipped_slot_1.has_signal("skill_dropped_on_slot"):
 		equipped_slot_1.skill_dropped_on_slot.connect(_on_skill_dropped)
@@ -60,6 +71,14 @@ func _ready():
 		synthesis_slot2.skill_dropped_on_slot.connect(_on_synthesis_slot2_dropped)
 	if is_instance_valid(synthesis_button):
 		synthesis_button.pressed.connect(_on_synthesis_button_pressed)
+
+#region [Sound] Helper Function
+func play_sfx(stream: AudioStream):
+	if sfx_player and stream:
+		sfx_player.stream = stream
+		sfx_player.pitch_scale = randf_range(0.95, 1.05) 
+		sfx_player.play()
+#endregion
 
 #region UI Management
 func refresh_ui(player_node: CharacterBody2D):
@@ -126,7 +145,6 @@ func refresh_upgrade_tab():
 
 # Synthesis tab
 func refresh_synthesis_tab():
-	# Update first synthesis slot UI
 	if is_instance_valid(synthesis_slot1):
 		if is_instance_valid(current_synthesis_skill1):
 			var t = load(current_synthesis_skill1.skill_path).instantiate()
@@ -135,7 +153,6 @@ func refresh_synthesis_tab():
 		else:
 			synthesis_slot1.clear_skill_display()
 
-	# Update second synthesis slot UI
 	if is_instance_valid(synthesis_slot2):
 		if is_instance_valid(current_synthesis_skill2):
 			var t = load(current_synthesis_skill2.skill_path).instantiate()
@@ -144,7 +161,6 @@ func refresh_synthesis_tab():
 		else:
 			synthesis_slot2.clear_skill_display()
 
-	# Update info label
 	if is_instance_valid(synthesis_info_label):
 		if not is_instance_valid(current_synthesis_skill1) or not is_instance_valid(current_synthesis_skill2):
 			synthesis_info_label.text = "Place 2 skills to use for synthesis."
@@ -160,45 +176,45 @@ func _on_skill_dropped(skill_instance: SkillInstance, slot_index: int):
 	if player_node_ref:
 		if InventoryManager.remove_skill_from_inventory(skill_instance):
 			player_node_ref.equip_skill(skill_instance, slot_index)
+			play_sfx(sound_equip) 
 			get_tree().create_timer(0.01).timeout.connect(refresh_ui.bind(player_node_ref))
 		else:
 			print("UI error: Attempting to equip a skill not in inventory")
 
 # Unequip skill
 func _on_skill_unequipped(slot_index: int):
-	# Player equipment slots 
+	var unequipped = false
+	
 	if slot_index >= 1 and slot_index <= 3:
 		if player_node_ref:
 			player_node_ref.unequip_skill(slot_index)
+			unequipped = true
 
-
-	# Upgrade target slot 
 	elif slot_index == 10:
 		if is_instance_valid(current_upgrade_base):
 			current_upgrade_base = null
-			print("Upgrade target skill unequipped")
+			unequipped = true
 
-	# Material slot (slot 11)
 	elif slot_index == 11:
 		if is_instance_valid(current_upgrade_material):
 			current_upgrade_material = null
-			print("Material skill unequipped")
+			unequipped = true
 
-# Unequip synthesis slot 1
 	elif slot_index == 12:
 		if is_instance_valid(current_synthesis_skill1):
 			InventoryManager.add_skill_to_inventory(current_synthesis_skill1)
 			current_synthesis_skill1 = null
-			print("Synthesis skill 1 unequipped")
+			unequipped = true
 
-	# Unequip synthesis slot 2
 	elif slot_index == 13:
 		if is_instance_valid(current_synthesis_skill2):
 			InventoryManager.add_skill_to_inventory(current_synthesis_skill2)
 			current_synthesis_skill2 = null
-			print("Synthesis skill 2 unequipped")
+			unequipped = true
 
-	# Refresh UI
+	if unequipped:
+		play_sfx(sound_unequip) 
+
 	get_tree().create_timer(0.01).timeout.connect(refresh_ui.bind(player_node_ref))
 
 # Upgrade target skill drop
@@ -207,6 +223,7 @@ func _on_upgrade_base_dropped(skill_instance: SkillInstance, slot_index: int):
 		InventoryManager.add_skill_to_inventory(current_upgrade_base)
 		
 	current_upgrade_base = skill_instance
+	play_sfx(sound_equip) 
 	
 	get_tree().create_timer(0.01).timeout.connect(refresh_ui.bind(player_node_ref))
 
@@ -216,6 +233,7 @@ func _on_upgrade_material_dropped(skill_instance: SkillInstance, slot_index: int
 		InventoryManager.add_skill_to_inventory(current_upgrade_material)
 		
 	current_upgrade_material = skill_instance
+	play_sfx(sound_equip) 
 	
 	get_tree().create_timer(0.01).timeout.connect(refresh_ui.bind(player_node_ref))
 
@@ -224,9 +242,11 @@ func _on_upgrade_button_pressed():
 	var success = InventoryManager.attempt_upgrade(current_upgrade_base, current_upgrade_material)
 	
 	if success:
+		play_sfx(sound_success) 
 		InventoryManager.remove_skill_from_inventory(current_upgrade_material)
 		current_upgrade_material = null
 	else:
+		play_sfx(sound_fail)    
 		InventoryManager.remove_skill_from_inventory(current_upgrade_material)
 		current_upgrade_material = null
 	get_tree().create_timer(0.01).timeout.connect(refresh_ui.bind(player_node_ref))
@@ -237,6 +257,7 @@ func _on_synthesis_slot1_dropped(skill_instance: SkillInstance, slot_index: int)
 		InventoryManager.add_skill_to_inventory(current_synthesis_skill1)
 	InventoryManager.remove_skill_from_inventory(skill_instance)
 	current_synthesis_skill1 = skill_instance
+	play_sfx(sound_equip) # [Sound]
 	get_tree().create_timer(0.01).timeout.connect(refresh_ui.bind(player_node_ref))
 
 
@@ -246,22 +267,24 @@ func _on_synthesis_slot2_dropped(skill_instance: SkillInstance, slot_index: int)
 		InventoryManager.add_skill_to_inventory(current_synthesis_skill2)
 	InventoryManager.remove_skill_from_inventory(skill_instance)
 	current_synthesis_skill2 = skill_instance
+	play_sfx(sound_equip) # [Sound]
 	get_tree().create_timer(0.01).timeout.connect(refresh_ui.bind(player_node_ref))
 
 # Synthesis button
 func _on_synthesis_button_pressed():
 	if not is_instance_valid(current_synthesis_skill1) or not is_instance_valid(current_synthesis_skill2):
 		print("Synthesis error: Insufficient materials.")
+		play_sfx(sound_fail) # [Sound] 
 		return
 		
 	var getSkill = InventoryManager.get_random_skill_path()
 	InventoryManager.add_skill_to_inventory(getSkill)
 	print("Skill synthesis success! " + getSkill + " acquired")
 	
+	play_sfx(sound_synthesis) # [Sound] 
+	
 	current_synthesis_skill1 = null
 	current_synthesis_skill2 = null
 	
 	get_tree().create_timer(0.01).timeout.connect(refresh_ui.bind(player_node_ref))
-
-
 #endregion

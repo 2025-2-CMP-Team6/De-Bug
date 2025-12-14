@@ -1,9 +1,14 @@
-[gd_scene load_steps=9 format=3 uid="uid://hwvrl37b2dlk"]
+[gd_scene load_steps=14 format=3 uid="uid://hwvrl37b2dlk"]
 
 [ext_resource type="Script" uid="uid://chrq3r3tre42w" path="res://UI/SkillUI.gd" id="1_6m8pb"]
 [ext_resource type="Script" uid="uid://bghevohiykay4" path="res://UI/InventoryDropArea.gd" id="2_5m5hr"]
+[ext_resource type="AudioStream" uid="uid://bodtx5java2un" path="res://Sounds/effects/sfx_item_equip.mp3" id="2_sk2bb"]
+[ext_resource type="AudioStream" uid="uid://c0q6fitr1guui" path="res://Sounds/effects/sfx_item_drop.mp3" id="3_h525w"]
 [ext_resource type="PackedScene" uid="uid://djshs3mel8s1h" path="res://UI/skillslot.tscn" id="3_hvqun"]
 [ext_resource type="Texture2D" uid="uid://cyr0dpuqer51h" path="res://graphics/Yes-1.png.png" id="4_4qi14"]
+[ext_resource type="AudioStream" uid="uid://btlcxhooluldr" path="res://Sounds/effects/sfx_upgrade_succes.mp3" id="4_jnqye"]
+[ext_resource type="AudioStream" uid="uid://1b7h0ykjhtfd" path="res://Sounds/effects/sfx_upgrade_fail.mp3" id="5_nmpp3"]
+[ext_resource type="AudioStream" uid="uid://0j3gr6tqxw57" path="res://Sounds/effects/sfx_syn.mp3" id="6_j83gt"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6m8pb"]
 content_margin_left = 8.0
@@ -27,7 +32,7 @@ TooltipPanel/styles/panel = SubResource("StyleBoxFlat_6m8pb")
 [sub_resource type="LabelSettings" id="LabelSettings_4qi14"]
 font_size = 48
 
-[node name="SkillUI" type="CanvasLayer" node_paths=PackedStringArray("inventory_grid", "equipped_slot_1", "equipped_slot_2", "equipped_slot_3", "inventory_drop_area", "tab_container", "upgrade_base_slot", "upgrade_material_slot", "upgrade_button", "upgrade_info_label", "synthesis_slot1", "synthesis_slot2", "synthesis_button", "synthesis_info_label") groups=["skill_ui"]]
+[node name="SkillUI" type="CanvasLayer" node_paths=PackedStringArray("inventory_grid", "equipped_slot_1", "equipped_slot_2", "equipped_slot_3", "inventory_drop_area", "tab_container", "upgrade_base_slot", "upgrade_material_slot", "upgrade_button", "upgrade_info_label", "synthesis_slot1", "synthesis_slot2", "synthesis_button", "synthesis_info_label", "sfx_player") groups=["skill_ui"]]
 script = ExtResource("1_6m8pb")
 inventory_grid = NodePath("Panel/SkillContainer/InventoryGrid")
 equipped_slot_1 = NodePath("Panel/TabContainer/equiped/MarginContainer/EquippedSlots/Slot1")
@@ -43,6 +48,12 @@ synthesis_slot1 = NodePath("Panel/TabContainer/Synthesis/MarginContainer/HBoxCon
 synthesis_slot2 = NodePath("Panel/TabContainer/Synthesis/MarginContainer/HBoxContainer/SynthesisSkill2")
 synthesis_button = NodePath("Panel/TabContainer/Synthesis/SynthesisButton")
 synthesis_info_label = NodePath("Panel/TabContainer/Synthesis/SynthesisInfoLabel")
+sfx_player = NodePath("AudioStreamPlayer")
+sound_equip = ExtResource("2_sk2bb")
+sound_unequip = ExtResource("3_h525w")
+sound_success = ExtResource("4_jnqye")
+sound_fail = ExtResource("5_nmpp3")
+sound_synthesis = ExtResource("6_j83gt")
 
 [node name="Panel" type="Panel" parent="."]
 offset_left = 654.0
@@ -201,3 +212,6 @@ icon = ExtResource("4_4qi14")
 [node name="SynthesisInfoLabel" type="Label" parent="Panel/TabContainer/Synthesis"]
 layout_mode = 2
 size_flags_vertical = 8
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+bus = &"SFX"
