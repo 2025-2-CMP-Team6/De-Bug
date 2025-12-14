@@ -19,6 +19,8 @@ const BaseSkill = preload("res://SkillDatas/BaseSkill.gd")
 @export var dash_cost: float = 35.0
 @export var stamina_regen_rate: float = 20.0
 @export var hit_sound: AudioStream
+@export var jump_sound: AudioStream
+@export var dash_sound: AudioStream
 #endregion
 
 #region State Management Variables
@@ -214,6 +216,12 @@ func handle_inputs():
 		velocity.y = jump_velocity
 		jumps_made += 1
 		
+		if sfx_player and jump_sound:
+			sfx_player.stream = jump_sound
+			sfx_player.volume_db = -4.0
+			sfx_player.pitch_scale = randf_range(0.9, 1.1) # 소리가 단조롭지 않게 피치 랜덤 조절
+			sfx_player.play()
+		
 	if Input.is_action_just_pressed("skill_1"):
 		var target = find_nearest_enemy()
 		try_cast_skill(skill_1_slot, target)
@@ -224,6 +232,13 @@ func handle_inputs():
 	elif Input.is_action_just_pressed("dash") and can_dash:
 		if current_stamina >= dash_cost:
 			change_state(GameManager.State.DASH)
+			
+			if sfx_player and dash_sound:
+				sfx_player.stream = dash_sound
+				sfx_player.volume_db = 0.0    # <--- 점프때 줄인 소리를 다시 원상복구 (필요하면 여기도 줄이세요)
+				sfx_player.pitch_scale = randf_range(0.95, 1.05) # 대쉬는 피치 변화를 살짝만 줌
+				sfx_player.play()
+			# -------------------------
 		else:
 			pass
 #endregion
