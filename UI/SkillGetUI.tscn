@@ -10,6 +10,7 @@
 
 [node name="SkillGetUI" type="CanvasLayer" node_paths=PackedStringArray("skill_select1", "skill_select2", "skill_select3", "select_button", "background_panel", "cancel_button", "sfx_player")]
 process_mode = 3
+layer = 200
 script = ExtResource("1_y5hbc")
 skill_select1 = NodePath("MarginContainer/EquippedSlots/SkillSelect")
 skill_select2 = NodePath("MarginContainer/EquippedSlots/SkillSelect2")

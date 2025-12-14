@@ -34,6 +34,7 @@ TooltipPanel/styles/panel = SubResource("StyleBoxFlat_6m8pb")
 font_size = 48
 
 [node name="SkillUI" type="CanvasLayer" node_paths=PackedStringArray("inventory_grid", "equipped_slot_1", "equipped_slot_2", "equipped_slot_3", "inventory_drop_area", "tab_container", "upgrade_base_slot", "upgrade_material_slot", "upgrade_button", "upgrade_info_label", "synthesis_slot1", "synthesis_slot2", "synthesis_button", "synthesis_info_label", "sfx_player") groups=["skill_ui"]]
+process_mode = 3
 script = ExtResource("1_6m8pb")
 inventory_grid = NodePath("Panel/SkillContainer/InventoryGrid")
 equipped_slot_1 = NodePath("Panel/TabContainer/equiped/MarginContainer/EquippedSlots/Slot1")
