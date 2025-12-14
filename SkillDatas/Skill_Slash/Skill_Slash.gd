@@ -1,4 +1,5 @@
-# Skill_Melee.gd
+# Skill_Slash.gd
+# owner: 김동현
 extends BaseSkill
 
 #region Node References
@@ -8,7 +9,6 @@ extends BaseSkill
 
 #region Initialization
 func _init():
-	# ★ You must use this variable instead of 'ignore_gravity'.
 	gravity_multiplier = 0.2
 
 func _ready():

@@ -1,4 +1,5 @@
-# res://EffectManager.gd
+# EffectManager.gd
+# owner: 김동현
 extends Node
 
 #region Node References and Timers

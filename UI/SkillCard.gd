@@ -1,4 +1,5 @@
 # SkillCard.gd
+# owner: 김동현
 extends PanelContainer
 class_name SkillCard
 

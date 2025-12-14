@@ -1,4 +1,5 @@
 # GameManager.gd
+# owner: ALL
 extends Node
 
 var is_cheat: bool = false

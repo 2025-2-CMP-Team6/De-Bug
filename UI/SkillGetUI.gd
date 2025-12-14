@@ -1,3 +1,6 @@
+# SkillGetUI.gd
+# owner: 김동현
+
 extends CanvasLayer
 class_name SkillGetUI
 
@@ -16,11 +19,11 @@ signal closed
 
 #region [Simple Sound Settings]
 @export_group("Sound Settings")
-@export var sfx_player: AudioStreamPlayer 
-@export var sound_open: AudioStream       
-@export var sound_slot_click: AudioStream 
-@export var sound_confirm: AudioStream   
-@export var sound_cancel: AudioStream     
+@export var sfx_player: AudioStreamPlayer
+@export var sound_open: AudioStream
+@export var sound_slot_click: AudioStream
+@export var sound_confirm: AudioStream
+@export var sound_cancel: AudioStream
 #endregion
 
 # Storage for currently selected skill data and UI node
@@ -88,7 +91,7 @@ func open_reward_screen() -> void:
 	self.offset.y = - screen_height
 	visible = true
 	
-	play_sfx(sound_open) 
+	play_sfx(sound_open)
 	
 	call_deferred("_start_open_animation")
 # Open animation
@@ -226,7 +229,7 @@ func _on_slot_clicked(skill_instance: SkillInstance, slot_node: Control): # Pane
 	selected_skill_instance = skill_instance
 	selected_slot_node = slot_node
 	
-	play_sfx(sound_slot_click) 
+	play_sfx(sound_slot_click)
 	
 	_update_visuals()
 	
@@ -277,7 +280,7 @@ func _on_select_button_pressed():
 	print("Skill confirmed acquired: " + selected_skill_instance.skill_path)
 	InventoryManager.add_skill_to_inventory(selected_skill_instance)
 	
-	play_sfx(sound_confirm) 
+	play_sfx(sound_confirm)
 	
 	var skill_ui = get_tree().get_first_node_in_group("skill_ui")
 	if is_instance_valid(skill_ui) and skill_ui.has_method("refresh_ui"):
@@ -291,7 +294,7 @@ func _on_cancel_button_pressed():
 	is_animating = true
 
 	print("Reward skipped")
-	play_sfx(sound_cancel) 
+	play_sfx(sound_cancel)
 	
 	_start_close_animation(null, null)
 #endregion

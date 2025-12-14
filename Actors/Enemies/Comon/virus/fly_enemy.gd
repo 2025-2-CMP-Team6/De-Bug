@@ -1,4 +1,6 @@
-class_name FlyingEnemy extends BaseEnemy
+# fly_enemy.gd
+# owner: 김동현
+extends BaseEnemy
 
 #region States
 enum State {

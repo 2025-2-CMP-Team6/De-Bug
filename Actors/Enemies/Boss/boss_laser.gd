@@ -1,4 +1,5 @@
 # boss_laser.gd
+# owner: 김동현
 extends Node2D
 
 #region Settings

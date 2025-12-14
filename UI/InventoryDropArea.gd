@@ -1,4 +1,5 @@
-# ui/InventoryDropArea.gd
+# InventoryDropArea.gd
+# owner: 김동현
 extends ScrollContainer
 
 signal skill_unequipped(slot_index: int)
