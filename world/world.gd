@@ -135,12 +135,14 @@ func _on_enemy_died():
 		print("An enemy has died. Remaining enemies: " + str(remaining_enemies.size() - 1))
 
 func _on_skill_get_ui_closed():
+	get_tree().paused = false
 	if is_instance_valid(player) and (not is_instance_valid(skill_ui) or not skill_ui.visible):
 		player.set_input_locked(false)
 
 # Function to open the reward selection screen
 func open_reward_selection() -> void:
 	if is_instance_valid(skill_get_ui):
+		get_tree().paused = true
 		skill_get_ui.open_reward_screen()
 		if is_instance_valid(player):
 			player.set_input_locked(true)
